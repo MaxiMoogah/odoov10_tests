@@ -124,6 +124,8 @@ class sales_reports(models.TransientModel):
         # 8-  'nett' = [3,4,5,6,8,9]
         # 9-  'perception' => type = 'perception' & tax = 'vat'
         # 10- 'grossincome' => type = 'perception' & tax = 'gross_income'
+        # 11- Others
+        # 12- 'Monotributo'= 11
 
         # id's of vats
         s1 = self.env['account.tax'].search([('tax_group_id.type', '=', 'tax'),('tax_group_id.tax', '=', 'vat'),('tax_group_id.afip_code', '=', 4),('vatreport_included', '=', True)]).ids
@@ -137,18 +139,19 @@ class sales_reports(models.TransientModel):
         s9 = self.env['account.tax'].search([('tax_group_id.type', '=', 'perception'),('tax_group_id.tax', '=', 'vat'),('vatreport_included', '=', True)]).ids
         s10 = self.env['account.tax'].search([('tax_group_id.type', '=', 'perception'),('tax_group_id.tax', '=', 'gross_income'),('vatreport_included', '=', True)]).ids
         s11 = self.env['account.tax'].search([('tax_group_id.type', '=', 'tax'),('tax_group_id.tax', '=', 'other'),('tax_group_id.afip_code', '=', 4),('vatreport_included', '=', True)]).ids
+        s12 = self.env['account.tax'].search([('tax_group_id.type', '=', 'tax'),('tax_group_id.tax', '=', 'vat'),('tax_group_id.afip_code', '=', 10),('vatreport_included', '=', True)]).ids
 
-        return {'IVA 10.50%':s1,'IVA 21%':s2,'IVA 27%':s3,'IVA 5%':s4,'IVA 2.50%':s5,'exempt':s6,'novat':s7,'nett':s8,'perception':s9,'grossincome':s10,'other':s11}
+        return {'Monotributo':s12,'IVA 10.50%':s1,'IVA 21%':s2,'IVA 27%':s3,'IVA 5%':s4,'IVA 2.50%':s5,'exempt':s6,'novat':s7,'nett':s8,'perception':s9,'grossincome':s10,'other':s11}
 
     def fill_array(self,new_array,invoices):
         new_vat_array = OrderedDict()
         var = total = 0.0
         for inv in invoices:
-            new_vat_array[inv.id] = {'IVA 10.50%':0.0,'IVA 21%':0.0,'IVA 27%':0.0,'IVA 5%':0.0,'IVA 2.50%':0.0,'exempt':0.0,'novat':0.0,'nett':0.0,'perception':0.0,'grossincome':0.0,'other':0.0}
+            new_vat_array[inv.id] = {'Monotributo':0.0,'IVA 10.50%':0.0,'IVA 21%':0.0,'IVA 27%':0.0,'IVA 5%':0.0,'IVA 2.50%':0.0,'exempt':0.0,'novat':0.0,'nett':0.0,'perception':0.0,'grossincome':0.0,'other':0.0}
             for line in inv.tax_line_ids:
                 for tax in new_array:
                     if line.tax_id.id in new_array[tax]:
-                        if tax in ['exempt','novat','nett']:
+                        if tax in ['Monotributo','exempt','novat','nett']:
                             var = line.base
                         else:
                             var = line.amount
@@ -186,7 +189,6 @@ class sales_reports(models.TransientModel):
         vatarray = {}
         new_array = self.get_new_array()
         new_vat_array = self.fill_array(new_array,invoices)
-
         # Titles
         worksheet.write(0, 0, _('Nombre del Informe: Libro IVA Compras'))
         worksheet.write(1, 0, _('Empresa: ') + self.env.user.company_id.name)
@@ -203,6 +205,7 @@ class sales_reports(models.TransientModel):
         vattot['IVA 27%'] = 0.00
         vattot['IVA 5%'] = 0.00
         vattot['IVA 2.50%'] = 0.00
+        vattot['Monotributo'] = 0.00
 
         #columns
         index = 5
@@ -308,7 +311,10 @@ class sales_reports(models.TransientModel):
                         worksheet.write(index, subindex, ' ')
                     else:
                         cuit = o.partner_id.main_id_number
-                        worksheet.write(index, subindex,cuit[0:2] + '-' + cuit[2:10] + '-' + cuit[10:11])
+                        if o.partner_id.main_id_category_id.code != 'DNI':
+                            worksheet.write(index, subindex,cuit[0:2] + '-' + cuit[2:10] + '-' + cuit[10:11])
+                        else:
+                            worksheet.write(index, subindex, cuit)
                     subindex += 1
 
                     worksheet.write(index, subindex,  o.partner_id.name)
@@ -500,14 +506,21 @@ class sales_reports(models.TransientModel):
             worksheet.write(index, subindex, _("Totales Agrupados"))
             subindex += 1
             for code in vatcodes:
-                worksheet.write(index, subindex, _("Base"))
-                subindex += 1
+                foundf = False
+                for type in matrix:
+                    for key, value in matrix[type].iteritems():
+                        if key == code:
+                            if matrixbase[type][key] > 0:
+                                foundf = True
+                if foundf:
+                    worksheet.write(index, subindex, _("Base"))
+                    subindex += 1
                 worksheet.write(index, subindex, code)
                 subindex += 1
-            worksheet.write(index, subindex, _("Totales"))
-            subindex += 1
+
 
             # print matrix
+            #index += 2
             totgrp = 0
             for type in matrix:
                 index += 1
@@ -516,19 +529,68 @@ class sales_reports(models.TransientModel):
                 subindex += 1
                 for code in vatcodes:
                     foundf = False
+                    foundf2 = False
                     for key, value in matrix[type].iteritems():
                         if key == code:
                             foundf = True
-                            worksheet.write(index, subindex, matrixbase[type][key])
-                            subindex += 1
+                            if matrixbase[type][key] > 0:
+                                foundf2 = True
+                                worksheet.write(index, subindex, matrixbase[type][key])
+                                subindex += 1
                             worksheet.write(index, subindex, value)
                             subindex += 1
                             totgrp +=  (matrixbase[type][key] + value)
                     if not foundf:
-                        subindex += 2
+                        if foundf2:
+                            subindex += 2
+                        else:
+                            subindex += 1
                 worksheet.write(index, subindex, totgrp)
                 subindex += 1
                 totgrp = 0
+
+
+
+
+
+
+
+            #
+            # index += 2
+            # subindex = 0
+            # worksheet.write(index, subindex, _("Totales Agrupados"))
+            # subindex += 1
+            # for code in vatcodes:
+            #     worksheet.write(index, subindex, _("Base"))
+            #     subindex += 1
+            #     worksheet.write(index, subindex, code)
+            #     subindex += 1
+            # worksheet.write(index, subindex, _("Totales"))
+            # subindex += 1
+            #
+            # # print matrix
+            # index += 2
+            # totgrp = 0
+            # for type in matrix:
+            #     index += 1
+            #     subindex = 0
+            #     worksheet.write(index, subindex, type)
+            #     subindex += 1
+            #     for code in vatcodes:
+            #         foundf = False
+            #         for key, value in matrix[type].iteritems():
+            #             if key == code:
+            #                 foundf = True
+            #                 worksheet.write(index, subindex, matrixbase[type][key])
+            #                 subindex += 1
+            #                 worksheet.write(index, subindex, value)
+            #                 subindex += 1
+            #                 totgrp +=  (matrixbase[type][key] + value)
+            #         if not foundf:
+            #             subindex += 2
+            #     worksheet.write(index, subindex, totgrp)
+            #     subindex += 1
+            #     totgrp = 0
 
         else:
             subindex = 7

@@ -320,7 +320,10 @@ class sales_reports(models.TransientModel):
                         worksheet.write(index, subindex, ' ')
                     else:
                         cuit = o.partner_id.main_id_number
-                        worksheet.write(index, subindex,cuit[0:2] + '-' + cuit[2:10] + '-' + cuit[10:11])
+                        if o.partner_id.main_id_category_id.code != 'DNI':
+                            worksheet.write(index, subindex,cuit[0:2] + '-' + cuit[2:10] + '-' + cuit[10:11])
+                        else:
+                            worksheet.write(index, subindex, cuit)
                     subindex += 1
 
                     worksheet.write(index, subindex,  o.partner_id.name)
@@ -512,14 +515,22 @@ class sales_reports(models.TransientModel):
             worksheet.write(index, subindex, _("Totales Agrupados"))
             subindex += 1
             for code in vatcodes:
-                worksheet.write(index, subindex, _("Base"))
-                subindex += 1
+                foundf = False
+                for type in matrix:
+                    for key, value in matrix[type].iteritems():
+                        if key == code:
+                            print matrixbase[type][key]
+                            if matrixbase[type][key] > 0:
+                                foundf = True
+                if foundf:
+                    worksheet.write(index, subindex, _("Base"))
+                    subindex += 1
                 worksheet.write(index, subindex, code)
                 subindex += 1
-            worksheet.write(index, subindex, _("Totales"))
-            subindex += 1
+
 
             # print matrix
+            #index += 2
             totgrp = 0
             for type in matrix:
                 index += 1
@@ -528,19 +539,60 @@ class sales_reports(models.TransientModel):
                 subindex += 1
                 for code in vatcodes:
                     foundf = False
+                    foundf2 = False
                     for key, value in matrix[type].iteritems():
                         if key == code:
                             foundf = True
-                            worksheet.write(index, subindex, matrixbase[type][key])
-                            subindex += 1
+                            if matrixbase[type][key] > 0:
+                                foundf2 = True
+                                worksheet.write(index, subindex, matrixbase[type][key])
+                                subindex += 1
                             worksheet.write(index, subindex, value)
                             subindex += 1
                             totgrp +=  (matrixbase[type][key] + value)
                     if not foundf:
-                        subindex += 2
+                        if foundf2:
+                            subindex += 2
+                        else:
+                            subindex += 1
                 worksheet.write(index, subindex, totgrp)
                 subindex += 1
                 totgrp = 0
+
+            # index += 2
+            # subindex = 0
+            # worksheet.write(index, subindex, _("Totales Agrupados"))
+            # subindex += 1
+            # for code in vatcodes:
+            #     worksheet.write(index, subindex, _("Base"))
+            #     subindex += 1
+            #     worksheet.write(index, subindex, code)
+            #     subindex += 1
+            # worksheet.write(index, subindex, _("Totales"))
+            # subindex += 1
+            #
+            # # print matrix
+            # totgrp = 0
+            # for type in matrix:
+            #     index += 1
+            #     subindex = 0
+            #     worksheet.write(index, subindex, type)
+            #     subindex += 1
+            #     for code in vatcodes:
+            #         foundf = False
+            #         for key, value in matrix[type].iteritems():
+            #             if key == code:
+            #                 foundf = True
+            #                 worksheet.write(index, subindex, matrixbase[type][key])
+            #                 subindex += 1
+            #                 worksheet.write(index, subindex, value)
+            #                 subindex += 1
+            #                 totgrp +=  (matrixbase[type][key] + value)
+            #         if not foundf:
+            #             subindex += 2
+            #     worksheet.write(index, subindex, totgrp)
+            #     subindex += 1
+            #     totgrp = 0
 
         else:
             subindex = 7

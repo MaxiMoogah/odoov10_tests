@@ -856,7 +856,7 @@ class AccountPaymentGroup(models.Model):
     #         # 'domain': [('payment_id', 'in', self.payment_ids.ids)],
     #     }
 
-class AccountInvoiceConfirm(models.TransientModel):
+class AccountPaymentGroupConfirm(models.TransientModel):
     """
     This wizard will confirm the all the selected draft invoices
     """
