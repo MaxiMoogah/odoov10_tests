@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_account_payments" model="ir.actions.act_window">
+        <field name="name">Standard Receipts</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="context">{'default_partner_type': 'customer'}</field>
+        <field name="domain">[('partner_type', '=', 'customer'),('payment_group_id', '=', False)]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+              Click to register a payment
+            </p><p>
+              Payments are used to register liquidity movements (send or collect).
+              You can then process those payments by your own means or by using installed facilities.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_account_payments_payable" model="ir.actions.act_window">
+        <field name="name">Standard Payments</field>
+        <field name="res_model">account.payment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form,graph</field>
+        <field name="context">{'default_partner_type': 'supplier'}</field>
+        <field name="domain">[('partner_type', '=', 'supplier'),('payment_group_id', '=', False)]</field>
+        <field name="help" type="html">
+            <p class="oe_view_nocontent_create">
+              Click to register a payment
+            </p><p>
+              Payments are used to register liquidity movements (send or collect).
+              You can then process those payments by your own means or by using installed facilities.
+            </p>
+        </field>
+    </record>
+
+    <menuitem action="action_account_payments" id="menu_action_account_payments_group_receivable2" parent="account.menu_finance_receivables" sequence="20" groups="account.group_account_user"/>
+    <menuitem action="action_account_payments_payable" id="menu_action_account_payments_group_payable2" parent="account.menu_finance_payables" sequence="20" groups="account.group_account_user"/>
+
+</odoo>

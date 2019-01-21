@@ -12,3 +12,4 @@ import account_payment_group
 import multicurrency_customer_ledger_report
 import multicurrency_supplier_ledger_report
 import account_payment
+import account_move_line

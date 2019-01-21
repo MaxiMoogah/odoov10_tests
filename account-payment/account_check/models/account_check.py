@@ -716,18 +716,26 @@ class AccountCheck(models.Model):
         ], limit=1)
 
         product = self.env['product.product']
-        if partner_type == 'customer':
-            #if operation == 'reclaimed':
-            #    product = self.env['product.template'].search([('tc_state','=','tc_rec_endorsed')])
-            if operation in ['rejected','reclaimed']:
+        print partner_type
+        print operation
+        print self.type
+        last_operation = self._get_last_operation().operation
+        print last_operation
+        if self.type == 'third_check':
+            if operation == 'reclaimed' and last_operation == 'deposited':
+                last_operation = 'reclaimed'
+            if operation == 'reclaimed' and last_operation == 'delivered':
+                last_operation = 'reclaimed'
+
+            if last_operation in ['rejected','reclaimed']:
                 product = self.env['product.product'].search([('tc_state','=','tc_rejected')],limit=1)
-            if operation == 'returned':
+            if last_operation == 'returned':
                 product = self.env['product.product'].search([('tc_state','=','tc_canceled')],limit=1)
             account2 = product.property_account_income_id.id
         else:
-            if operation in ['rejected','reclaimed']:
+            if last_operation in ['rejected']:
                 product = self.env['product.product'].search([('oc_state','=','oc_rejected')],limit=1)
-            if operation == 'returned':
+            if last_operation in ['returned','reclaimed']:
                 product = self.env['product.product'].search([('oc_state','=','oc_canceled')],limit=1)
             account2 = product.property_account_expense_id.id
         if not product.id:

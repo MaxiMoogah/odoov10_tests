@@ -787,8 +787,10 @@ class AccountPaymentGroup(models.Model):
     @api.model
     def create(self, values):
         self.clear_caches()
+        if 'payment_date2' in values.keys():
+            values['payment_date'] = values['payment_date2']
         res = super(AccountPaymentGroup, self).create(values)
-        res.payment_date = res.payment_date2
+        #res.payment_date = res.payment_date2
         return res
 
     @api.multi
@@ -808,9 +810,8 @@ class AccountPaymentGroup(models.Model):
             writeoff_acc_id = False
             writeoff_journal_id = False
 
-            if rec.company_id.arg_sortdate:
-                rec.to_pay_move_line_ids = rec.to_pay_move_line_ids.sorted(key='date_maturity')
-
+            #if rec.company_id.arg_sortdate:
+            #    rec.to_pay_move_line_ids = rec.to_pay_move_line_ids.sorted(key='date_maturity')
             rec.payment_ids.post()
             counterpart_aml = rec.payment_ids.mapped('move_line_ids').filtered(
                 lambda r: not r.reconciled and r.account_id.internal_type in (

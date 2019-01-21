@@ -16,9 +16,9 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: custom_standard_reports
-#: code:addons/custom_standard_reports/models/account_partner_ledger.py:116
-#: code:addons/custom_standard_reports/models/account_aged_partner_balance.py:74
-#: code:addons/custom_standard_reports/models/account_aged_partner_balance.py:88
+#: code:addons/custom_standard_reports/models/account_partner_ledger.py:115
+#: code:addons/custom_standard_reports/models/account_aged_partner_balance.py:77
+#: code:addons/custom_standard_reports/models/account_aged_partner_balance.py:91
 #, python-format
-msgid "Invoice Number"
-msgstr "Número de Factura"
+msgid "Official Number"
+msgstr "Número Oficial"

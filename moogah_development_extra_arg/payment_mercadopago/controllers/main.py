@@ -105,13 +105,13 @@ class MercadoPagoController(http.Controller):
 
     @http.route(['/mercadopago/shop/payment/validate'], type='http', auth='public')
     def mercadopago_form_feedback(self, **post):
-        print("Inside Mercadopago Payment Transaction method")
-        print("-----request--------",request.session)
-        print("-----------post----------",post)
+        # print("Inside Mercadopago Payment Transaction method")
+        # print("-----request--------",request.session)
+        # print("-----------post----------",post)
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url')
         r_url = "/shop/payment/validate"
         acquirer = request.env['payment.acquirer'].sudo()
-        print("acquirer------------",acquirer)
+        # print("acquirer------------",acquirer)
         if request.session.get('pref_id') == post.get('preference_id'):
             if not request.session.get('sale_transaction_id') or request.session.get('website_payment_tx_id', False):
                 Transaction = request.env['payment.transaction'].sudo()
@@ -131,29 +131,29 @@ class MercadoPagoController(http.Controller):
             else :
                 tx = request.env['payment.transaction'].sudo().browse(
                     int(request.session.get('sale_transaction_id') or request.session.get('website_payment_tx_id', False)))
-            print("-------tx-----------",tx)
+            # print("-------tx-----------",tx)
             post.update({'sale_transaction_id' : tx.id})
             request.env['payment.transaction'].sudo().form_feedback(post, 'mercadopago')
         # 2/0
-        print "-----------url to redirect : ",base_url + r_url
+        # print "-----------url to redirect : ",base_url + r_url
         return request.render('payment_mercadopago.payment_mercadopago_redirect',
                               {'return_url': '%s' % urlparse.urljoin(base_url, r_url)})
 
     @http.route(['/payment/mercadopago/deposit'],type='json', auth='public')
     def mercadopago_payment_deposit(self, **kwargs):
-        print("-----------post",kwargs)
-        print("------request",request, request.session)
+        # print("-----------post",kwargs)
+        # print("------request",request, request.session)
         acquirer_id = request.env['payment.acquirer'].search([('id', '=', kwargs.get('acquirer_id'))])
         order = request.env['sale.order'].search([('id', '=', request.session.get('sale_order_id'))])
         mp = MecradoPagoPayment(acquirer_id)
         # 2/0
-        print("mp---------",mp)
+        # print("mp---------",mp)
         if kwargs.get('payment_method'):
             tx = request.env['payment.transaction'].sudo().browse(
                 int(request.session.get('sale_transaction_id') or request.session.get('website_payment_tx_id', False)))
-            print("--------tx from mercadopago payment deposit------",tx, order)
+            # print("--------tx from mercadopago payment deposit------",tx, order)
             if not tx:
-                print("Create it please!")
+                # print("Create it please!")
                 tx = tx.sudo()._check_or_create_sale_tx(order, acquirer_id, payment_token=False,
                                                         tx_type='form')
             else:
@@ -186,7 +186,7 @@ class MercadoPagoController(http.Controller):
 
     @http.route(['/payment/mercadopago/s2s/create_json_3ds'], type='json', auth='public', csrf=False)
     def mercadopago_s2s_create_json_3ds(self, verify_validity=False, **kwargs):
-        print("------mercadopago_s2s_create_json_3ds-----",kwargs)
+        # print("------mercadopago_s2s_create_json_3ds-----",kwargs)
         token = request.env['payment.acquirer'].browse(int(kwargs.get('acquirer_id'))).s2s_process(kwargs)
         if not token:
             res = {'result': False, }
@@ -212,24 +212,24 @@ class MercadoPagoController(http.Controller):
 
     @http.route(['/mercadopago/reject_payment'], type='http', auth='public', website=True)
     def reject_payment(self, **data):
-        print("------controller calling--------",data,request.session.get('state_message'))
+        # print("------controller calling--------",data,request.session.get('state_message'))
         msg = data.get('state_msg')
         return request.render("payment_mercadopago.reject_payment_template", {'msg':msg})
 
     @http.route(['/ipn/notification'], type='json', auth='public')
     def mercadopago_ipn_notification(self, **kwargs):
-        print("*************", request.jsonrequest, type(request.jsonrequest))
+        # print("*************", request.jsonrequest, type(request.jsonrequest))
         kwargs =    request.jsonrequest
-        print("----------request has been received with arguements : ",kwargs)
+        # print("----------request has been received with arguements : ",kwargs)
         acquirer_id = request.env['payment.acquirer'].sudo().search([('provider', '=', 'mercadopago')], limit=1)
         mp = MecradoPagoPayment(acquirer_id)
-        print("---------",acquirer_id, mp)
+        # print("---------",acquirer_id, mp)
         if acquirer_id.mercadopago_use_ipn:
             if kwargs.get('id'):
                 p_id = kwargs.get('id')
             elif kwargs.get('resource'):
                 p_id = kwargs.get('resource').split('/')[-1]
-            print("-------p_id-------",p_id)
+            # print("-------p_id-------",p_id)
             if kwargs and kwargs.get('topic') and p_id:
                 response = mp.get_payment_update(p_id)
                 if response.get('status') in (200, 201) and response.get('data'):
@@ -265,5 +265,5 @@ class MercadoPagoController(http.Controller):
             else:
                 return False
         else:
-            print("Inside else")
+            # print("Inside else")
             return False

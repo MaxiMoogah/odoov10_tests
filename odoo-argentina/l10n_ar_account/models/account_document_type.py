@@ -20,7 +20,7 @@ class AccountDocmentType(models.Model):
             vals.update({
                 'padding': 8,
                 'implementation': 'no_gap',
-                'prefix': "%04i-" % (journal.point_of_sale_number),
+                'prefix': "%05i-" % (journal.point_of_sale_number),
             })
         return vals
 

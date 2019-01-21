@@ -7,6 +7,7 @@ import logging
 import mercadopago
 from datetime import datetime
 import json
+import pprint
 
 from werkzeug import urls, utils
 from odoo.http import request
@@ -57,7 +58,7 @@ class PaymentMercadoPago(models.Model):
     mercadopago_use_ipn = fields.Boolean(string='Use IPN', groups='base.group_user')
     mercadopago_ipn_url = fields.Char(string='IPN URL', groups='base.group_user', compute='_get_ipn_url')
     mercadopago_enable_MercadoEnvio = fields.Boolean(string='Enable MercadoEnvio', groups='base.group_user')
-    auto_confirm = fields.Selection(selection_add=[('confirm_order_draft_acquirer', 'Authorize & capture the amount, confirm the SO, create	the	payment	and	save the invoice in	draft state on acquirer confirmation'),("confirm_order_confirm_inv","Authorize & capture the amount, confirm the SO and auto-validate the invoice on acquirer confirmation")],
+    auto_confirm = fields.Selection(selection_add=[('confirm_order_draft_acquirer', 'Authorize & capture the amount, confirm the SO, create	the	payment	and	save the invoice in	draft state on acquirer confirmation')],
                                     domain=[('provider', '=', 'mercadopago')],)
     available_payment_method = fields.Selection([('all', 'All Available Payment Methods Available'),
                                                  ('custom', 'Customized Available Payment Methods')],
@@ -90,7 +91,7 @@ class PaymentMercadoPago(models.Model):
         excl_methods = self.env['mercadopago.payment.methods'].search([('id', 'not in', incl_methods)])
         for method in excl_methods:
             excluded_method.append({'id' : method.uni_id})
-        print("----------method------",excluded_method)
+        # print("----------method------",excluded_method)
         atm = self.other_payment_methods_ids.search([('payment_type', '=', 'atm')])
         ticket = self.other_payment_methods_ids.search([('payment_type', '=', 'ticket')])
         if not self.credit_card_payment_methods_ids:
@@ -101,7 +102,7 @@ class PaymentMercadoPago(models.Model):
             excluded_type.append({'id' : 'atm'})
         if not ticket:
             excluded_type.append({'id' : 'ticket'})
-        print("-------type-------",excluded_type)
+        # print("-------type-------",excluded_type)
         return {'excluded_type' : excluded_type, 'excluded_method' : excluded_method}
 
     def _get_mercadopago_pref(self, values, order, base_url, excluded_payment_methods):
@@ -146,7 +147,7 @@ class PaymentMercadoPago(models.Model):
                                                    },
                            }
         preference_result = mp.create_preference(preference_data)
-        print("-----preference_result-----", preference_result)
+        # print("-----preference_result-----", preference_result)
         if preference_result.get('response').get('status') == 400:
             raise UserError(_('There seems to be some problem while creating MercadoPago Preference'))
         request.session['pref_id'] = preference_result.get('response').get("id")
@@ -182,20 +183,20 @@ class PaymentMercadoPago(models.Model):
     def mercadopago_form_generate_values(self, values):
         self.ensure_one()
         global _mercadopago_sandbox_url, _mercadopago_production_url
-        print("--------mercadopago_form_generate_values----------", values)
+        # print("--------mercadopago_form_generate_values----------", values)
         base_url = self.env['ir.config_parameter'].get_param('web.base.url')
         order = request.website.sale_get_order()
         excluded_payment_methods = self._set_excluded_payment_methods(self)
-        print("------excluded_payment_methods----",excluded_payment_methods)
+        # print("------excluded_payment_methods----",excluded_payment_methods)
         if order:
 
             mercadopago_pref = self._get_mercadopago_pref(values, order, base_url, excluded_payment_methods)
             _mercadopago_sandbox_url = mercadopago_pref.get('response').get('sandbox_init_point')
             _mercadopago_production_url = mercadopago_pref.get('response').get('init_point')
-            print "--------_mercadopago_sandbox_url",_mercadopago_sandbox_url
+            # print "--------_mercadopago_sandbox_url",_mercadopago_sandbox_url
 
             temp_mercadopago_tx_values = {'tx_return_url' : mercadopago_pref.get('response').get("back_urls").get('success'),}
-            print "temp_mercadopago_tx_values", temp_mercadopago_tx_values
+            # print "temp_mercadopago_tx_values", temp_mercadopago_tx_values
         return temp_mercadopago_tx_values
 
 
@@ -204,9 +205,6 @@ class PaymentMercadoPago(models.Model):
         # print("----------data---------",data, self)
         # print("----_card_token_dict------",_card_token_dict)
         self = self.env['payment.acquirer'].sudo().search([('provider', '=', 'mercadopago')])
-        print ('-------self------',self)
-        print("-----data------",data)
-
         mercado_obj = MecradoPagoPayment(self)
         values = {'cc_number': data.get('cc_number'),
                   'cc_holder_name': data.get('cc_holder_name'),
@@ -235,18 +233,20 @@ class PaymentMercadoPago(models.Model):
         # if data['cc_expiry'] and datetime.now().strftime('%y%M') > datetime.strptime(data['cc_expiry'],
         #                                                                              '%M / %y').strftime('%y%M'):
         #     return False
-        print("------error-----",error)
+        # print("------error-----",error)
         return False if error else True
 
     @api.multi
     def mercadopago_get_form_action_url(self):
         self.ensure_one()
-        print "It has been called for getting urls"
+        # print "It has been called for getting urls"
         return self._get_fu_urls(self.environment)['mercadopago_form_url']
 
 
 class PaymentTransactionMercadoPago(models.Model):
     _inherit = "payment.transaction"
+
+    mercadopago_response = fields.Text("MercadoPago Response")
 
     @api.model
     def create(self, vals):
@@ -271,17 +271,73 @@ class PaymentTransactionMercadoPago(models.Model):
         created_invoice = self.env['account.invoice'].browse(created_invoice).with_context(**ctx_company)
 
         if created_invoice:
-            _logger.info('<%s> transaction completed, auto-generated invoice %s (ID %s) for %s (ID %s)',
-                         acquirer_name, created_invoice.name, created_invoice.id, tx.sale_order_id.name, tx.sale_order_id.id)
+            # Invoice will be created and will be kept in 'Draft' state along with creation of Payment Record
+            if self.acquirer_id.auto_confirm == "confirm_order_draft_acquirer":
+                # To keep invoice created for particular SO to draft state.
+                _logger.info('<%s> transaction completed, auto-generated invoice %s (ID %s) for %s (ID %s)',
+                             self.acquirer_id.provider, created_invoice.name, created_invoice.id,
+                             self.sale_order_id.name, self.sale_order_id.id)
 
-            created_invoice.action_invoice_open()
-            if tx.acquirer_id.journal_id:
-                created_invoice.with_context(tx_currency_id=tx.currency_id.id).pay_and_reconcile(tx.acquirer_id.journal_id, pay_amount=created_invoice.amount_total)
-                if created_invoice.payment_ids:
-                    created_invoice.payment_ids[0].payment_transaction_id = tx
+                # created_invoice.action_invoice_open()
+                self.sale_order_id.write({'invoice_status': 'invoiced'})
+                if not self.acquirer_id.journal_id:
+                    default_journal = self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
+                    if not default_journal:
+                        _logger.warning(
+                            '<%s> transaction completed, could not auto-generate payment for %s (ID %s) (no journal set on acquirer)',
+                            self.acquirer_id.provider, self.sale_order_id.name, self.sale_order_id.id)
+                    self.acquirer_id.journal_id = default_journal
+                    created_invoice.with_context(tx_currency_id=self.currency_id.id).pay_and_reconcile(
+                        self.acquirer_id.journal_id, pay_amount=created_invoice.amount_total)
+                    if created_invoice.payment_ids:
+                        created_invoice.payment_ids[0].payment_transaction_id = self
+                #     Creating Payment record related to particular Invoice generated from MercadoPago paayment Gateway.
+                pay_journal = self.env['account.journal'].browse([self.acquirer_id.journal_id.id])
+                # print("------pay_journal-----",pay_journal)
+
+                payment_type = created_invoice.type in ('out_invoice', 'in_refund') and 'inbound' or 'outbound'
+                if payment_type == 'inbound':
+                    payment_method = self.env.ref('account.account_payment_method_manual_in')
+                    journal_payment_methods = pay_journal.inbound_payment_method_ids
+                else:
+                    payment_method = self.env.ref('account.account_payment_method_manual_out')
+                    journal_payment_methods = pay_journal.outbound_payment_method_ids
+                if payment_method not in journal_payment_methods:
+                    raise UserError(_('No appropriate payment method enabled on journal %s') % pay_journal.name)
+
+                communication = created_invoice.type in (
+                'in_invoice', 'in_refund') and created_invoice.reference or created_invoice.number or ""
+                if created_invoice.origin:
+                    communication = '%s (%s)' % (communication, created_invoice.origin)
+
+                payment_values = {'invoice_ids': [(6, 0, created_invoice.ids)],
+                                  'amount': created_invoice.amount_total or created_invoice.residual,
+                                  'payment_date': fields.Date.context_today(self), 'communication': communication,
+                                  'partner_id': created_invoice.partner_id.id,
+                                  'partner_type': created_invoice.type in (
+                                  'out_invoice', 'out_refund') and 'customer' or 'supplier',
+                                  'journal_id': self.acquirer_id.journal_id.id, 'payment_type': payment_type,
+                                  'payment_method_id': payment_method.id, }
+                if self.env.context.get('tx_currency_id'):
+                    payment_values['currency_id'] = self.env.context.get('tx_currency_id')
+
+                payment = self.env['account.payment'].create(
+                    payment_values)  # print("-----payment has been created with id of : ",payment)
+
+
             else:
-                _logger.warning('<%s> transaction completed, could not auto-generate payment for %s (ID %s) (no journal set on acquirer)',
-                                acquirer_name, tx.sale_order_id.name, tx.sale_order_id.id)
+                _logger.info('<%s> transaction completed, auto-generated invoice %s (ID %s) for %s (ID %s)',
+                             acquirer_name, created_invoice.name, created_invoice.id, tx.sale_order_id.name, tx.sale_order_id.id)
+
+                created_invoice.action_invoice_open()
+                if tx.acquirer_id.journal_id:
+                    created_invoice.with_context(tx_currency_id=tx.currency_id.id).pay_and_reconcile(tx.acquirer_id.journal_id, pay_amount=created_invoice.amount_total)
+                    self.sale_order_id.write({'invoice_status': 'invoiced'})
+                    if created_invoice.payment_ids:
+                        created_invoice.payment_ids[0].payment_transaction_id = tx
+                else:
+                    _logger.warning('<%s> transaction completed, could not auto-generate payment for %s (ID %s) (no journal set on acquirer)',
+                                    acquirer_name, tx.sale_order_id.name, tx.sale_order_id.id)
         else:
             _logger.warning('<%s> transaction completed, could not auto-generate invoice for %s (ID %s)',
                             acquirer_name, tx.sale_order_id.name, tx.sale_order_id.id)
@@ -290,30 +346,25 @@ class PaymentTransactionMercadoPago(models.Model):
     def _confirm_so(self, acquirer_name=False):
         for tx in self:
             if tx.acquirer_id.provider == "mercadopago":
-                # print "inside _confirm_so method with record : ", tx
                 # check tx state, confirm the potential SO
                 if tx.sale_order_id and tx.sale_order_id.state in ['draft', 'sent']:
                     # verify SO/TX match, excluding tx.fees which are currently not included in SO
                     amount_matches = float_compare(tx.amount, tx.sale_order_id.amount_total, 2) == 0
                     if amount_matches:
-                        # print "condition is true and going to confirm so"
-                        # print "acquirer ref is : ", acquirer_name
                         if not acquirer_name:
                             acquirer_name = tx.acquirer_id.provider or 'unknown'
-                        # print "tx.acquirer_id.auto_confirm : ", tx.acquirer_id.provider,tx.acquirer_id.auto_confirm
                         if tx.state == 'authorized' and tx.acquirer_id.auto_confirm == 'authorize':
                             _logger.info('<%s> transaction authorized, auto-confirming order %s (ID %s)', acquirer_name,
                                          tx.sale_order_id.name, tx.sale_order_id.id)
                             tx.sale_order_id.with_context(send_email=True).action_confirm()
                         if tx.state == 'done' and tx.acquirer_id.auto_confirm in ['confirm_so',
                                                                                   'generate_and_pay_invoice',
-                                                                                  'confirm_order_draft_acquirer',
-                                                                                  'confirm_order_confirm_inv']:
+                                                                                  'confirm_order_draft_acquirer']:
                             _logger.info('<%s> transaction completed, auto-confirming order %s (ID %s)', acquirer_name,
                                          tx.sale_order_id.name, tx.sale_order_id.id)
                             tx.sale_order_id.with_context(send_email=True).action_confirm()
-                            print "tx.sale_order_id : ",tx.sale_order_id.state
-                            if tx.acquirer_id.auto_confirm in ['generate_and_pay_invoice','confirm_order_confirm_inv'] :
+                            # print "tx.sale_order_id : ",tx.sale_order_id.state
+                            if tx.acquirer_id.auto_confirm in ('generate_and_pay_invoice', 'confirm_order_draft_acquirer') :
                                 self._generate_and_pay_invoice(tx, acquirer_name)
                         elif tx.state not in ['cancel', 'error'] and tx.sale_order_id.state == 'draft':
                             _logger.info(
@@ -369,15 +420,15 @@ class PaymentTransactionMercadoPago(models.Model):
     @api.multi
     def mercadopago_s2s_do_transaction(self, **data):
         self.ensure_one()
-        print("-------mercadopago_s2s_do_transaction-------",self.payment_token_id.acquirer_ref)
+        # print("-------mercadopago_s2s_do_transaction-------",self.payment_token_id.acquirer_ref)
         transaction = MecradoPagoPayment(self.acquirer_id)
         res = transaction.mercadopago_payment(self)
-        print("-------res---------",res)
+        # print("-------res---------",res)
         return self._mercadopago_s2s_validate_tree(res)
 
     @api.multi
     def _mercadopago_s2s_validate_tree(self, tree):
-        print("-------_mercadopago_s2s_validate_tree--------",tree)
+        # print("-------_mercadopago_s2s_validate_tree--------",tree)
         self.ensure_one()
         if self.state not in ('draft', 'pending', 'refunding'):
             _logger.info('MercadoPago: trying to validate an already validated tx (ref %s)', self.reference)
@@ -397,9 +448,9 @@ class PaymentTransactionMercadoPago(models.Model):
             status = tree.get('status')
             status_detail = tree.get('status_detail')
 
-        print("---------Status--------",status)
+        # print("---------Status--------",status)
         if status == 'approved':
-            print("it has been approved and rest is being done")
+            # print("it has been approved and rest is being done")
             new_state = 'refunded' if self.state == 'refunding' else 'done'
             self.write({'state': new_state,
                         'date_validate': fields.datetime.now(),
@@ -426,7 +477,7 @@ class PaymentTransactionMercadoPago(models.Model):
         elif status == "rejected":
             state_message = ""
             status_detail = tree.get('status_detail')
-            print("--------status_detail--------",tree.get('status_detail'))
+            # print("--------status_detail--------",tree.get('status_detail'))
             if status_detail == "cc_rejected_call_for_authorize":
                 state_message = "Aww Snap! There seems to be some problem with Payment. Please call authorize person."
             elif status_detail == "cc_rejected_insufficient_amount":
@@ -513,7 +564,7 @@ class PaymentTransactionMercadoPago(models.Model):
 
     @api.model
     def _mercadopago_form_get_tx_from_data(self, data):
-        print("----------data-----------",data)
+        # print("----------data-----------",data)
         reference = data.get('sale_transaction_id')
         if not reference:
             error_msg = _(
@@ -536,11 +587,156 @@ class PaymentTransactionMercadoPago(models.Model):
     def _mercadopago_form_validate(self, data):
         # res = self._mercadopago_s2s_validate_tree(data)
         # return res
-        print "--------_mercadopago_form_validate-------",data
+        # print "--------_mercadopago_form_validate-------",data
         if self.state == 'done':
             _logger.warning('MercadoPago: trying to validate an already validated tx (ref %s)' % self.reference)
             return True
         return self._mercadopago_s2s_validate_tree(data)
+
+    def _cron_pending_payment_mercadopago(self):
+        print("Cron pending Payemt MercadoPago")
+        acquirer_id = self.env['payment.acquirer'].sudo().search([('provider', '=', 'mercadopago')], limit=1)
+        transactions = self.env['payment.transaction'].sudo().search([('acquirer_id', '=', acquirer_id.id),('state', 'not in', ['done', 'cancel', 'refunded']), ('acquirer_reference', '!=', False)])
+        print("Transaction : ",transactions)
+        if transactions:
+            for transaction in transactions:
+                if not transaction.acquirer_reference:
+                    _logger.info("There is no MercadoPago Payment Id provide for %s"% transaction.reference)
+                else:
+                    payments = []
+                    mp = MecradoPagoPayment(transaction.acquirer_id)
+                    # print("mp >>>>>>>>>>",mp)
+                    mp_payment = mp.get_payment_update(transaction.acquirer_reference)
+                    print "mp_payment : ",mp_payment
+                    if mp_payment and mp_payment.get('status') in (200, 201):
+                        print("inside if mp payment")
+                        if transaction.acquirer_id.environment == "prod":
+                            merchant_order = mp.get_merchant_orders(mp_payment.get('data').get('order').get('id'))
+                            payments.append(merchant_order.get('data').get('payments'))
+                            # print ("00000000000000000000000000000000000", payments)
+                        else:
+                            merchant_order = mp_payment
+                            payments.append(merchant_order.get('data'))
+                        # print("merchant_order : ",merchant_order)
+                        if merchant_order and merchant_order.get('status') in (200, 201):
+                            print("getting payment done, I guess!!")
+                            # print("Payments are : ",payments)
+                            for payment in payments:
+                                if len(payment) > 1:
+                                    for pay in payment:
+                                        payment_respose = mp.get_payment_update(str(pay.get('id')))
+                                        self.process_payment(payment_respose)
+                                else:
+                                    payment_respose = mp.get_payment_update(str(payment[0].get('id')))
+                                    _logger.info("\npayment response is %s", payment_respose)
+                                    self.process_payment(payment_respose)
+                        else:
+                            _logger.info(
+                                "Payment has not been processed,\n We did not get any merchant order from MercadoPago with reference of Id : %s" % transaction.acquirer_reference)
+
+    def _cron_recover_abandoned_payment_mercadopago(self):
+        _logger.info("Checking for Abandoned Payments from MercadoPago. Trying to recover Payment Transactions.")
+        acquirer_id = self.env['payment.acquirer'].sudo().search([('provider', '=', 'mercadopago')], limit=1)
+        transactions = self.env['payment.transaction'].sudo().search([('acquirer_id', '=', acquirer_id.id), ('state', 'in', ['draft']),('acquirer_reference', '=', False)])
+        print("Transactions from Cron that are abandoned : ",transactions)
+        if transactions:
+            for transaction in transactions:
+                mp = MecradoPagoPayment(transaction.acquirer_id)
+                search_payments = mp.search_mercadopago_payment(transaction)
+                print ">>>>>>>>>>>>",search_payments
+                if search_payments:
+                    for payment in search_payments:
+                        # print("~~~~~~~~~",payment)
+                        transaction.write({'acquirer_reference':payment.get('id')})
+                        # data = {'data' : payment}
+                        # self.process_payment(data)
+                else:
+                    _logger.info("No Payments found for %s Order"% transaction.sale_order_id.name)
+        else:
+            _logger.info("No Abandoned transaction found against MercadoPago Payment Gateway.")
+
+    def process_payment(self, response):
+        _logger.info(
+            'Payment status has been changed for MercadoPago Payment of Sale Order : %s to %s, now changing payment status in Odoo.',
+            response.get('data').get('description'), response.get('data').get('status'))
+        print("!!!!!!!!!!",response.get('data').get('id'))
+        txs = self.env['payment.transaction'].sudo().search([('acquirer_reference', '=', response.get('data').get('id')),('state', 'not in',['done', 'cancel', 'refunded'])])
+        # print ("<<<<<<<<<<<<<<<<<", txs)
+        if not txs:
+            _logger.info(response.get('data').get('id'))
+            # raise odoo.exceptions.MissingError(
+            #     'Transaction does not exist or has been deleted for MercadoPago Payment reference : %s' % response.get(
+            #         'data').get('id'))
+        else:
+            for tx in txs:
+                # status = "pending" if response.get('data').get('status') in ("in_process", "pending") else response.get(
+                #     'data').get('status')
+                # status = "done" if response.get('data').get('status') == "approved" else status
+                status = response.get('data').get('status')
+                # print (">>>>>>>>>>>>>",status)
+                if status == 'approved':
+                    # print("it has been approved and rest is being done")
+                    new_state = 'refunded' if tx.state == 'refunding' else 'done'
+                    tx.write({'state': new_state, 'date_validate': fields.datetime.now()})
+
+                elif status == 'pending':
+                    tx.write({'state': 'pending'})
+
+                elif status == "in_process":
+                    tx.write({'state': 'pending'})
+                    return True
+
+                elif status == "rejected":
+                    # print ("--------------------", status)
+
+                    state_message = ""
+                    if response and response.get('data') and response.get('data').get('status_detail'):
+                        status_detail = response.get('data').get('status_detail')
+                        # print("--------status_detail--------",tree.get('status_detail'))
+                    if status_detail == "cc_rejected_call_for_authorize":
+                        state_message = "Aww Snap! There seems to be some problem with Payment. Please call authorize person."
+                    elif status_detail == "cc_rejected_insufficient_amount":
+                        state_message = "Insufficient Funds."
+                    elif status_detail == "cc_rejected_bad_filled_security_code":
+                        state_message = "Security Code entered is incorrect for this Card."
+                    elif status_detail == "cc_rejected_bad_filled_date":
+                        state_message = "Card has been Expired, Please provide Valid Card."
+                    elif status_detail == "cc_rejected_bad_filled_other":
+                        state_message = "It seems some information in Payment form has been provided incorrectly.\n\t Please check it and try again."
+                    else:
+                        state_message = "Aww Snap! We are sorry that your payment has been rejected. Please try again after sometimes."
+                    tx.write({'state': 'cancel', 'state_message': state_message})
+                    # print ("===============",tx.state)
+                # print(response)
+                elif status == "refunded":
+                    tx.write({'state' : 'refunded'})
+                elif status == "cancelled":
+                    tx.write({'state' : 'cancel', 'state_message' : response.get('data').get('status_detail')})
+                tx.write({'mercadopago_response' : pprint.pformat(response.get('data'))})
+                print("tx.stage = ",tx.state)
+                try:
+                    if response.get('data').get('status') and tx.state in ('authorized', 'done'):
+                        _logger.info("Transcation Status : %s", tx.state)
+                        _logger.info("Payment has been done, now confirming Sale Order as well paying invoice.")
+                        tx.sale_order_id.with_context(send_email=True).action_confirm()
+                        _logger.info("Transcation Status : %s, Order status: %s", tx.state, tx.sale_order_id.state)
+                        tx._generate_and_pay_invoice()
+                        self._cr.commit()
+
+                    elif response.get('data').get('status') and tx.state == "pending":
+                        _logger.info("Payment status received as Pending. Confirming Sale Order.")
+                        tx.sale_order_id.action_quotation_send()
+                        self._cr.commit()
+
+                    elif response.get('data').get('status') and tx.state == "cancel":
+                        _logger.info("Transaction was cancelled, moving sale order to cancel state.")
+                        tx.sale_order_id.action_cancel()
+                        self._cr.commit()
+                except:
+                    _logger.info("Some error : %s ", tx.sale_order_id.name)
+                    #tx.sale_order_id.with_context(send_email=True).action_confirm()
+            return True
+
 
 
 class MercadoPagoPaymentToken(models.Model):
@@ -553,7 +749,7 @@ class MercadoPagoPaymentToken(models.Model):
 
     @api.model
     def mercadopago_create(self, values):
-        print("-----values-from mercadopago_create------- ",values)
+        # print("-----values-from mercadopago_create------- ",values)
         if values.get('cc_number'):
             values['cc_number'] = values['cc_number'].replace(' ', '')
             acquirer = self.env['payment.acquirer'].browse(values['acquirer_id'])
@@ -562,11 +758,11 @@ class MercadoPagoPaymentToken(models.Model):
             mercado_obj = MecradoPagoPayment(acquirer)
             mercadopago_profile_id = ""
             if acquirer.save_token:
-                print("-------values----",values)
+                # print("-------values----",values)
                 # 2/0
                 pass
             card_token = mercado_obj._get_card_token(acquirer, values)
-            print("----card_token----", card_token)
+            # print("----card_token----", card_token)
 
             # if partner.mercadopago_customer:
             #     print("There it exists as : ",partner.mercadopago_customer)
@@ -595,7 +791,7 @@ class MercadoPagoPaymentToken(models.Model):
 
             card_info = values['cc_number'] + ":" + values["cc_expiry"] + ":" + values['cc_holder_name'] + ":" + values['docNumber'] + ":" + doctype + ":" + values['customer_email'] + ":" + values['cc_brand']
             if card_token and card_token.get("id"):
-                print("Inside if----------------")
+                # print("Inside if----------------")
                 return {'mercadopago_profile' : card_info,
                         'name': 'XXXXXXXXXXXX%s - %s' % (values['cc_number'][-4:], values['cc_holder_name']),
                         'acquirer_ref': card_token.get("id"),

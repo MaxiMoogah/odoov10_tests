@@ -72,7 +72,7 @@ class AccountPaymentGroup(models.Model):
         if self.currency2_id:
             currency = self.currency2_id.with_context(date=self.payment_date or fields.Date.context_today(self))
             currency_rate = currency.compute(1.0, self.company_id.currency_id)
-            self.currency_rate = currency_rate
+            self.currency_rate = self._get_currency_rate(currency, currency_rate)
             self.manual_currency_rate = self.currency_rate
 
     @api.onchange('manual_currency_rate', 'to_pay_amount')
@@ -400,6 +400,13 @@ class AccountPaymentGroup(models.Model):
             super(AccountPaymentGroup, rec).post()
             if rec.currency2_id.id == rec.inv_currency_id.id != rec.currency_id.id:
                 rec._check_difference_exchange_rate(current_inv_residual)
+
+    def _get_currency_rate(self, currency, rate):
+        if self.payment_date:
+            currency_rate = self.env['res.currency.rate'].search([('name', '<=', self.payment_date),
+                                                                         ('currency_id', '=', currency.id)],
+                                                                        limit=1, order='name desc').inverse_rate
+        return currency_rate and currency_rate or rate
 
     _sql_constraints = [
         ('positive_rate', 'CHECK(manual_currency_rate >= 0)', _('The Manual Rate can not be negative'))

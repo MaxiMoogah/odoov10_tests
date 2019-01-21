@@ -1,5 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+
+    <record id="transaction_form_mercadopago_inherit" model="ir.ui.view">
+        <field name="name">Transaction Form MercadoPago Inherit</field>
+        <field name="model">payment.transaction</field>
+        <field name="inherit_id" ref="payment.transaction_form"></field>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="MercadoPago TX Details">
+                        <group>
+                            <field name="mercadopago_response" readonly="1"/>
+                        </group>
+                    </page>
+                <!--<notebook attrs="{'invisible': [('acquirer_id.provider', '!=', 'mercadopago')]}">-->
+                    <!--<page name="mercadopago_response" string="MercadoPago Response" >-->
+                        <!--<field name="mercadopago_response" readonly="1"/>-->
+                    <!--</page>-->
+                <!--</notebook>-->
+            </xpath>
+        </field>
+    </record>
+
+
     <record id="acquirer_form_mercadopago" model="ir.ui.view">
         <field name="name">acquirer.form.mercadopago</field>
         <field name="model">payment.acquirer</field>
@@ -46,6 +68,12 @@
                     </div>
                 </div>
                 <!--</group>-->
+            </xpath>
+
+            <xpath expr="//field[@name='journal_id']" position="attributes">
+                <attribute name="attrs">{'required': [('auto_confirm', 'in', ('generate_and_pay_invoice','confirm_order_draft_acquirer'))], 'invisible': [('auto_confirm', 'not in',('generate_and_pay_invoice','confirm_order_draft_acquirer'))]}
+
+                </attribute>
             </xpath>
         </field>
     </record>

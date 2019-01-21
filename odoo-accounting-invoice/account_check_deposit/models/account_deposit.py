@@ -99,31 +99,31 @@ class AccountCheckDeposit(models.Model):
         compute='_compute_check_deposit', readonly=True,
         string="Reconcile")
 
-    @api.multi
-    @api.constrains('currency_id', 'check_payment_ids', 'company_id')
-    def _check_deposit(self):
-        for deposit in self:
-            deposit_currency = deposit.currency_id
-            if deposit_currency == deposit.company_id.currency_id:
-                for line in deposit.check_payment_ids:
-                    if line.currency_id:
-                        raise ValidationError(
-                            _("The check with amount %s and reference '%s' "
-                                "is in currency %s but the deposit is in "
-                                "currency %s.") % (
-                                line.debit, line.ref or '',
-                                line.currency_id.name,
-                                deposit_currency.name))
-            else:
-                for line in deposit.check_payment_ids:
-                    if line.currency_id != deposit_currency:
-                        raise ValidationError(
-                            _("The check with amount %s and reference '%s' "
-                                "is in currency %s but the deposit is in "
-                                "currency %s.") % (
-                                line.debit, line.ref or '',
-                                line.currency_id.name,
-                                deposit_currency.name))
+    # @api.multi
+    # @api.constrains('currency_id', 'check_payment_ids', 'company_id')
+    # def _check_deposit(self):
+    #     for deposit in self:
+    #         deposit_currency = deposit.currency_id
+    #         if deposit_currency == deposit.company_id.currency_id:
+    #             for line in deposit.check_payment_ids:
+    #                 if line.currency_id:
+    #                     raise ValidationError(
+    #                         _("The check with amount %s and reference '%s' "
+    #                             "is in currency %s but the deposit is in "
+    #                             "currency %s.") % (
+    #                             line.debit, line.ref or '',
+    #                             line.currency_id.name,
+    #                             deposit_currency.name))
+    #         else:
+    #             for line in deposit.check_payment_ids:
+    #                 if line.currency_id != deposit_currency:
+    #                     raise ValidationError(
+    #                         _("The check with amount %s and reference '%s' "
+    #                             "is in currency %s but the deposit is in "
+    #                             "currency %s.") % (
+    #                             line.debit, line.ref or '',
+    #                             line.currency_id.name,
+    #                             deposit_currency.name))
 
     @api.multi
     def unlink(self):
@@ -175,7 +175,7 @@ class AccountCheckDeposit(models.Model):
             'debit': 0.0,
             'account_id': line.account_id.id,
             'partner_id': line.partner_id.id,
-            'currency_id': line.currency_id.id or False,
+            'currency_id': line.currency_id.id or line.company_id.currency_id.id,
             'amount_currency': line.amount_currency * -1,
         }
 
@@ -205,7 +205,7 @@ class AccountCheckDeposit(models.Model):
             'credit': 0.0,
             'account_id': account_id,
             'partner_id': False,
-            'currency_id': deposit.currency_none_same_company_id.id or False,
+            'currency_id': deposit.currency_none_same_company_id.id or deposit.company_id.currency_id.id,
             'amount_currency': total_amount_currency,
         }
 
@@ -228,7 +228,6 @@ class AccountCheckDeposit(models.Model):
                     check_move_validity=False).create(line_vals)
                 to_reconcile_lines.append(line + move_line)
                 line.check_id._add_operation('deposited', self, None, None, move.id)
-
 
             # Create counter-part
             counter_vals = self._prepare_counterpart_move_lines_vals(

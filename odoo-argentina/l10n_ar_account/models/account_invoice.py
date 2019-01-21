@@ -197,7 +197,7 @@ class AccountInvoice(models.Model):
                 invoice_number = splited_number.pop()
                 point_of_sale = splited_number.pop()
             elif "-" not in str_number and len(str_number) == 12:
-                point_of_sale = str_number[:4]
+                point_of_sale = str_number[:5]
                 invoice_number = str_number[-8:]
             else:
                 raise UserError(_(
@@ -476,8 +476,8 @@ class AccountInvoice(models.Model):
             sep = '-'
         elements = document_number.split(sep)
         if len(elements) == 2:
-            if (len(elements[0]) <= 4) and (len(elements[0]) <= 8):
-                number = '%s-%s' % (elements[0].zfill(4), elements[1].zfill(8))
+            if (len(elements[0]) <= 5) and (len(elements[0]) <= 8):
+                number = '%s-%s' % (elements[0].zfill(5), elements[1].zfill(8))
         else:
             number = document_number
 

@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Configuracion, Informes y Exportaciones Impositivas para ARG", 
-
+    'name': "Configuracion, Informes y Exportaciones Impositivas para ARG",
     'summary': """Configuracion, Informes y Exportaciones Impositivas para ARG""",
-
     'description': """
         Configuración y campos adicionales para el manejo de impuestos de ARG, Exportaciones e Informes.
     """,
-
     'author': "Moogah",
     'website': "http://www.Moogah.com",
-
     # Categories can be used to filter modules in modules listing
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '10.0.1.0.24',
-
+    'version': '10.0.1.0.38',
     # any module necessary for this one to work correctly
     'depends': [
         'sale',
@@ -25,7 +20,6 @@
         'account_withholding',
         'vitt_nl_setting',
     ],
-
     # always loaded
     'data': [
         'security/ir.model.access.csv',

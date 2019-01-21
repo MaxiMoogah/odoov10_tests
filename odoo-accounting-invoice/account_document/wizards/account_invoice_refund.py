@@ -87,7 +87,7 @@ class AccountInvoiceRefund(models.TransientModel):
             sep = '-'
         elements = document_number.split(sep)
         if len(elements) == 2:
-            if (len(elements[0]) <= 4) and (len(elements[0]) <= 8):
+            if (len(elements[0]) <= 5) and (len(elements[0]) <= 8):
                 number = '%s-%s' % (elements[0].zfill(4), elements[1].zfill(8))
         else:
             number = document_number

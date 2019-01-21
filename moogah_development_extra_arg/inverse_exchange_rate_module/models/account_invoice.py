@@ -45,6 +45,13 @@ class account_invoice(models.Model):
 
     manual_currency_rate_active = fields.Boolean('Apply Manual Exchange')
     manual_currency_rate = fields.Float('Inverse Rate', digits=(12, 6))
+    currency_rate = fields.Float(compute='_compute_currency_rate',  string='Currency Rate', copy=False,
+                                 store=True, digits=(16, 4))
+
+    @api.depends('date', 'currency_id', 'manual_currency_rate_active', 'manual_currency_rate')
+    def _compute_currency_rate(self):
+        for record in self:
+            record.currency_rate = record._get_currency_rate()
 
     @api.onchange('journal_id')
     def _onchange_journal_id(self):
@@ -91,6 +98,15 @@ class account_invoice(models.Model):
                     raise Warning(_('The currency must be the same from Quotations to Invoices'))
 
     @api.multi
+    def get_localization_invoice_vals(self):
+        self.ensure_one()
+        res = super(account_invoice, self).get_localization_invoice_vals()
+        if self.localization == 'argentina':
+            if 'currency_rate' in res:
+                res['currency_rate'] = self._get_currency_rate()
+        return res
+
+    @api.multi
     def action_invoice_open(self):
         self.check_manual_currency_rate()
         return super(account_invoice, self).action_invoice_open()
@@ -103,7 +119,8 @@ class account_invoice(models.Model):
         price = False
         for inv in self:
 
-            if inv.manual_currency_rate_active and inv.currency_id != inv.company_id.currency_id:
+            # if inv.manual_currency_rate_active and inv.currency_id != inv.company_id.currency_id:
+            if inv.currency_id != inv.company_id.currency_id:
                 inv.move_id.write({'state': 'draft'})
                 inv.move_id.line_ids = False
 
@@ -172,13 +189,14 @@ class account_invoice(models.Model):
                         'currency_id': diff_currency and inv.currency_id.id,
                         'invoice_id': inv.id
                     })
-                if inv.manual_currency_rate_active:
-                    for i in iml:
-                        price = i.get('amount_currency') * inv.manual_currency_rate
-                        if i.get('price') > 0 or i.get('type') == 'dest':
-                            i.update({'price': price})
-                        else:
-                            i.update({'price': -price})
+                # if inv.manual_currency_rate_active:
+                for i in iml:
+                    rate = inv.manual_currency_rate if inv.manual_currency_rate_active else inv.currency_rate
+                    price = i.get('amount_currency') * rate
+                    if i.get('price') > 0 or i.get('type') == 'dest':
+                        i.update({'price': price})
+                    else:
+                        i.update({'price': -price})
                 part = self.env['res.partner']._find_accounting_partner(inv.partner_id)
                 line = [(0, 0, self.line_get_convert(l, part.id)) for l in iml]
                 line = inv.group_lines(iml, line)
@@ -189,7 +207,7 @@ class account_invoice(models.Model):
                 }
                 inv.move_id.write(move_vals)
                 inv.move_id.post()
-                inv.write({'currency_rate': inv.manual_currency_rate})
+                # inv.write({'currency_rate': inv.manual_currency_rate})
         return res
 
 
@@ -233,6 +251,16 @@ class account_invoice(models.Model):
                     payment_dict[0].update(amount=amount_to_show)
 
             self.payments_widget = json.dumps(current_info)
+
+    def _get_currency_rate(self):
+        currency_rate = self.currency_rate
+        if self.date and self.currency_id:
+            currency_rate = self.env['res.currency.rate'].search([('name', '<=', self.date),
+                                                                         ('currency_id', '=', self.currency_id.id)],
+                                                                        limit=1, order='name desc').inverse_rate
+        if self.manual_currency_rate_active and self.manual_currency_rate:
+            currency_rate = self.manual_currency_rate
+        return currency_rate
 
 
 class AccountInvoiceRefund(models.TransientModel):

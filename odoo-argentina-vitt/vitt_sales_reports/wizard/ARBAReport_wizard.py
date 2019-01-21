@@ -139,7 +139,7 @@ class sire_report(models.TransientModel):
                 else:
                     str += "?"
                 str += inv.journal_document_type_id.document_type_id.document_letter_id.name
-                str += "{:0>4}".format(inv.journal_id.point_of_sale_number)
+                str += "{:0>5}".format(inv.journal_id.point_of_sale_number)
                 str += "{:0>8}".format(inv.document_number[5:])
 
                 t1 = MultiplybyRate2(inv.currency_rate, inv.amount_untaxed, inv.company_currency_id, inv.currency_id)

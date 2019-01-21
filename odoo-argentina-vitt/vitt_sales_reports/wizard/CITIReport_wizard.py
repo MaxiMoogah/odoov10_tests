@@ -271,7 +271,8 @@ class citi_reports(models.TransientModel):
                 if "{:0>3}".format(inv.journal_document_type_id.document_type_id.code) != '066' \
                     and "{:0>3}".format(inv.journal_document_type_id.document_type_id.code) != '067':
 
-                    tstr = tstr + "{:0>5}".format(inv.document_number[0:4]) + "{:0>20}".format(inv.document_number[5:])
+                    nr = inv.document_number.split('-')
+                    tstr = tstr + "{:0>5}".format(nr[0]) + "{:0>20}".format(nr[1])
                     tstr = tstr + "{:>16}".format(' ')
                 else:
                     tstr = tstr + "{:0>25}".format('0')
@@ -363,7 +364,7 @@ class citi_reports(models.TransientModel):
 
                 for code in vatcodes:
                     tstr_alic += "{:0>3}".format(inv.document_type_id.code)
-                    tstr_alic += "{:0>5}".format(inv.document_number[0:4]) + "{:0>20}".format(inv.document_number[5:])
+                    tstr_alic += "{:0>5}".format(inv.document_number[0:5]) + "{:0>20}".format(inv.document_number[6:])
                     tstr_alic += "{:0>2}".format(inv.partner_id.main_id_category_id.afip_code)
                     tstr_alic += "{:0>20}".format(inv.partner_id.main_id_number)
                     if inv.fiscal_position_id.afip_code == False:
@@ -473,8 +474,9 @@ class citi_reports(models.TransientModel):
             if inv.journal_id.use_documents:
                 tstr_v_cbte += inv.date_invoice[0:4] + inv.date_invoice[5:7] + inv.date_invoice[8:10]
                 tstr_v_cbte += "{:0>3}".format(inv.journal_document_type_id.document_type_id.code)
-                tstr_v_cbte += "{:0>5}".format(inv.document_number[0:4]) + "{:0>20}".format(inv.document_number[5:])
-                tstr_v_cbte += "{:0>20}".format(inv.document_number[5:])
+                doc_nr = inv.document_number.split('-')
+                tstr_v_cbte += "{:0>5}".format(doc_nr[0]) + "{:0>20}".format(doc_nr[1])
+                tstr_v_cbte += "{:0>20}".format(doc_nr[1])
                 tstr_v_cbte += "{:0>2}".format(inv.partner_id.main_id_category_id.afip_code)
                 tstr_v_cbte += "{:0>20}".format(inv.partner_id.main_id_number)
 
@@ -557,7 +559,8 @@ class citi_reports(models.TransientModel):
 
                     for code in vatcodes:
                         tstr_v_alic += "{:0>3}".format(inv.document_type_id.code)
-                        tstr_v_alic += "{:0>5}".format(inv.document_number[0:4]) + "{:0>20}".format(inv.document_number[5:])
+                        docnr = inv.document_number.split('-')
+                        tstr_v_alic += "{:0>5}".format(docnr[0]) + "{:0>20}".format(docnr[1])
                         #tstr_v_alic += "{:0>2}".format(inv.partner_id.main_id_category_id.afip_code)
                         #tstr_v_alic += "{:0>20}".format(inv.partner_id.main_id_number)
                         if inv.fiscal_position_id.afip_code == False:

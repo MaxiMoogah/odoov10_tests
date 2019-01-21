@@ -60,6 +60,8 @@ class ReportPartnerLedger(models.AbstractModel):
                     number = line.full_reconcile_id.name
                     if line.invoice_id:
                         number = line.invoice_id.display_name
+                    if line.payment_id:
+                        number = line.payment_id.display_name
                     domain_lines.append({
                         'id': line.id,
                         'type': 'move_line_id',
@@ -111,4 +113,4 @@ class ReportPartnerLedgerContext(models.TransientModel):
     _inherit = "account.partner.ledger.context"
 
     def get_columns_names(self):
-        return [_('JRNL'), _('Account'), _('Ref'), _('Invoice Number'), _('Debit'), _('Credit'), _('Balance')]
+        return [_('JRNL'), _('Account'), _('Ref'), _('Official Number'), _('Debit'), _('Credit'), _('Balance')]

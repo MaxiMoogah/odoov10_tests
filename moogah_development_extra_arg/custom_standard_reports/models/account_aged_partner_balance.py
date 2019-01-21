@@ -31,7 +31,11 @@ class ReportAccountAgedPartner(models.AbstractModel):
             if values['partner_id'] in context.unfolded_partners.ids:
                 for line in amls[values['partner_id']]:
                     aml = line['line']
-                    display_name = aml.invoice_id and aml.invoice_id.display_name or ''
+                    display_name = ''
+                    if aml.invoice_id:
+                        display_name = aml.invoice_id.display_name
+                    if aml.payment_id:
+                        display_name = aml.payment_id.display_name
                     vals = {
                         'id': aml.id,
                         'name': aml.move_id.name if aml.move_id.name else '/',
@@ -74,7 +78,7 @@ class AccountContextAgedReceivable(models.TransientModel):
     _inherit = "account.context.aged.receivable"
 
     def get_columns_names(self):
-        return [_('Invoice Number'), _("Not&nbsp;due&nbsp;on&nbsp;&nbsp; %s") % self.date_to, _("0&nbsp;-&nbsp;30"), _("30&nbsp;-&nbsp;60"), _("60&nbsp;-&nbsp;90"), _("90&nbsp;-&nbsp;120"), _("Older"), _("Total")]
+        return [_('Official Number'), _("Not&nbsp;due&nbsp;on&nbsp;&nbsp; %s") % self.date_to, _("0&nbsp;-&nbsp;30"), _("30&nbsp;-&nbsp;60"), _("60&nbsp;-&nbsp;90"), _("90&nbsp;-&nbsp;120"), _("Older"), _("Total")]
 
     @api.multi
     def get_columns_types(self):
@@ -88,7 +92,7 @@ class AccountContextAgedPayable(models.TransientModel):
         return self.env['account.aged.payable']
 
     def get_columns_names(self):
-        return [_('Invoice Number'), _("Not&nbsp;due&nbsp;on&nbsp;&nbsp; %s") % self.date_to, _("0&nbsp;-&nbsp;30"), _("30&nbsp;-&nbsp;60"), _("60&nbsp;-&nbsp;90"), _("90&nbsp;-&nbsp;120"), _("Older"), _("Total")]
+        return [_('Official Number'), _("Not&nbsp;due&nbsp;on&nbsp;&nbsp; %s") % self.date_to, _("0&nbsp;-&nbsp;30"), _("30&nbsp;-&nbsp;60"), _("60&nbsp;-&nbsp;90"), _("90&nbsp;-&nbsp;120"), _("Older"), _("Total")]
 
     @api.multi
     def get_columns_types(self):

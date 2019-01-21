@@ -9,6 +9,8 @@ import imp
 from decimal import *
 import copy
 from collections import OrderedDict
+import logging
+_logger = logging.getLogger(__name__)
 
 TWOPLACES = Decimal(10) ** -2
 
@@ -296,12 +298,14 @@ class sales_reports(models.TransientModel):
                     worksheet.write(index, subindex, o.journal_document_type_id.document_type_id.report_name)
                     subindex += 1
 
-                    let = o.display_name[-16:]
-                    let = let[1]
+                    let = o.journal_document_type_id.document_type_id.document_letter_id.name
                     worksheet.write(index, subindex, str(let))  # letra
                     subindex += 1
 
-                    worksheet.write(index, subindex, str(o.display_name[-13:]))  # nro comprob
+                    if o.document_number:
+                        worksheet.write(index, subindex, o.document_number)  # nro comprob
+                    else:
+                        worksheet.write(index, subindex, "")
                     subindex += 1
 
                     worksheet.write(index, subindex,  str(o.partner_id.afip_responsability_type_id.report_code_name))
@@ -437,12 +441,14 @@ class sales_reports(models.TransientModel):
                     worksheet.write(index, subindex, o.journal_document_type_id.document_type_id.report_name)
                     subindex += 1
 
-                    let = o.display_name[-16:]
-                    let = let[1]
+                    let = o.journal_document_type_id.document_type_id.document_letter_id.name
                     worksheet.write(index, subindex, str(let))  # letra
                     subindex += 1
 
-                    worksheet.write(index, subindex, str(o.display_name[-13:]))  # nro comprob
+                    if o.document_number:
+                        worksheet.write(index, subindex, o.document_number)  # nro comprob
+                    else:
+                        worksheet.write(index, subindex, "")
                     subindex += 1
 
                     tot = 0.0
@@ -503,6 +509,7 @@ class sales_reports(models.TransientModel):
 
             index += 2
             subindex = 0
+            if_base = dict()
             worksheet.write(index, subindex, _("Totales Agrupados"))
             subindex += 1
             for code in vatcodes:
@@ -512,6 +519,7 @@ class sales_reports(models.TransientModel):
                         if key == code:
                             if matrixbase[type][key] > 0:
                                 foundf = True
+                                if_base[key] = True
                 if foundf:
                     worksheet.write(index, subindex, _("Base"))
                     subindex += 1
@@ -520,7 +528,6 @@ class sales_reports(models.TransientModel):
 
 
             # print matrix
-            #index += 2
             totgrp = 0
             for type in matrix:
                 index += 1
@@ -529,21 +536,18 @@ class sales_reports(models.TransientModel):
                 subindex += 1
                 for code in vatcodes:
                     foundf = False
-                    foundf2 = False
                     for key, value in matrix[type].iteritems():
                         if key == code:
                             foundf = True
-                            if matrixbase[type][key] > 0:
-                                foundf2 = True
+                            if key in if_base.keys() and if_base[key] == True:
                                 worksheet.write(index, subindex, matrixbase[type][key])
                                 subindex += 1
                             worksheet.write(index, subindex, value)
                             subindex += 1
                             totgrp +=  (matrixbase[type][key] + value)
                     if not foundf:
-                        if foundf2:
-                            subindex += 2
-                        else:
+                        subindex += 1
+                        if code in if_base.keys() and if_base[code] == True:
                             subindex += 1
                 worksheet.write(index, subindex, totgrp)
                 subindex += 1

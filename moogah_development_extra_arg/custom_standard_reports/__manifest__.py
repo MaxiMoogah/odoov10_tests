@@ -2,7 +2,7 @@
 
 {
     'name': 'Custom Standard Reports',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'category': 'Accounting',
     'summary': '',
     'description': """

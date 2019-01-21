@@ -12,10 +12,11 @@ import StringIO
 import xlsxwriter
 from odoo.tools import config, posix_to_ldml
 
+
 class report_bi_vendor_transaction(models.AbstractModel):
     _name = "vendor.transaction.report"
     _description = "Vendor Transaction Report"
-    
+
     def _format(self, value, currency=False):
         if self.env.context.get('no_format'):
             return value
@@ -35,7 +36,7 @@ class report_bi_vendor_transaction(models.AbstractModel):
     def _formatted(self, value, digit):
         formatted = ('%.' + str(digit) + 'f') % value
         return formatted
-    
+
     @api.model
     def get_lines(self, context_id, line_id=None):
         if type(context_id) == int:
@@ -48,7 +49,7 @@ class report_bi_vendor_transaction(models.AbstractModel):
             'cash_basis': context_id.cash_basis,
             'context_id': context_id,
             'company_ids': context_id.company_ids.ids,
-            'partner_id':context_id.partner_id.id,
+            'partner_id': context_id.partner_id.id,
         })
         if new_context.get('xlsx_format'):
             res = self.with_context(new_context)._xlsx_lines(line_id)
@@ -58,19 +59,18 @@ class report_bi_vendor_transaction(models.AbstractModel):
 
     @api.model
     def _lines(self, line_id=None):
-        ctx = self._context 
+        ctx = self._context
         lines = []
         context = self.env.context
         context_id = context.get('context_id')
         partner_id = context_id.partner_id.id or False
         payment_obj = self.env['account.payment']
-        
-        if not partner_id:
-            partner_id = context.get('partner_id',False)
-        
-        if not  partner_id:
-            raise UserError(_('Vendor Not Found'))
 
+        if not partner_id:
+            partner_id = context.get('partner_id', False)
+
+        if not partner_id:
+            raise UserError(_('Vendor Not Found'))
 
         ##############
         if not line_id:
@@ -79,9 +79,9 @@ class report_bi_vendor_transaction(models.AbstractModel):
                 grand_total_credit = 0.0
                 initial_lines = []
                 globle_dict_list = []
-                total_vendor_invoices = self.env['account.invoice'].search([('partner_id','=',partner_id),
-                                                                            ('type', 'in',['in_refund','in_invoice']),
-                                                                            ('state', 'not in', ['cancel','draft']),
+                total_vendor_invoices = self.env['account.invoice'].search([('partner_id', '=', partner_id),
+                                                                            ('type', 'in', ['in_refund', 'in_invoice']),
+                                                                            ('state', 'not in', ['cancel', 'draft']),
                                                                             ('date_invoice', '<', ctx.get('date_from')),
                                                                             ('currency_id', '=', currency.id)])
                 initial_lines.append({
@@ -101,10 +101,13 @@ class report_bi_vendor_transaction(models.AbstractModel):
                     else:
                         grand_total_credit += inv.amount_total
 
-                total_vendor_payment_group = self.env['account.payment.group'].search([('partner_id','=',partner_id),
-                                                                                       ('partner_type', '=', 'supplier'),
-                                                                                       ('state', 'not in', ['draft','confirmed']),
-                                                                                       ('payment_date', '<', ctx.get('date_from'))])
+                total_vendor_payment_group = self.env['account.payment.group'].search([('partner_id', '=', partner_id),
+                                                                                       (
+                                                                                       'partner_type', '=', 'supplier'),
+                                                                                       ('state', 'not in',
+                                                                                        ['draft', 'confirmed']),
+                                                                                       ('payment_date', '<',
+                                                                                        ctx.get('date_from'))])
                 total_currency_vendor_payment_group = self.filter_currency_customer_payment_group(
                     total_vendor_payment_group, currency)
                 for cpg in total_currency_vendor_payment_group:
@@ -113,7 +116,11 @@ class report_bi_vendor_transaction(models.AbstractModel):
                     amount = sum(cpg.payment_ids.mapped('amount'))
 
                     if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        amount = amount / cpg.manual_currency_rate
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            amount = amount / cpg.manual_currency_rate
+                        else:
+                            amount = amount * cpg.manual_currency_rate
+                        # amount = amount / cpg.manual_currency_rate
                     grand_total_debit += amount
 
                 grand_total_balance = grand_total_debit - grand_total_credit
@@ -121,10 +128,11 @@ class report_bi_vendor_transaction(models.AbstractModel):
                 initial_lines.append({
                     'id': partner_id,
                     'type': 'o_account_reports_domain_total',
-                    'name':_("Initial Balance"),
+                    'name': _("Initial Balance"),
                     'footnotes': {},
-                    'columns': ['', '', '', '', '', '',self._format(grand_total_debit, currency),
-                                self._format(grand_total_credit, currency), self._format(grand_total_balance, currency)],
+                    'columns': ['', '', '', '', '', '', self._format(grand_total_debit, currency),
+                                self._format(grand_total_credit, currency),
+                                self._format(grand_total_balance, currency)],
                     'level': 0,
                 })
 
@@ -134,12 +142,13 @@ class report_bi_vendor_transaction(models.AbstractModel):
                 total_debit = grand_total_debit
                 total_credit = grand_total_credit
 
-                vendor_invoices = self.env['account.invoice'].search([('partner_id','=',partner_id),
-                                                                      ('type', 'in',['in_refund','in_invoice']),
-                                                                      ('state', 'not in', ['cancel','draft']),
+                vendor_invoices = self.env['account.invoice'].search([('partner_id', '=', partner_id),
+                                                                      ('type', 'in', ['in_refund', 'in_invoice']),
+                                                                      ('state', 'not in', ['cancel', 'draft']),
                                                                       ('date_invoice', '>=', ctx.get('date_from')),
                                                                       ('date_invoice', '<=', ctx.get('date_to')),
-                                                                      ('currency_id', '=', currency.id)],order='date_invoice')
+                                                                      ('currency_id', '=', currency.id)],
+                                                                     order='date_invoice')
                 for inv in vendor_invoices:
                     debit = credit = 0.0
                     if inv.type == 'in_refund':
@@ -148,26 +157,30 @@ class report_bi_vendor_transaction(models.AbstractModel):
                         credit = inv.amount_total
 
                     globle_dict_list.append({
-                         'obj':inv,
-                         'date':inv.date_invoice,
-                         'custom_type':'invoice',
-                         'doc_type':inv.journal_document_type_id.display_name,
-                         'number':inv.display_name,
-                         'reference':inv.name,
-                         'debit':debit,
-                         'credit':credit,
+                        'obj': inv,
+                        'date': inv.date_invoice,
+                        'custom_type': 'invoice',
+                        'doc_type': inv.journal_document_type_id.display_name,
+                        'number': inv.display_name,
+                        'reference': inv.name,
+                        'debit': debit,
+                        'credit': credit,
                         'currency_rate': inv.manual_currency_rate,
                         'amount_in_currency': debit if inv.type == "in_refund" else credit,
-                         })
+                    })
 
-                vendor_payment_group = self.env['account.payment.group'].search([('partner_id','=',partner_id),
+                vendor_payment_group = self.env['account.payment.group'].search([('partner_id', '=', partner_id),
                                                                                  ('partner_type', '=', 'supplier'),
-                                                                                 ('state', 'not in', ['draft','confirmed']),
-                                                                                 ('payment_date', '>=', ctx.get('date_from')),
-                                                                                 ('payment_date', '<=', ctx.get('date_to'))],order='payment_date')
+                                                                                 ('state', 'not in',
+                                                                                  ['draft', 'confirmed']),
+                                                                                 ('payment_date', '>=',
+                                                                                  ctx.get('date_from')),
+                                                                                 ('payment_date', '<=',
+                                                                                  ctx.get('date_to'))],
+                                                                                order='payment_date')
 
                 currency_vendor_payment_group = self.filter_currency_customer_payment_group(vendor_payment_group,
-                                                                                              currency)
+                                                                                            currency)
                 if currency_vendor_payment_group or vendor_invoices:
                     lines.extend(initial_lines)
                 for cpg in currency_vendor_payment_group:
@@ -181,22 +194,27 @@ class report_bi_vendor_transaction(models.AbstractModel):
                     amount_in_currency = payment_amount
                     credit = 0.0
 
-                    if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        debit = debit / cpg.manual_currency_rate
+                    if cpg.manual_currency_rate and payment_line_currency.id != currency.id:
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            debit = debit / cpg.manual_currency_rate
+                        else:
+                            debit = debit * cpg.manual_currency_rate
+                    # if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
+                    #     debit = debit / cpg.manual_currency_rate
 
                     globle_dict_list.append({
-                        'obj':cpg,
-                        'custom_type':'payment',
-                        'date':cpg.payment_date,
-                        'doc_type':cpg.receiptbook_id.display_name,
-                        'number':cpg.display_name,
-                        'reference':cpg.name,
-                        'debit':debit,
-                        'credit':credit,
+                        'obj': cpg,
+                        'custom_type': 'payment',
+                        'date': cpg.payment_date,
+                        'doc_type': cpg.receiptbook_id.display_name,
+                        'number': cpg.display_name,
+                        'reference': cpg.name,
+                        'debit': debit,
+                        'credit': credit,
                         'currency_rate': cpg.manual_currency_rate,
                         'amount_in_currency': amount_in_currency,
                         'payment_currency': payment_line_currency,
-                                 })
+                    })
 
                 sorted_globle_dict_list = sorted(globle_dict_list, key=itemgetter('date'))
                 for dict in sorted_globle_dict_list:
@@ -208,40 +226,41 @@ class report_bi_vendor_transaction(models.AbstractModel):
                                   and dict['obj'].move_line_ids and dict['obj'].move_line_ids[0].move_id.id or False
 
                         if len(dict['number']) > 20:
-                            dict['number'] = dict['number'][:19]+"..."
+                            dict['number'] = dict['number'][:19] + "..."
                         if len(dict['reference']) > 20:
-                            dict['reference'] = dict['reference'][:19]+"..."
+                            dict['reference'] = dict['reference'][:19] + "..."
 
                         vals = {
                             'type': 'payment',
                             'unfoldable': True,
-                            'name':dict['number'],
+                            'name': dict['number'],
                             'payment_group': dict['obj'].id,
                             'move_id': move_id,
-                            }
+                        }
 
-                        if not payment_obj.search([('state','not in',['draft']),('partner_id','=',partner_id),
+                        if not payment_obj.search([('state', 'not in', ['draft']), ('partner_id', '=', partner_id),
                                                    ('payment_group_id', '=', dict['obj'].id)]):
                             vals.update({
                                 'type': 'move_line_id',
-                                'name':dict['number'],
+                                'name': dict['number'],
                                 'move_id': move_id,
                                 'action': dict['obj'].open_payment_group_from_report(),
                                 'unfoldable': False,
                                 'level': 1,
-                                })
+                            })
                         vals.update({
                             'id': dict['obj'].id,
                             'unfolded': dict['obj'] and (
-                                        dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
+                                dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
                             'action': dict['obj'].open_payment_group_from_report(),
-                            'footnotes':  self.env.context['context_id']._get_footnotes(vals['type'], dict['obj'].id),
-                            'columns': [dict['date'], dict['doc_type'], dict['number'],dict['reference'],
-                                        self._formatted(dict['currency_rate'], 6), self._format(dict['amount_in_currency'],
-                                        dict['payment_currency']), self._format(dict['debit'], currency),
+                            'footnotes': self.env.context['context_id']._get_footnotes(vals['type'], dict['obj'].id),
+                            'columns': [dict['date'], dict['doc_type'], dict['number'], dict['reference'],
+                                        self._formatted(dict['currency_rate'], 6),
+                                        self._format(dict['amount_in_currency'],
+                                                     dict['payment_currency']), self._format(dict['debit'], currency),
                                         self._format(dict['credit'], currency), self._format(balance, currency)],
                             'level': 0,
-                            })
+                        })
 
                         lines.append(vals)
                         if dict['obj'].id in context['context_id']['unfolded_payments'].ids:
@@ -255,26 +274,28 @@ class report_bi_vendor_transaction(models.AbstractModel):
                             'id': dict['obj'].id,
                             'type': 'move_line_id',
                             'move_id': dict['obj'].move_id.id,
-                            'name':dict['number'],
+                            'name': dict['number'],
                             'action': dict['obj'].open_invoice_from_report(),
                             'footnotes': self.env.context['context_id']._get_footnotes('move_line_id', dict['obj'].id),
                             'level': 0,
-                            'columns': [dict['date'], dict['doc_type'], dict['number'],dict['reference'],
-                                        self._formatted(dict['currency_rate'], 6), self._format(dict['amount_in_currency'], currency),
+                            'columns': [dict['date'], dict['doc_type'], dict['number'], dict['reference'],
+                                        self._formatted(dict['currency_rate'], 6),
+                                        self._format(dict['amount_in_currency'], currency),
                                         self._format(dict['debit'], currency),
-                                        self._format(dict['credit'], currency),self._format(balance, currency)],
+                                        self._format(dict['credit'], currency), self._format(balance, currency)],
                         })
                 if sorted_globle_dict_list:
                     lines.append({
                         'id': partner_id,
                         'type': 'o_account_reports_domain_total',
-                        'name':_("Total Currency: ")+currency.name,
-                        'footnotes': self.env.context['context_id']._get_footnotes('o_account_reports_domain_total', partner_id),
-                        'columns': ['', '', '', '', '', '',self._format(total_debit, currency),
+                        'name': _("Total Currency: ") + currency.name,
+                        'footnotes': self.env.context['context_id']._get_footnotes('o_account_reports_domain_total',
+                                                                                   partner_id),
+                        'columns': ['', '', '', '', '', '', self._format(total_debit, currency),
                                     self._format(total_credit, currency), self._format(balance, currency)],
                         'level': 0,
                         'unfoldable': False,
-                })
+                    })
                 lines.append({
                     'id': 0,
                     'type': 'line',
@@ -288,7 +309,7 @@ class report_bi_vendor_transaction(models.AbstractModel):
         else:
             domain_lines = []
             lines = self.get_account_payment_line(line_id, domain_lines, partner_id, unfolded=True)
-            
+
         return lines
 
     @api.model
@@ -337,7 +358,8 @@ class report_bi_vendor_transaction(models.AbstractModel):
 
                 total_vendor_payment_group = self.env['account.payment.group'].search([('partner_id', '=', partner_id),
                                                                                        (
-                                                                                       'partner_type', '=', 'supplier'),
+                                                                                           'partner_type', '=',
+                                                                                           'supplier'),
                                                                                        ('state', 'not in',
                                                                                         ['draft', 'confirmed']),
                                                                                        ('payment_date', '<',
@@ -350,7 +372,11 @@ class report_bi_vendor_transaction(models.AbstractModel):
                     amount = sum(cpg.payment_ids.mapped('amount'))
 
                     if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        amount = amount / cpg.manual_currency_rate
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            amount = amount / cpg.manual_currency_rate
+                        else:
+                            amount = amount * cpg.manual_currency_rate
+                        # amount = amount / cpg.manual_currency_rate
                     grand_total_debit += amount
 
                 grand_total_balance = grand_total_debit - grand_total_credit
@@ -424,8 +450,13 @@ class report_bi_vendor_transaction(models.AbstractModel):
                     amount_in_currency = payment_amount
                     credit = 0.0
 
-                    if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        debit = debit / cpg.manual_currency_rate
+                    if cpg.manual_currency_rate and payment_line_currency.id != currency.id:
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            debit = debit / cpg.manual_currency_rate
+                        else:
+                            debit = debit * cpg.manual_currency_rate
+                    # if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
+                    #     debit = debit / cpg.manual_currency_rate
 
                     globle_dict_list.append({
                         'obj': cpg,
@@ -476,7 +507,7 @@ class report_bi_vendor_transaction(models.AbstractModel):
                         vals.update({
                             'id': dict['obj'].id,
                             'unfolded': dict['obj'] and (
-                                        dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
+                                dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
                             'action': dict['obj'].open_payment_group_from_report(),
                             'footnotes': self.env.context['context_id']._get_footnotes(vals['type'], dict['obj'].id),
                             'columns': [dict['date'], dict['doc_type'] or '', dict['number'], dict['reference'] or '',
@@ -538,7 +569,6 @@ class report_bi_vendor_transaction(models.AbstractModel):
 
         return lines
 
-
     def get_account_payment_line(self, line_id, lines, partner_id, unfolded=None):
         if unfolded:
             lines.append({
@@ -566,7 +596,11 @@ class report_bi_vendor_transaction(models.AbstractModel):
                 currency_amount = debit
                 credit = 0.0
                 if payment.currency_id.id != line_currency.id and payment_group_line.manual_currency_rate:
-                    debit = debit / payment_group_line.manual_currency_rate
+                    if line_currency.id != self.env.user.company_id.currency_id.id:
+                        debit = debit / payment_group_line.manual_currency_rate
+                    else:
+                        debit = debit * payment_group_line.manual_currency_rate
+                    # debit = debit / payment_group_line.manual_currency_rate
                 balance = debit - credit
 
                 payment_total_debit += debit
@@ -593,15 +627,24 @@ class report_bi_vendor_transaction(models.AbstractModel):
                     'level': 1,
                     'unfoldable': False,
                 })
-                #             if payment_group_line.matched_amount != 0.0:
         payment_line_currency = payment_group_line.payment_ids and payment_group_line.payment_ids[0].currency_id \
                                 or payment_group_line.currency2_id
-        for aml in payment_group_line.matched_move_line_ids:
+        for aml in payment_group_line.matched_move_line_ids.filtered(lambda x: x.invoice_id):
             credit = 0.0
             debit = aml.with_context(payment_group_id=payment_group_line.id).payment_group_matched_amount
-            currency_amount = aml.with_context(payment_group_id=payment_group_line.id).payment_group_matched_amount
+            currency_amount = debit
+            if payment_line_currency.id != self.env.user.company_id.currency_id.id \
+                    and line_currency.id != self.env.user.company_id.currency_id.id:
+                debit = currency_amount = aml.with_context(
+                    payment_group_id=payment_group_line.id).payment_group_matched_amount_currency
             if payment_line_currency.id != line_currency.id and payment_group_line.manual_currency_rate:
-                debit = debit / payment_group_line.manual_currency_rate
+                if line_currency.id == self.env.user.company_id.currency_id.id:
+                    currency_amount = currency_amount / payment_group_line.manual_currency_rate
+                else:
+                    debit = debit / payment_group_line.manual_currency_rate
+            # if payment_line_currency.id != line_currency.id and payment_group_line.manual_currency_rate:
+            #     debit = debit / payment_group_line.manual_currency_rate
+
             balance = debit - credit
 
             payment_total_debit += debit
@@ -645,8 +688,8 @@ class report_bi_vendor_transaction(models.AbstractModel):
         filter_currency_payment_group = vendor_payment_group.filtered(
             lambda x: x.mapped('matched_move_line_ids').filtered(
                 lambda i: i.invoice_id and i.invoice_id.currency_id.id == currency.id)
-            or (not x.matched_move_line_ids and x.unmatched_amount and x.mapped('payment_ids').filtered(
-                          lambda p: p.currency_id and p.currency_id.id == currency.id)))
+                      or (not x.matched_move_line_ids and x.unmatched_amount and x.mapped('payment_ids').filtered(
+                lambda p: p.currency_id and p.currency_id.id == currency.id)))
         return filter_currency_payment_group
 
     def get_currency_section(self, payment_group_line):
@@ -657,7 +700,7 @@ class report_bi_vendor_transaction(models.AbstractModel):
         else:
             if payment_group_line.unmatched_amount and payment_group_line.payment_ids:
                 return payment_group_line.payment_ids[0].currency_id
-    
+
     @api.model
     def get_title(self):
         return _("Vendor Transaction Report")
@@ -665,33 +708,31 @@ class report_bi_vendor_transaction(models.AbstractModel):
     @api.model
     def get_name(self):
         return 'vendor_transaction_report'
-        
+
     @api.model
     def get_report_type(self):
         return self.env.ref('bi_partner_transaction_report.bi_vendor_transaction_report_type')
-    
+
     def get_template(self):
         return 'bi_partner_transaction_report.report_financial_bi_partner'
-        # return 'account_reports.report_financial'
 
- 
-        
+
 class vendor_transection_context_report(models.TransientModel):
     _name = "vendor.transection.context.report"
     _description = "A particular context for the Partner Transaction"
     _inherit = "account.report.context.common"
 
-    partner_id = fields.Many2one('res.partner',"partner")
+    partner_id = fields.Many2one('res.partner', "partner")
     fold_field = 'unfolded_payments'
     unfolded_payments = fields.Many2many('account.payment.group', 'vendor_transection_context_to_payment',
                                          string='Unfolded lines')
 
-   
     def get_report_obj(self):
         return self.env['vendor.transaction.report']
 
     def get_columns_names(self):
-        return [_("Date"), _("Doc Type"), _("Number"), _("Reference"), _("Manual Rate"), _("Amount in Currency"), _("Debit"), _("Credit"), _("Balance")]
+        return [_("Date"), _("Doc Type"), _("Number"), _("Reference"), _("Manual Rate"), _("Amount in Currency"),
+                _("Debit"), _("Credit"), _("Balance")]
 
     @api.multi
     def get_columns_types(self):
@@ -705,12 +746,18 @@ class vendor_transection_context_report(models.TransientModel):
 
         def_style = workbook.add_format({'font_name': 'Arial'})
         title_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2})
-        level_0_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
-        level_0_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
-        level_0_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_0_style = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_0_style_left = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2, 'pattern': 1,
+             'font_color': '#FFFFFF'})
+        level_0_style_right = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2, 'pattern': 1,
+             'font_color': '#FFFFFF'})
         level_1_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2})
         level_1_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2})
-        level_1_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2})
+        level_1_style_right = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2})
         level_2_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2})
         level_2_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2, 'left': 2})
         level_2_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2, 'right': 2})
@@ -722,7 +769,7 @@ class vendor_transection_context_report(models.TransientModel):
         domain_style_right = workbook.add_format({'font_name': 'Arial', 'italic': True, 'right': 2})
         upper_line_style = workbook.add_format({'font_name': 'Arial', 'top': 2})
 
-        sheet.set_column(0, 0, 15) #  Set the first column width to 15
+        sheet.set_column(0, 0, 15)  # Set the first column width to 15
 
         sheet.write(0, 0, '', title_style)
 
@@ -733,14 +780,14 @@ class vendor_transection_context_report(models.TransientModel):
             x = 2
             for column in self.with_context(is_xls=True).get_special_date_line_names():
                 sheet.write(y_offset, x, column, title_style)
-                sheet.write(y_offset, x+1, '', title_style)
+                sheet.write(y_offset, x + 1, '', title_style)
                 x += 2
             sheet.write(y_offset, x, '', title_style)
             y_offset += 1
 
         x = 1
         for column in self.with_context(is_xls=True).get_columns_names():
-            sheet.write(y_offset, x, column.replace('<br/>', ' ').replace('&nbsp;',' '), title_style)
+            sheet.write(y_offset, x, column.replace('<br/>', ' ').replace('&nbsp;', ' '), title_style)
             x += 1
         y_offset += 1
 
@@ -787,22 +834,22 @@ class vendor_transection_context_report(models.TransientModel):
                 if isinstance(lines[y]['columns'][x - 1], tuple):
                     lines[y]['columns'][x - 1] = lines[y]['columns'][x - 1][0]
                 if x < len(lines[y]['columns']):
-                    sheet.write(y + y_offset, x+lines[y].get('colspan', 1)-1, lines[y]['columns'][x - 1], style)
+                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1], style)
                 else:
-                    sheet.write(y + y_offset, x+lines[y].get('colspan', 1)-1, lines[y]['columns'][x - 1], style_right)
+                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1],
+                                style_right)
             if lines[y]['type'] == 'total' or lines[y].get('level') == 0:
                 for x in xrange(0, len(lines[0]['columns']) + 1):
                     sheet.write(y + 1 + y_offset, x, None, upper_line_style)
                 y_offset += 1
         if lines:
-            for x in xrange(0, max_width+1):
+            for x in xrange(0, max_width + 1):
                 sheet.write(len(lines) + y_offset, x, None, upper_line_style)
 
         workbook.close()
         output.seek(0)
         response.stream.write(output.read())
         output.close()
-
 
     def get_pdf(self):
         if not config['test_enable']:
@@ -811,7 +858,8 @@ class vendor_transection_context_report(models.TransientModel):
         report_obj = self.get_report_obj()
         lines = report_obj.with_context(print_mode=True).get_lines(self)
         footnotes = self.get_footnotes_from_lines(lines)
-        base_url = self.env['ir.config_parameter'].sudo().get_param('report.url') or self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        base_url = self.env['ir.config_parameter'].sudo().get_param('report.url') or self.env[
+            'ir.config_parameter'].sudo().get_param('web.base.url')
         rcontext = {
             'mode': 'print',
             'base_url': base_url,
@@ -836,5 +884,7 @@ class vendor_transection_context_report(models.TransientModel):
         if len(self.get_columns_names()) > 4:
             landscape = True
 
-        return self.env['report']._run_wkhtmltopdf([header], [''], [(0, body)], landscape, self.env.user.company_id.paperformat_id, spec_paperformat_args={'data-report-margin-top': 10, 'data-report-header-spacing': 10})
-
+        return self.env['report']._run_wkhtmltopdf([header], [''], [(0, body)], landscape,
+                                                   self.env.user.company_id.paperformat_id,
+                                                   spec_paperformat_args={'data-report-margin-top': 10,
+                                                                          'data-report-header-spacing': 10})

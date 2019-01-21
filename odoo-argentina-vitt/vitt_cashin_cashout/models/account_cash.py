@@ -155,30 +155,30 @@ class AccountCashInOut(models.Model):
     @api.multi
     def validate_cash(self):
         if self.journal_id.default_debit_account_id.deprecated or self.journal_id.default_debit_account_id.deprecated:
-            raise UserError(_('Journal account checked as deprecated, not allowed'))
+            raise UserError(_("Journal account checked as deprecated, not allowed"))
         if self.cash_account_id.deprecated:
-            raise UserError(_('Cash account checked as deprecated, not allowed'))
+            raise UserError(_("Cash account checked as deprecated, not allowed"))
         if self.journal_id:
             types = self.journal_id.inbound_payment_method_ids.mapped('code') + self.journal_id.outbound_payment_method_ids.mapped('code')
             if 'delivered_third_check' in types or 'received_third_check' in types:
-                raise UserError(_('journal Third Checks type not allowed'))
+                raise UserError(_("journal Third Checks type not allowed"))
             if 'issue_check' in types:
                 if self.type == 'cash_in':
-                    raise UserError(_('issue check journal type not allowed in cash-in'))
+                    raise UserError(_("issue check journal type not allowed in cash-in"))
                 if not self.benefitiary_type:
-                    raise UserError(_('Please, Select a benefitiray type first'))
+                    raise UserError(_("Please, Select a benefitiray type first"))
                 else:
                     if self.benefitiary_type=='supplier' and not self.benefitiary_id:
-                        raise UserError(_('Please, Select a Contact first'))
+                        raise UserError(_("Please, Select a Contact first"))
                     if self.benefitiary_type=='employee' and not self.employee_id:
-                        raise UserError(_('Please, Select an Employee first'))
+                        raise UserError(_("Please, Select an Employee first"))
             for check in self.check_line_ids:
                 if self.benefitiary_type == 'supplier':
                     if check.partner_id != self.benefitiary_id:
-                        raise UserError(_('partner in check %s not the same as cash legder') % (check.number))
+                        raise UserError(_("partner in check %s not the same as cash legder") % (check.number))
                 if self.benefitiary_type == 'employee':
                     if check.partner_id.employee_id != self.employee_id:
-                        raise UserError(_('employee in check %s not the same as cash legder') % (check.number))
+                        raise UserError(_("employee in check %s not the same as cash legder") % (check.number))
         self.create_cash_nl()
 
     @api.multi
@@ -243,8 +243,11 @@ class AccountCashInOut(models.Model):
                     if cash.currency_id.id != self.company_id.currency_id.id:
                         debit_line_vals.update({'amount_currency': cash.total_amount})
                         credit_line_vals.update({'amount_currency': -cash.total_amount})
+                ref = name
+                if self.cash_reference:
+                    ref = self.cash_reference + '-' + name
                 vals = {
-                    'ref': name,
+                    'ref': ref,
                     'journal_id': cash.journal_id.id,
                     'date': cash.deposit_date,
                     'line_ids': [(0, False, debit_line_vals),(0, False, credit_line_vals)],

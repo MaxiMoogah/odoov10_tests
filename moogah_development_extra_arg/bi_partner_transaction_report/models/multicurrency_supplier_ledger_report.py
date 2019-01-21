@@ -132,7 +132,11 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                         amount = sum(cpg.payment_ids.mapped('amount'))
 
                         if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                            amount = amount / cpg.manual_currency_rate
+                            if currency.id != self.env.user.company_id.currency_id.id:
+                                amount = amount / cpg.manual_currency_rate
+                            else:
+                                amount = amount * cpg.manual_currency_rate
+                            # amount = amount / cpg.manual_currency_rate
                         grand_total_debit += amount
 
                     grand_total_balance = grand_total_debit - grand_total_credit
@@ -194,7 +198,6 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                     currency_vendor_payment_group = self.filter_currency_customer_payment_group(vendor_payment_group,
                                                                                                 currency)
                     if currency_vendor_payment_group or vendor_invoices:
-                        # if not filter(lambda x: x['id'] == partner.id, lines):
                         if not filter(lambda x: x.get('partner_id') and x.get('partner_id') == partner.id, lines):
                             lines.extend(partner_lines)
                         lines.extend(currrency_lines)
@@ -208,9 +211,14 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                         debit = payment_amount
                         amount_in_currency = payment_amount
                         credit = 0.0
+                        if cpg.manual_currency_rate and payment_line_currency.id != currency.id:
+                            if currency.id != self.env.user.company_id.currency_id.id:
+                                debit = debit / cpg.manual_currency_rate
+                            else:
+                                debit = debit * cpg.manual_currency_rate
 
-                        if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                            debit = debit / cpg.manual_currency_rate
+                        # if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
+                        #     debit = debit / cpg.manual_currency_rate
 
                         globle_dict_list.append({
                             'obj': cpg,
@@ -402,7 +410,11 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                         amount = sum(cpg.payment_ids.mapped('amount'))
 
                         if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                            amount = amount / cpg.manual_currency_rate
+                            if currency.id != self.env.user.company_id.currency_id.id:
+                                amount = amount / cpg.manual_currency_rate
+                            else:
+                                amount = amount * cpg.manual_currency_rate
+                            # amount = amount / cpg.manual_currency_rate
                         grand_total_debit += amount
 
                     grand_total_balance = grand_total_debit - grand_total_credit
@@ -464,7 +476,6 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                     currency_vendor_payment_group = self.filter_currency_customer_payment_group(vendor_payment_group,
                                                                                                 currency)
                     if currency_vendor_payment_group or vendor_invoices:
-                        # if not filter(lambda x: x['id'] == partner.id, lines):
                         if not filter(lambda x: x.get('partner_id') and x.get('partner_id') == partner.id, lines):
                             lines.extend(partner_lines)
                         lines.extend(currrency_lines)
@@ -478,9 +489,14 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                         debit = payment_amount
                         amount_in_currency = payment_amount
                         credit = 0.0
+                        if cpg.manual_currency_rate and payment_line_currency.id != currency.id:
+                            if currency.id != self.env.user.company_id.currency_id.id:
+                                debit = debit / cpg.manual_currency_rate
+                            else:
+                                debit = debit * cpg.manual_currency_rate
 
-                        if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                            debit = debit / cpg.manual_currency_rate
+                        # if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
+                        #     debit = debit / cpg.manual_currency_rate
 
                         globle_dict_list.append({
                             'obj': cpg,
@@ -625,7 +641,11 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                 currency_amount = debit
                 credit = 0.0
                 if payment.currency_id.id != line_currency.id and payment_group_line.manual_currency_rate:
-                    debit = debit / payment_group_line.manual_currency_rate
+                    if line_currency.id != self.env.user.company_id.currency_id.id:
+                        debit = debit / payment_group_line.manual_currency_rate
+                    else:
+                        debit = debit * payment_group_line.manual_currency_rate
+                    # debit = debit / payment_group_line.manual_currency_rate
                 balance = debit - credit
 
                 payment_total_debit += debit
@@ -652,15 +672,26 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
                     'level': 1,
                     'unfoldable': False,
                 })
-                #             if payment_group_line.matched_amount != 0.0:
         payment_line_currency = payment_group_line.payment_ids and payment_group_line.payment_ids[0].currency_id \
                                 or payment_group_line.currency2_id
         for aml in payment_group_line.matched_move_line_ids:
             credit = 0.0
             debit = aml.with_context(payment_group_id=payment_group_line.id).payment_group_matched_amount
             currency_amount = aml.with_context(payment_group_id=payment_group_line.id).payment_group_matched_amount
+
+            if payment_line_currency.id != self.env.user.company_id.currency_id.id \
+                    and line_currency.id != self.env.user.company_id.currency_id.id:
+                debit = currency_amount = aml.with_context(
+                    payment_group_id=payment_group_line.id).payment_group_matched_amount_currency
             if payment_line_currency.id != line_currency.id and payment_group_line.manual_currency_rate:
-                debit = debit / payment_group_line.manual_currency_rate
+                if line_currency.id == self.env.user.company_id.currency_id.id:
+                    currency_amount = currency_amount / payment_group_line.manual_currency_rate
+                else:
+                    debit = debit / payment_group_line.manual_currency_rate
+
+            # if payment_line_currency.id != line_currency.id and payment_group_line.manual_currency_rate:
+            #     debit = debit / payment_group_line.manual_currency_rate
+
             balance = debit - credit
 
             payment_total_debit += debit
@@ -732,7 +763,6 @@ class CurrenciesVendorLedgerReport(models.AbstractModel):
     
     def get_template(self):
         return 'bi_partner_transaction_report.report_financial_bi_partner'
-        # return 'account_reports.report_financial'
 
  
         

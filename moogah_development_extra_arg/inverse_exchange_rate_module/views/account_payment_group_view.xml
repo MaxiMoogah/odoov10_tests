@@ -145,5 +145,34 @@
 
         <menuitem action="action_account_payment_group_anticipate" id="menu_action_account_payments_group_anticipate" parent="account.menu_finance_receivables" sequence="30" />
         <menuitem action="action_account_payment_group_anticipate_supplier" id="menu_action_account_payments_group_anticipate_supplier" parent="account.menu_finance_payables" sequence="30" />
+
+
+        <record id="view_account_payment_group_search2" model="ir.ui.view">
+            <field name="name">account.payment.group.search2</field>
+            <field name="model">account.payment.group</field>
+            <field name="inherit_id" ref="account_payment_group.view_account_payment_group_search"/>
+            <field name="arch" type="xml">
+                <filter name="state_draft" position="after">
+                    <filter string="Prepayments" domain="[('prepayment_reference','!=','False')]" name='prepayments'/>
+                </filter>
+                <filter name="currency" position="replace">
+                    <filter string="Currency" domain="[]" context="{'group_by': 'currency2_id'}" groups="base.group_multi_currency"/>
+                </filter>
+            </field>
+        </record>
+
+        <!--record id="view_account_payment_group_tree2" model="ir.ui.view">
+            <field name="name">account.payment.group.tree2</field>
+            <field name="model">account.payment.group</field>
+            <field name="inherit_id" ref="account_payment_group.view_account_payment_group_tree"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="unmatched_amount"/>
+                    <field name="unmatched_amount_payment_currency2"/>
+                </field>
+            </field>
+        </record-->
+
+
     </data>
 </odoo>

@@ -8,7 +8,7 @@
 
 {
     'name': 'Account Check Deposit',
-    'version': '10.0.1.1',
+    'version': '10.0.1.1.5',
     'category': 'Accounting & Finance',
     'license': 'AGPL-3',
     'summary': 'Manage deposit of checks to the bank',

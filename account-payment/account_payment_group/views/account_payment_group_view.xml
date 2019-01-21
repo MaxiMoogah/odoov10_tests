@@ -58,7 +58,7 @@
             <separator/>
             <filter string="Partner" domain="[]" context="{'group_by': 'partner_id'}"/>
             <filter string="State" domain="[]" context="{'group_by': 'state'}"/>
-            <filter string="Currency" domain="[]" context="{'group_by': 'currency_id'}" groups="base.group_multi_currency"/>
+            <filter string="Currency" domain="[]" context="{'group_by': 'currency_id'}" groups="base.group_multi_currency" name="currency"/>
             <filter string="Company" domain="[]" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
         </search>
     </field>

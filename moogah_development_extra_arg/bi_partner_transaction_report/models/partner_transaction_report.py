@@ -12,10 +12,11 @@ import StringIO
 import xlsxwriter
 from odoo.tools import config, posix_to_ldml
 
+
 class report_bi_partner_transaction(models.AbstractModel):
     _name = "partner.transaction.report"
     _description = "Partner Transaction Report"
-    
+
     def _format(self, value, currency=False):
         if self.env.context.get('no_format'):
             return value
@@ -35,21 +36,21 @@ class report_bi_partner_transaction(models.AbstractModel):
     def _formatted(self, value, digit):
         formatted = ('%.' + str(digit) + 'f') % value
         return formatted
-    
+
     @api.model
     def get_lines(self, context_id, line_id=None):
         if type(context_id) == int:
             context_id = self.env['partner.transection.context.report'].search([['id', '=', context_id]])
         new_context = dict(self.env.context)
         new_context.update({
-            
+
             'date_from': context_id.date_from,
             'date_to': context_id.date_to,
             'state': context_id.all_entries and 'all' or 'posted',
             'cash_basis': context_id.cash_basis,
             'context_id': context_id,
             'company_ids': context_id.company_ids.ids,
-            'partner_id':context_id.partner_id.id,
+            'partner_id': context_id.partner_id.id,
             'filter_unfold_all': context_id.filter_unfold_all,
         })
         if new_context.get('xlsx_format'):
@@ -87,7 +88,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                                                                               ('date_invoice', '<',
                                                                                ctx.get('date_from')),
                                                                               ('currency_id', '=', currency.id)])
-                # if total_customer_invoices:
                 initial_lines.append({
                     'id': currency.id,
                     'type': 'line',
@@ -95,8 +95,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                     'footnotes': {},
                     'columns': ['', '', '', '', '', '', '', '', ''],
                     'level': 1,
-                    # 'unfoldable': False,
-                    # 'unfolded': False,
                     'colspan': 4,
                 })
                 for inv in total_customer_invoices:
@@ -119,7 +117,11 @@ class report_bi_partner_transaction(models.AbstractModel):
                     amount = sum(cpg.payment_ids.mapped('amount'))
 
                     if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        amount = amount / cpg.manual_currency_rate
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            amount = amount / cpg.manual_currency_rate
+                        else:
+                            amount = amount * cpg.manual_currency_rate
+                        # amount = amount / cpg.manual_currency_rate
                     grand_total_credit += amount
 
                 grand_total_balance = grand_total_debit - grand_total_credit
@@ -151,8 +153,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                                                                         ('date_invoice', '<=', ctx.get('date_to')),
                                                                         ('currency_id', '=', currency.id)],
                                                                        order='date_invoice')
-                # if customer_invoices:
-                #     lines = initial_lines
                 for inv in customer_invoices:
                     debit = credit = 0.0
                     if inv.type == "out_refund":
@@ -197,8 +197,11 @@ class report_bi_partner_transaction(models.AbstractModel):
                     debit = 0.0
                     credit = payment_amount
                     amount_in_currency = payment_amount
-                    if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        credit = credit / cpg.manual_currency_rate
+                    if cpg.manual_currency_rate and payment_line_currency.id != currency.id:
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            credit = credit / cpg.manual_currency_rate
+                        else:
+                            credit = credit * cpg.manual_currency_rate
 
                     globle_dict_list.append({
                         'obj': cpg,
@@ -246,7 +249,8 @@ class report_bi_partner_transaction(models.AbstractModel):
 
                         vals.update({
                             'id': dict['obj'].id,
-                            'unfolded': dict['obj'] and (dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
+                            'unfolded': dict['obj'] and (
+                                dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
                             'action': dict['obj'].open_payment_group_from_report(),
                             'footnotes': self.env.context['context_id']._get_footnotes(vals['type'], dict['obj'].id),
                             'columns': [dict['date'], dict['doc_type'], dict['number'], dict['reference'],
@@ -288,7 +292,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                         'name': _("Total Currency: ") + currency.name,
                         'footnotes': self.env.context['context_id']._get_footnotes('o_account_reports_domain_total',
                                                                                    partner_id),
-                        #                     'footnotes': {},
                         'columns': ['', '', '', '', '', '', self._format(total_debit, currency),
                                     self._format(total_credit, currency),
                                     self._format(balance, currency)],
@@ -302,8 +305,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                     'footnotes': {},
                     'columns': ['', '', '', '', '', '', '', '', ''],
                     'level': 1,
-                    # 'unfoldable': False,
-                    # 'unfolded': False,
                 })
 
         else:
@@ -311,7 +312,6 @@ class report_bi_partner_transaction(models.AbstractModel):
             lines = self.get_account_payment_line(line_id, domain_lines, partner_id, unfolded=True)
 
         return lines
-
 
     @api.model
     def _xlsx_lines(self, line_id=None):
@@ -344,7 +344,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                                                                               ('date_invoice', '<',
                                                                                ctx.get('date_from')),
                                                                               ('currency_id', '=', currency.id)])
-                # if total_customer_invoices:
                 initial_lines.append({
                     'id': currency.id,
                     'type': 'line',
@@ -376,7 +375,11 @@ class report_bi_partner_transaction(models.AbstractModel):
                     amount = sum(cpg.payment_ids.mapped('amount'))
 
                     if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        amount = amount / cpg.manual_currency_rate
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            amount = amount / cpg.manual_currency_rate
+                        else:
+                            amount = amount * cpg.manual_currency_rate
+                        # amount = amount / cpg.manual_currency_rate
                     grand_total_credit += amount
 
                 grand_total_balance = grand_total_debit - grand_total_credit
@@ -408,8 +411,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                                                                         ('date_invoice', '<=', ctx.get('date_to')),
                                                                         ('currency_id', '=', currency.id)],
                                                                        order='date_invoice')
-                # if customer_invoices:
-                #     lines = initial_lines
                 for inv in customer_invoices:
                     debit = credit = 0.0
                     if inv.type == "out_refund":
@@ -454,8 +455,11 @@ class report_bi_partner_transaction(models.AbstractModel):
                     debit = 0.0
                     credit = payment_amount
                     amount_in_currency = payment_amount
-                    if payment_line_currency.id != currency.id and cpg.manual_currency_rate:
-                        credit = credit / cpg.manual_currency_rate
+                    if cpg.manual_currency_rate and payment_line_currency.id != currency.id:
+                        if currency.id != self.env.user.company_id.currency_id.id:
+                            credit = credit / cpg.manual_currency_rate
+                        else:
+                            credit = credit * cpg.manual_currency_rate
 
                     globle_dict_list.append({
                         'obj': cpg,
@@ -503,7 +507,8 @@ class report_bi_partner_transaction(models.AbstractModel):
 
                         vals.update({
                             'id': dict['obj'].id,
-                            'unfolded': dict['obj'] and (dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
+                            'unfolded': dict['obj'] and (
+                                dict['obj'].id in context['context_id']['unfolded_payments'].ids) or False,
                             'action': dict['obj'].open_payment_group_from_report(),
                             'footnotes': self.env.context['context_id']._get_footnotes(vals['type'], dict['obj'].id),
                             'columns': [dict['date'], dict['doc_type'] or '', dict['number'], dict['reference'] or '',
@@ -545,7 +550,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                         'name': _("Total Currency: ") + currency.name,
                         'footnotes': self.env.context['context_id']._get_footnotes('o_account_reports_domain_total',
                                                                                    partner_id),
-                        #                     'footnotes': {},
                         'columns': ['', '', '', '', '', '', self._format(total_debit, currency),
                                     self._format(total_credit, currency),
                                     self._format(balance, currency)],
@@ -569,7 +573,6 @@ class report_bi_partner_transaction(models.AbstractModel):
             lines = self.get_account_payment_line(line_id, domain_lines, partner_id, line=True)
 
         return lines
-
 
     def get_account_payment_line(self, line_id, lines, partner_id, unfolded=None):
         if unfolded:
@@ -599,7 +602,11 @@ class report_bi_partner_transaction(models.AbstractModel):
                 debit = 0.0
 
                 if payment.currency_id.id != line_currency.id and payment_group_line.manual_currency_rate:
-                    credit = credit / payment_group_line.manual_currency_rate
+                    if line_currency.id != self.env.user.company_id.currency_id.id:
+                        credit = credit / payment_group_line.manual_currency_rate
+                    else:
+                        credit = credit * payment_group_line.manual_currency_rate
+                    # credit = credit / payment_group_line.manual_currency_rate
 
                 balance = debit - credit
 
@@ -618,7 +625,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                     'move_id': move_id,
                     'unfoldable': False,
                     'name': name,
-                    # 'footnotes':self.env.context['context_id']._get_footnotes('move_line_id', payment.id),
                     'footnotes': {},
                     'columns': [payment.payment_date, payment.receiptbook_id.display_name, invoice_number, '',
                                 self._formatted(payment_group_line.manual_currency_rate, 6),
@@ -627,15 +633,22 @@ class report_bi_partner_transaction(models.AbstractModel):
                                 self._format(credit, line_currency), self._format(balance, line_currency)],
                     'level': 1,
                 })
-                #             if payment_group_line.matched_amount != 0.0:
         payment_line_currency = payment_group_line.payment_ids and payment_group_line.payment_ids[0].currency_id \
                                 or payment_group_line.currency2_id
-        for aml in payment_group_line.matched_move_line_ids:
+        for aml in payment_group_line.matched_move_line_ids.filtered(lambda x: x.invoice_id):
             credit = aml.with_context(payment_group_id=payment_group_line.id).payment_group_matched_amount
-            currency_amount = aml.with_context(payment_group_id=payment_group_line.id).payment_group_matched_amount
+            currency_amount = credit
             debit = 0.0
+            if payment_line_currency.id != self.env.user.company_id.currency_id.id \
+                    and line_currency.id != self.env.user.company_id.currency_id.id:
+                credit = currency_amount = aml.with_context(
+                    payment_group_id=payment_group_line.id).payment_group_matched_amount_currency
             if payment_line_currency.id != line_currency.id and payment_group_line.manual_currency_rate:
-                credit = credit / payment_group_line.manual_currency_rate
+                if line_currency.id == self.env.user.company_id.currency_id.id:
+                    currency_amount = currency_amount / payment_group_line.manual_currency_rate
+                    # credit = currency_amount * payment_group_line.manual_currency_rate
+                else:
+                    credit = credit / payment_group_line.manual_currency_rate
             balance = debit - credit
 
             payment_total_debit += debit
@@ -643,7 +656,7 @@ class report_bi_partner_transaction(models.AbstractModel):
             payment_total_balance += balance
 
             move_id = aml.move_id.id or False
-            invoice_number = aml.invoice_id.display_name
+            invoice_number = aml.invoice_id and aml.invoice_id.display_name or ''
 
             lines.append({
                 'id': aml.id,
@@ -653,7 +666,6 @@ class report_bi_partner_transaction(models.AbstractModel):
                 'unfoldable': False,
                 'name': invoice_number,
                 'footnotes': self.env.context['context_id']._get_footnotes('move_line_id', aml.id),
-                # 'footnotes':{},
                 'columns': [aml.date, payment_group_line.receiptbook_id.display_name, invoice_number, '',
                             self._formatted(payment_group_line.manual_currency_rate, 6),
                             self._format(currency_amount, payment_line_currency),
@@ -680,10 +692,9 @@ class report_bi_partner_transaction(models.AbstractModel):
         filter_currency_payment_group = customer_payment_group.filtered(
             lambda x: x.mapped('matched_move_line_ids').filtered(
                 lambda i: i.invoice_id and i.invoice_id.currency_id.id == currency.id)
-            or (not x.matched_move_line_ids and x.unmatched_amount and x.mapped('payment_ids').filtered(
-                          lambda p: p.currency_id and p.currency_id.id == currency.id)))
+                      or (not x.matched_move_line_ids and x.unmatched_amount and x.mapped('payment_ids').filtered(
+                lambda p: p.currency_id and p.currency_id.id == currency.id)))
         return filter_currency_payment_group
-
 
     def get_currency_section(self, payment_group_line):
         if payment_group_line.matched_move_line_ids:
@@ -694,39 +705,38 @@ class report_bi_partner_transaction(models.AbstractModel):
             if payment_group_line.unmatched_amount and payment_group_line.payment_ids:
                 return payment_group_line.payment_ids[0].currency_id
 
-    
     @api.model
     def get_title(self):
         return _("Partner Transaction Report")
-    
+
     @api.model
     def get_name(self):
         return 'partner_transaction_report'
-        
+
     @api.model
     def get_report_type(self):
         return self.env.ref('bi_partner_transaction_report.bi_partner_transaction_report_type')
-    
+
     def get_template(self):
         return 'bi_partner_transaction_report.report_financial_bi_partner'
-        # return 'account_reports.report_financial'
 
-    
+
 class partner_transection_context_report(models.TransientModel):
     _name = "partner.transection.context.report"
     _description = "A particular context for the Partner Transaction"
     _inherit = "account.report.context.common"
 
-    partner_id = fields.Many2one('res.partner',"partner")
+    partner_id = fields.Many2one('res.partner', "partner")
     fold_field = 'unfolded_payments'
     unfolded_payments = fields.Many2many('account.payment.group', 'partner_transection_context_to_payment',
                                          string='Unfolded lines')
-   
+
     def get_report_obj(self):
         return self.env['partner.transaction.report']
 
     def get_columns_names(self):
-        return [_("Date"), _("Doc Type"), _("Number"), _("Reference"), _("Manual Rate"),_("Amount in Currency"), _("Debit"), _("Credit"), _("Balance")]
+        return [_("Date"), _("Doc Type"), _("Number"), _("Reference"), _("Manual Rate"), _("Amount in Currency"),
+                _("Debit"), _("Credit"), _("Balance")]
 
     @api.multi
     def get_columns_types(self):
@@ -740,12 +750,18 @@ class partner_transection_context_report(models.TransientModel):
 
         def_style = workbook.add_format({'font_name': 'Arial'})
         title_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2})
-        level_0_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
-        level_0_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
-        level_0_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_0_style = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_0_style_left = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2, 'pattern': 1,
+             'font_color': '#FFFFFF'})
+        level_0_style_right = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2, 'pattern': 1,
+             'font_color': '#FFFFFF'})
         level_1_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2})
         level_1_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2})
-        level_1_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2})
+        level_1_style_right = workbook.add_format(
+            {'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2})
         level_2_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2})
         level_2_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2, 'left': 2})
         level_2_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2, 'right': 2})
@@ -757,7 +773,7 @@ class partner_transection_context_report(models.TransientModel):
         domain_style_right = workbook.add_format({'font_name': 'Arial', 'italic': True, 'right': 2})
         upper_line_style = workbook.add_format({'font_name': 'Arial', 'top': 2})
 
-        sheet.set_column(0, 0, 15) #  Set the first column width to 15
+        sheet.set_column(0, 0, 15)  # Set the first column width to 15
 
         sheet.write(0, 0, '', title_style)
 
@@ -768,14 +784,14 @@ class partner_transection_context_report(models.TransientModel):
             x = 2
             for column in self.with_context(is_xls=True).get_special_date_line_names():
                 sheet.write(y_offset, x, column, title_style)
-                sheet.write(y_offset, x+1, '', title_style)
+                sheet.write(y_offset, x + 1, '', title_style)
                 x += 2
             sheet.write(y_offset, x, '', title_style)
             y_offset += 1
 
         x = 1
         for column in self.with_context(is_xls=True).get_columns_names():
-            sheet.write(y_offset, x, column.replace('<br/>', ' ').replace('&nbsp;',' '), title_style)
+            sheet.write(y_offset, x, column.replace('<br/>', ' ').replace('&nbsp;', ' '), title_style)
             x += 1
         y_offset += 1
 
@@ -822,15 +838,16 @@ class partner_transection_context_report(models.TransientModel):
                 if isinstance(lines[y]['columns'][x - 1], tuple):
                     lines[y]['columns'][x - 1] = lines[y]['columns'][x - 1][0]
                 if x < len(lines[y]['columns']):
-                    sheet.write(y + y_offset, x+lines[y].get('colspan', 1)-1, lines[y]['columns'][x - 1], style)
+                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1], style)
                 else:
-                    sheet.write(y + y_offset, x+lines[y].get('colspan', 1)-1, lines[y]['columns'][x - 1], style_right)
+                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1],
+                                style_right)
             if lines[y]['type'] == 'total' or lines[y].get('level') == 0:
                 for x in xrange(0, len(lines[0]['columns']) + 1):
                     sheet.write(y + 1 + y_offset, x, None, upper_line_style)
                 y_offset += 1
         if lines:
-            for x in xrange(0, max_width+1):
+            for x in xrange(0, max_width + 1):
                 sheet.write(len(lines) + y_offset, x, None, upper_line_style)
 
         workbook.close()
@@ -845,7 +862,8 @@ class partner_transection_context_report(models.TransientModel):
         report_obj = self.get_report_obj()
         lines = report_obj.with_context(print_mode=True).get_lines(self)
         footnotes = self.get_footnotes_from_lines(lines)
-        base_url = self.env['ir.config_parameter'].sudo().get_param('report.url') or self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        base_url = self.env['ir.config_parameter'].sudo().get_param('report.url') or self.env[
+            'ir.config_parameter'].sudo().get_param('web.base.url')
         rcontext = {
             'mode': 'print',
             'base_url': base_url,
@@ -870,5 +888,7 @@ class partner_transection_context_report(models.TransientModel):
         if len(self.get_columns_names()) > 4:
             landscape = True
 
-        return self.env['report']._run_wkhtmltopdf([header], [''], [(0, body)], landscape, self.env.user.company_id.paperformat_id, spec_paperformat_args={'data-report-margin-top': 10, 'data-report-header-spacing': 10})
-
+        return self.env['report']._run_wkhtmltopdf([header], [''], [(0, body)], landscape,
+                                                   self.env.user.company_id.paperformat_id,
+                                                   spec_paperformat_args={'data-report-margin-top': 10,
+                                                                          'data-report-header-spacing': 10})

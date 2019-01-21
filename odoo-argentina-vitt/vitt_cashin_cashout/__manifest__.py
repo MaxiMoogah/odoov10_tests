@@ -8,7 +8,7 @@
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.7',
+    'version': '10.0.1.0.8',
     'depends': [
         'account',
         'account_payment_fix',

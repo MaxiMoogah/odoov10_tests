@@ -82,9 +82,9 @@ class AccountJournal(models.Model):
             name = 'Online'
         elif point_of_sale_type == 'electronic':
             name = 'Electronica'
-        name = '%s %s %04d' % (
+        name = '%s %s %05d' % (
             'Ventas', name, point_of_sale_number)
-        code = 'V%04d' % (point_of_sale_number)
+        code = 'V%05d' % (point_of_sale_number)
         return (name, code)
 
     @api.multi

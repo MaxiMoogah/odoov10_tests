@@ -21,6 +21,13 @@ class res_currency(models.Model):
             self.env['res.currency.rate'].create({
                 'name': datetime.datetime.now(),
                 'rate': 1.0 / vals.get('inverse_rate'),
+                'inverse_rate': vals.get('inverse_rate'),
                 'currency_id': self.id
             })
         return res
+
+
+class ResCurrencyRate(models.Model):
+    _inherit = 'res.currency.rate'
+
+    inverse_rate = fields.Float(string='Inverse Rate', digits=(12, 6))

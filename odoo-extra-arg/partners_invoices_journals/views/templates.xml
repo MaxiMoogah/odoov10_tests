@@ -1,0 +1,73 @@
+<odoo>
+    <template id="qweb_customer_invoice_journal">
+        <t t-call="report.html_container">
+            <t t-call="report.external_layout">
+              <div class="page" style="font-size:9px;" >
+                <h2> Partners Invoices Journals</h2>
+                  <div class="row">
+                      <div class="col-xs-6" >
+                          <t t-foreach="filters2" t-as="filters">
+                              <span t-esc="filters"/><br/>
+                          </t>
+                      </div>
+                      <div class="col-xs-6" >
+                      </div>
+                  </div>
+                <table class="table table-condensed">
+                  <thead>
+                    <tr>
+                        <t t-foreach="list_titles" t-as="title">
+                            <th ><span t-esc="title"/></th>
+                        </t>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <t t-set="qty" t-value="len(list_titles)"/>
+                    <tr t-foreach="print_data" t-as="data">
+                        <t t-foreach="qty" t-as="index">
+                            <td>
+                               <span t-esc="data[1][index]"/>
+                            </td>
+                        </t>
+                    </tr>
+                  </tbody>
+                </table>
+                  <br/>
+                <table class="table table-condensed">
+                  <thead>
+                      <tr>
+                          <th >Totales por Moneda</th>
+                          <th >Monto</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr t-foreach="curtotals" t-as="cur">
+                          <td>
+                              <span t-esc="cur"/>
+                          </td>
+                          <td>
+                              <span t-esc="curtotals[cur]"/>
+                          </td>
+                      </tr>
+                  </tbody>
+                </table>
+                  <br/>
+                <table class="table table-condensed">
+                  <tbody>
+                      <tr t-foreach="inv_qty" t-as="qty">
+                          <td>
+                              <span t-esc="qty"/>
+                          </td>
+                          <td>
+                              <span t-esc="inv_qty[qty]"/>
+                          </td>
+                      </tr>
+                  </tbody>
+                </table>
+              </div>
+            </t>
+        </t>
+    </template>
+
+</odoo>

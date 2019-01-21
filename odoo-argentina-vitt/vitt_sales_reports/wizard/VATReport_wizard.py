@@ -9,8 +9,16 @@ import imp
 from decimal import *
 import copy
 from collections import OrderedDict
+import unicodedata
+import string
 
 TWOPLACES = Decimal(10) ** -2
+
+def remove_accents(input_str):
+    nfkd_form = unicodedata.normalize('NFKD', input_str)
+    printable = set(string.printable)
+    res =  u"".join([c for c in nfkd_form if not unicodedata.combining(c)])[:30]
+    return filter(lambda x: x in printable, res)
 
 class AccountTax(models.Model):
     _inherit = "account.tax"
@@ -155,19 +163,22 @@ class sales_reports(models.TransientModel):
         new_vat_array = OrderedDict()
         var = total = 0.0
         for inv in invoices:
-            new_vat_array[inv.id] = {'IVA 10.50%':0.0,'IVA 21%':0.0,'IVA 27%':0.0,'IVA 5%':0.0,'IVA 2.50%':0.0,'exempt':0.0,'novat':0.0,'nett':0.0,'perception':0.0,'grossincome':0.0,'other':0.0}
-            for line in inv.tax_line_ids:
-                for tax in new_array:
-                    if line.tax_id.id in new_array[tax]:
-                        if tax in ['exempt','novat','nett']:
-                            var = line.base
-                        else:
-                            var = line.amount
+            new_vat_array[inv.id] = {'IVA 10.50%': 0.0, 'IVA 21%': 0.0, 'IVA 27%': 0.0, 'IVA 5%': 0.0, 'IVA 2.50%': 0.0,
+                                     'exempt': 0.0, 'novat': 0.0, 'nett': 0.0, 'perception': 0.0, 'grossincome': 0.0,
+                                     'other': 0.0}
+            if inv.state != 'cancel':
+                for line in inv.tax_line_ids:
+                    for tax in new_array:
+                        if line.tax_id.id in new_array[tax]:
+                            if tax in ['exempt','novat','nett']:
+                                var = line.base
+                            else:
+                                var = line.amount
 
-                        total = float(MultiplybyRate(inv.currency_rate, var, inv.company_currency_id, inv.currency_id))
-                        if inv.document_type_id.internal_type == 'credit_note':
-                            total *= -1
-                        new_vat_array[inv.id][tax] += float(Decimal(total).quantize(TWOPLACES))
+                            total = float(MultiplybyRate(inv.currency_rate, var, inv.company_currency_id, inv.currency_id))
+                            if inv.document_type_id.internal_type == 'credit_note':
+                                total *= -1
+                            new_vat_array[inv.id][tax] += float(Decimal(total).quantize(TWOPLACES))
         return new_vat_array
 
 
@@ -187,7 +198,7 @@ class sales_reports(models.TransientModel):
         domain = [
             ('date', '>=', date_froms), ('date', '<=', date_tos),
             ('type', '!=', 'in_invoice'),('type', '!=', 'in_refund'),
-            ('journal_id.use_documents', '=', True),('state', 'not in', ['draft','cancel'])
+            ('journal_id.use_documents', '=', True),('state', 'not in', ['draft'])
         ]
         if self.journal_ids:
             domain.append(('journal_id.id', 'in', list(self.journal_ids._ids)))
@@ -305,12 +316,17 @@ class sales_reports(models.TransientModel):
                     worksheet.write(index, subindex, o.journal_document_type_id.document_type_id.report_name)
                     subindex += 1
 
-                    let = o.display_name[-16:]
-                    let = let[1]
+
+                    let = o.journal_document_type_id.document_type_id.document_letter_id.name
                     worksheet.write(index, subindex, str(let))  # letra
                     subindex += 1
 
-                    worksheet.write(index, subindex, str(o.display_name[-13:]))  # nro comprob
+
+
+                    if o.document_number:
+                        worksheet.write(index, subindex, str(o.document_number))  # nro comprob
+                    else:
+                        worksheet.write(index, subindex, "")
                     subindex += 1
 
                     worksheet.write(index, subindex,  str(o.partner_id.afip_responsability_type_id.report_code_name))
@@ -326,7 +342,10 @@ class sales_reports(models.TransientModel):
                             worksheet.write(index, subindex, cuit)
                     subindex += 1
 
-                    worksheet.write(index, subindex,  o.partner_id.name)
+                    if o.state != 'cancel':
+                        worksheet.write(index, subindex,  o.partner_id.name)
+                    else:
+                        worksheet.write(index, subindex, "ANULADA")
                     subindex += 1
 
                     #tot = o.camount_untaxed()
@@ -372,60 +391,68 @@ class sales_reports(models.TransientModel):
                     gettotnovat += tot
                     subindex += 1
 
-                    tot = o.camount_total()
-                    worksheet.write(index, subindex, tot)
-                    camount_total += tot
+                    if o.state != 'cancel':
+                        tot = o.camount_total()
+                        worksheet.write(index, subindex, tot)
+                        camount_total += tot
+                    else:
+                        worksheet.write(index, subindex, 0)
                     index += 1
 
                     #Matrix for vat totals grouped by document_type_id
-                    for vat in o.tax_line_ids:
-                        if vat.tax_id.vatreport_included:
-                            amount = float(MultiplybyRate(o.currency_rate, vat.amount, o.company_currency_id, o.currency_id))
-                            base = float(MultiplybyRate(o.currency_rate, vat.base, o.company_currency_id, o.currency_id))
-                            name_key = o.partner_id.afip_responsability_type_id.name
+                    if o.state != 'cancel':
+                        for vat in o.tax_line_ids:
+                            if vat.tax_id.vatreport_included:
+                                amount = float(MultiplybyRate(o.currency_rate, vat.amount, o.company_currency_id, o.currency_id))
+                                base = float(MultiplybyRate(o.currency_rate, vat.base, o.company_currency_id, o.currency_id))
+                                name_key = o.partner_id.afip_responsability_type_id.name
 
-                            if vat.name in vatcodes:
-                                vatcodes[vat.name] += amount
-                            else:
-                                vatcodes.update({vat.name: amount})
+                                if vat.name in vatcodes:
+                                    vatcodes[vat.name] += amount
+                                else:
+                                    vatcodes.update({vat.name: amount})
 
-                            if vat.amount > 0:
-                                if o.document_type_id.internal_type == 'credit_note':
-                                    monto = -amount
-                                else:
-                                    monto = amount
-                            if vat.amount == 0:
-                                if o.document_type_id.internal_type == 'credit_note':
-                                    monto = -base
-                                else:
-                                    monto = base
+                                monto = 0
+                                if vat.amount > 0:
+                                    if o.document_type_id.internal_type == 'credit_note':
+                                        monto = -amount
+                                    else:
+                                        monto = amount
+                                if vat.amount == 0:
+                                    if vat.tax_id.tax_group_id.tax != 'gross_income':
+                                        if o.document_type_id.internal_type == 'credit_note':
+                                            monto = -base
+                                        else:
+                                            monto = base
 
-                            if not name_key in matrix.keys():
-                                matrix[name_key] = {vat.name:monto}
-                            else:
-                                if not vat.name in matrix[name_key].keys():
-                                    matrix[name_key].update({vat.name:monto})
+                                if not name_key in matrix.keys():
+                                    matrix[name_key] = {vat.name:monto}
                                 else:
-                                    matrix[name_key][vat.name] += monto
+                                    if not vat.name in matrix[name_key].keys():
+                                        matrix[name_key].update({vat.name:monto})
+                                    else:
+                                        matrix[name_key][vat.name] += monto
 
-                            if vat.amount > 0:
-                                if o.document_type_id.internal_type == 'credit_note':
-                                    monto = -base
-                                else:
-                                    monto = base
-                            if vat.amount == 0:
-                                if o.document_type_id.internal_type == 'credit_note':
-                                    monto = -amount
-                                else:
-                                    monto = amount
+                                monto = 0
+                                if vat.amount > 0:
+                                    if o.document_type_id.internal_type == 'credit_note':
+                                        monto = -base
+                                    else:
+                                        monto = base
+                                if vat.amount == 0:
+                                    if vat.tax_id.tax_group_id.tax != 'gross_income':
+                                        if o.document_type_id.internal_type == 'credit_note':
+                                            monto = -amount
+                                        else:
+                                            monto = amount
 
-                            if not name_key in matrixbase.keys():
-                                matrixbase[name_key] = {vat.name:monto}
-                            else:
-                                if not vat.name in matrixbase[name_key].keys():
-                                    matrixbase[name_key].update({vat.name:monto})
+                                if not name_key in matrixbase.keys():
+                                    matrixbase[name_key] = {vat.name:monto}
                                 else:
-                                    matrixbase[name_key][vat.name] += monto
+                                    if not vat.name in matrixbase[name_key].keys():
+                                        matrixbase[name_key].update({vat.name:monto})
+                                    else:
+                                        matrixbase[name_key][vat.name] += monto
 
                 else:
                     worksheet.write(index, subindex, o.date_invoice)
@@ -446,12 +473,14 @@ class sales_reports(models.TransientModel):
                     worksheet.write(index, subindex, o.journal_document_type_id.document_type_id.report_name)
                     subindex += 1
 
-                    let = o.display_name[-16:]
-                    let = let[1]
+                    let = o.journal_document_type_id.document_type_id.document_letter_id.name
                     worksheet.write(index, subindex, str(let))  # letra
                     subindex += 1
 
-                    worksheet.write(index, subindex, str(o.display_name[-13:]))  # nro comprob
+                    if o.document_number:
+                        worksheet.write(index, subindex, str(o.document_number))  # nro comprob
+                    else:
+                        worksheet.write(index, subindex, "")
                     subindex += 1
 
                     tot = 0.0
@@ -512,6 +541,7 @@ class sales_reports(models.TransientModel):
 
             index += 2
             subindex = 0
+            if_base = dict()
             worksheet.write(index, subindex, _("Totales Agrupados"))
             subindex += 1
             for code in vatcodes:
@@ -519,9 +549,9 @@ class sales_reports(models.TransientModel):
                 for type in matrix:
                     for key, value in matrix[type].iteritems():
                         if key == code:
-                            print matrixbase[type][key]
                             if matrixbase[type][key] > 0:
                                 foundf = True
+                                if_base[key] = True
                 if foundf:
                     worksheet.write(index, subindex, _("Base"))
                     subindex += 1
@@ -530,7 +560,6 @@ class sales_reports(models.TransientModel):
 
 
             # print matrix
-            #index += 2
             totgrp = 0
             for type in matrix:
                 index += 1
@@ -539,21 +568,18 @@ class sales_reports(models.TransientModel):
                 subindex += 1
                 for code in vatcodes:
                     foundf = False
-                    foundf2 = False
                     for key, value in matrix[type].iteritems():
                         if key == code:
                             foundf = True
-                            if matrixbase[type][key] > 0:
-                                foundf2 = True
+                            if key in if_base.keys() and if_base[key] == True:
                                 worksheet.write(index, subindex, matrixbase[type][key])
                                 subindex += 1
                             worksheet.write(index, subindex, value)
                             subindex += 1
                             totgrp +=  (matrixbase[type][key] + value)
                     if not foundf:
-                        if foundf2:
-                            subindex += 2
-                        else:
+                        subindex += 1
+                        if code in if_base.keys() and if_base[code] == True:
                             subindex += 1
                 worksheet.write(index, subindex, totgrp)
                 subindex += 1
