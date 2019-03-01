@@ -18,4 +18,34 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="account_invoice_caerecover_form">
+        <field name="name">account.invoice.caerecover.form</field>
+        <field name="model">account.invoice.caerecover</field>
+        <field name="arch" type="xml">
+            <form string="Excel Report file">
+                <group>
+                    <field name="number"/>
+                    <field name="doctype_id"/>
+                    <field name="journal_id"/>
+                </group>
+                <footer>
+                    <button
+                        name="confirm"
+                        type="object"
+                        string="Recover CAEs"
+                        class="oe_highlight"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="group_cae_recover_act"
+        name="Recover CAE"
+        src_model="account.invoice"
+        res_model="account.invoice.caerecover"
+        view_mode="form"
+        target="new"
+        key2="client_action_multi"
+    />
+
 </odoo>

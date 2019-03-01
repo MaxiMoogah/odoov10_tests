@@ -120,6 +120,9 @@ class MassivePayment(models.Model):
     def unconfirm_paym(self):
         self.write({'state':'draft'})
 
+    def draft_paym(self):
+        self.write({'state':'draft'})
+
     def validate_paym(self):
         for invoice in self.invoice_ids:
             rec = dict()
@@ -148,15 +151,19 @@ class MassivePayment(models.Model):
 
     def cancel_paym(self):
         for invoice in self.invoice_ids:
-            if invoice.payment_id.move_line_ids:
-                move = invoice.payment_id.move_line_ids[0].move_id
-                if self.use_invoice_date:
-                    move.reverse_moves(invoice.invoice_id.date_invoice, invoice.payment_id.journal_id or False)
-                else:
-                    move.reverse_moves(self.payment_date, invoice.payment_id.journal_id or False)
-                invoice.payment_id.write({'reversed':True})
+            if invoice.payment_id:
+                invoice.payment_id.cancel()
+                invoice.payment_id.write({'move_name':""})
+                invoice.payment_id.unlink()
                 invoice.write({'payment_id': False})
-        self.write({'state':'draft','canceled_id':self.env.user.id,'canceled_date':fields.Datetime.now()})
+            # if invoice.payment_id.move_line_ids:
+            #     move = invoice.payment_id.move_line_ids[0].move_id
+            #     if self.use_invoice_date:
+            #         move.reverse_moves(invoice.invoice_id.date_invoice, invoice.payment_id.journal_id or False)
+            #     else:
+            #         move.reverse_moves(self.payment_date, invoice.payment_id.journal_id or False)
+            #     invoice.payment_id.write({'reversed':True})
+        self.write({'state':'cancel','canceled_id':self.env.user.id,'canceled_date':fields.Datetime.now()})
 
 
 class AccountPaymentWizard(models.TransientModel):

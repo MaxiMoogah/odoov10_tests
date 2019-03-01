@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="invoice_supplier_form2" model="ir.ui.view">
+    <!--record id="invoice_supplier_form2" model="ir.ui.view">
         <field name="name">invoice.supplier.form2</field>
         <field name="model">account.invoice</field>
         <field name="inherit_id" ref="account.invoice_supplier_form"/>
@@ -9,7 +9,7 @@
                 <field name="payment_term_id"/>
             </field>
         </field>
-    </record>
+    </record-->
 
    #WIZARD
     <record id="wizard_customer_invoice_journal_form" model="ir.ui.view">
@@ -25,8 +25,8 @@
                         <field name="partner_ids" widget="many2many_tags" attrs="{'invisible': [('type', '!=', 'customer')]}"/>
                         <field name="partner2_ids" widget="many2many_tags" attrs="{'invisible': [('type', '!=', 'supplier')]}"/>
                         <field name="categ_ids" widget="many2many_tags"/>
-                        <field name="user_id"/>
-                        <field name="salesteam_id"/>
+                        <field name="user_id" attrs="{'invisible': [('type', '!=', 'customer')]}"/>
+                        <field name="salesteam_id" attrs="{'invisible': [('type', '!=', 'customer')]}"/>
                         <field name="journal_ids" widget="many2many_tags" attrs="{'invisible': [('type', '!=', 'customer')]}"/>
                         <field name="journal2_ids" widget="many2many_tags" attrs="{'invisible': [('type', '!=', 'supplier')]}"/>
                         <field name="paym_term_id"/>
@@ -103,12 +103,12 @@
             <field name="page_height">0</field>
             <field name="page_width">0</field>
             <field name="orientation">Landscape</field>
-            <field name="margin_top">16</field>
-            <field name="margin_bottom">10</field>
-            <field name="margin_left">0</field>
-            <field name="margin_right">0</field>
+            <field name="margin_top">45</field>
+            <field name="margin_bottom">15</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
             <field name="header_line" eval="False"/>
-            <field name="header_spacing">1</field>
+            <field name="header_spacing">40</field>
             <field name="dpi">90</field>
         </record>
 
@@ -117,7 +117,7 @@
     <report
         id="menu_rep2_temp_html"
         model="account.invoice"
-        string="Supplier Invoice Journal"
+        string="Invoice Journal"
         report_type="qweb-html"
         name="partners_invoices_journals.repoort_html"
         file="partners_invoices_journals.repoort_html"
@@ -126,7 +126,7 @@
     <report
         id="menu_rep2_temp_pdf"
         model="account.invoice"
-        string="Supplier Invoice Journal"
+        string="Invoice Journal"
         report_type="qweb-pdf"
         name="partners_invoices_journals.repoort_pdf"
         file="partners_invoices_journals.repoort_pdf"
@@ -138,7 +138,7 @@
     <report
         id="menu_rep_temp_html"
         model="account.invoice"
-        string="Customer Invoice Journal"
+        string="Invoice Journal"
         report_type="qweb-html"
         name="partners_invoices_journals.repoort_html"
         file="partners_invoices_journals.repoort_html"
@@ -147,7 +147,7 @@
     <report
         id="menu_rep_temp_pdf"
         model="account.invoice"
-        string="Customer Invoice Journal"
+        string="Invoice Journal"
         report_type="qweb-pdf"
         name="partners_invoices_journals.repoort_pdf"
         file="partners_invoices_journals.repoort_pdf"

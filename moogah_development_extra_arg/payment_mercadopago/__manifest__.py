@@ -2,10 +2,10 @@
 {
     'name': 'MercadoPago Payment Acquirer',
     'category': 'Accounting',
-    'author' : 'TechUltra Solutions',
+    'author' : 'Moogah',
     'website' : 'www.techultrasolutions.com',
-    'summary': 'Payment Acquirer: MercadoPago Implementation',
-    'version': '1.2',
+    'summary': 'Payment Acquirer: MercadoPago Integration for Argentina',
+    'version': '1.4',
     'description': """MercadoPago Payment Acquirer""",
     'depends': ['payment', 'website', 'website_sale'],
     'data': [
@@ -17,4 +17,6 @@
         'data/ir_cron_transaction.xml',
     ],
     'installable': True,
+    "price": 360,
+    "currency": 'USD',
 }

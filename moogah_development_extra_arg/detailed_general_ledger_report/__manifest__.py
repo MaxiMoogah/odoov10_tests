@@ -3,7 +3,7 @@
 {
     "name": "Detailed General Ledger Report",
     'summary': "Detailed version of the General Ledger with analytic tags filter support",
-    "version": "10.0.1.1",
+    "version": "10.0.1.2",
     "license": "AGPL-3",
     "author": "Moogah",
     "website": "",

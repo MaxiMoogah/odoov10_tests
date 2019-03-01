@@ -55,14 +55,14 @@ class AccountInvoice(models.Model):
 
     @api.multi
     def action_invoice_open(self):
-        self.ensure_one()
         res = super(AccountInvoice, self).action_invoice_open()
-        if self.nc_ref_id != False:
-            domain = [('account_id', '=', self.account_id.id),
-                      ('partner_id', '=', self.env['res.partner']._find_accounting_partner(self.partner_id).id),
-                      ('reconciled', '=', False), ('amount_residual', '!=', 0.0), ('invoice_id','=', self.nc_ref_id)]
-            lines = self.env['account.move.line'].search(domain)
-            paym = self.assign_outstanding_credit(lines.id)
+        for inv in self:
+            if inv.nc_ref_id != False:
+                domain = [('account_id', '=', inv.account_id.id),
+                          ('partner_id', '=', inv.env['res.partner']._find_accounting_partner(inv.partner_id).id),
+                          ('reconciled', '=', False), ('amount_residual', '!=', 0.0), ('invoice_id','=', inv.nc_ref_id)]
+                lines = self.env['account.move.line'].search(domain)
+                paym = inv.assign_outstanding_credit(lines.id)
         return res
 
 class AccountInvoiceRefund(models.TransientModel):

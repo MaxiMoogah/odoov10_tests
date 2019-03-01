@@ -277,3 +277,11 @@ class account_check_wizard(models.TransientModel):
             move = self.env['account.move'].create(vals)
             move.post()
             check._add_operation('rejected', move, None, None, move.id)
+
+
+    @api.model
+    def default_get(self,fields):
+        recs = self.env['account.check.wizard'].search([])
+        query = "delete from account_check_wizard"
+        self._cr.execute(query, ())
+        return super(account_check_wizard, self).default_get(fields)

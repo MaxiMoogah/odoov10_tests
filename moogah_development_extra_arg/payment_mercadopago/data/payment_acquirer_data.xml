@@ -6,7 +6,7 @@
         <record id="mercadopago_journal" model="account.journal">
             <field name="name">Mercadopago</field>
             <field name="code">MERCPAGO</field>
-            <field name="type">sale</field>
+            <field name="type">bank</field>
             <!-- avoid being selected as default journal -->
             <field name="sequence">20</field>
         </record>

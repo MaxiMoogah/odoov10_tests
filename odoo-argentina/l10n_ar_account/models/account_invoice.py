@@ -239,9 +239,11 @@ class AccountInvoice(models.Model):
                 if afip_concept == '3':
                     afip_concept = '4'
         self.afip_concept = afip_concept
-        if afip_concept == '2':
-            self.afip_service_start = fields.Date.today()
-            self.afip_service_end = fields.Date.today()
+        if afip_concept in ['2','3']:
+            if not self.afip_service_start:
+                self.afip_service_start = fields.Date.today()
+            if not self.afip_service_end:
+                self.afip_service_end = fields.Date.today()
 
     @api.multi
     def get_localization_invoice_vals(self):
@@ -453,6 +455,7 @@ class AccountInvoice(models.Model):
     @api.one
     @api.constrains('invoice_line_ids')
     def update_taxes_fix(self):
+        self._get_concept()
         context = dict(self._context)
         if context.get('constraint_update_taxes'):
             return True

@@ -36,15 +36,16 @@ class AfipWsConsultWizard(models.TransientModel):
         #return journal_document_type.get_pyafipws_consult_invoice(self.number)
         ws = journal_document_type.get_pyafipws_consult_invoice2(self.number)
 
+
         if 'factura' not in ws.keys():
-            if inv.state == 'afip':
-                inv.write({'state':'draft'})
             raise UserError(_('No existen datos de esa factura en la Afip'))
 
         if not ws['factura']['cae'] or not ws['factura']['fch_venc_cae']:
-            if inv.state == 'afip':
-                inv.write({'state':'draft'})
             raise UserError(_('No se pudo retraer CAE'))
+
+        inv2 = self.env['account.invoice'].search([('afip_auth_code', '=', ws['factura']['cae'])])
+        if inv2:
+            raise UserError(_('you have an invoice with this CAE: %s') % (inv2.display_name2))
 
 
         date = inv.date_invoice

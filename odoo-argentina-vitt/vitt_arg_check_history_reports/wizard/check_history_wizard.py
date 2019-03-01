@@ -123,7 +123,7 @@ class report_vitt_arg_check_history_reports_check_rep(models.Model):
                     if op.operation == op_f.operation and op.date <= op_f.date \
                             and op.check_id.number == op_f.check_id.number and op.id != op_f.id:
                         subsdata += op
-        checks_op -= subsdata
+            checks_op -= subsdata
 
         report_obj = self.env['report']
         report = report_obj._get_report_from_name('vitt_arg_check_history_reports.check_rep')

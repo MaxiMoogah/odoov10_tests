@@ -677,7 +677,7 @@ class AccountInvoiceLine(models.Model):
 
     @api.onchange('name','product_id','invoice_line_tax_ids','purchase_id','quantity','price_unit','discount','price_subtotal')
     def onchange_name_line(self):
-        if not self.product_id and self.invoice_id.type == 'out_refund' and self.invoice_id.nc_ref_id > 0:
+        if not self.product_id:
             doit = False
             if self.invoice_id.journal_id.type == 'sale' and self.invoice_id.journal_id.use_documents:
                 conf = self.env['ir.config_parameter']
@@ -719,7 +719,7 @@ class AccountInvoiceLine(models.Model):
     @api.multi
     def write(self, vals):
         for rec in self:
-            if rec.product_id and not rec.invoice_line_tax_ids and self.invoice_id.type == 'out_refund' and self.invoice_id.nc_ref_id > 0:
+            if not rec.product_id:
                 doit = False
                 if rec.invoice_id.journal_id.type == 'sale' and rec.invoice_id.journal_id.use_documents:
                     conf = self.env['ir.config_parameter']

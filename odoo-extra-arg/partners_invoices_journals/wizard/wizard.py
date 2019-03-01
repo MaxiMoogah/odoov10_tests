@@ -14,8 +14,8 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
     date_to = fields.Date(string='Date To', required=True,
                           default=str(datetime.now() + relativedelta.relativedelta(months=+1, day=1, days=-1))[:10])
     partner_ids = fields.Many2many('res.partner',string="Customer",domain=[('customer', '=', True)])
-    partner2_ids = fields.Many2many('res.partner', string="Customer", domain=[('supplier', '=', True)])
-    categ_ids = fields.Many2many('res.partner.category',string="Customer Category")
+    partner2_ids = fields.Many2many('res.partner', string="Supplier", domain=[('supplier', '=', True)])
+    categ_ids = fields.Many2many('res.partner.category',string="Category")
     user_id = fields.Many2one('res.users',string="Sales Person")
     salesteam_id = fields.Many2one('crm.team',string="Sales Team")
     journal_ids = fields.Many2many('account.journal',string="Journal",domain="[('type', '=', 'sale')]")
@@ -48,31 +48,36 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
 
 
     def setinset(self, list1, list2):
+        foundf = False
         for tag in list1:
             if tag in list2:
-                return True
-        return False
+                foundf = True
+                break
+        return foundf
 
     def execute(self):
         if not self.draft and not self.open and not self.paid:
             raise UserError(_("you should select at least 1 State"))
         if not self.invoice_type and not self.refund_type:
             raise UserError(_("you should select at least 1 Invoice Type"))
+        if self.print_by == 'html' and self.artmode == 'detailed':
+            raise UserError(_("To run this report in the Detailed version you cannot choose 'HTML' "
+                              "as the printing Option. Please choose PDF or xlsx and try again"))
 
         filters = list()
         l = ""
         inv_obj = self.env['account.invoice']
         domain = [('date_invoice', '>=', self.date_from),('date_invoice', '<=', self.date_to)]
-        if self.partner_ids:
-            domain.append(('partner_id', 'in', self.partner_ids._ids))
+        if self.type == 'customer' and self.partner_ids.ids:
+            domain.append(('partner_id', 'in', list(self.partner_ids.ids)))
             l = _("Partners: ")
             for p in self.partner_ids:
                 l += p.name + ","
             filters.append(l)
-        if self.partner2_ids:
-            domain.append(('partner_id', 'in', self.partner2_ids._ids))
+        if self.type == 'supplier' and self.partner2_ids.ids:
+            domain.append(('partner_id', 'in', list(self.partner2_ids.ids)))
             l = _("Partners: ")
-            for p in self.partner_ids:
+            for p in self.partner2_ids:
                 l += p.name + ","
             filters.append(l)
         if self.categ_ids:
@@ -137,52 +142,77 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
         footer_comp_cur = dict()
         curtotals = dict()
         list_titles = list()
+        list_align = list()
         list_data = list()
+        oldindex = -1
+        tot_cur = 0.0
 
         invoices = inv_obj.search(domain,order=self.sort_by)
         for index, inv in enumerate(invoices):
-            list_data = list()
-            list_titles = list()
+            if inv.type in ('out_invoice','in_invoice'):
+                sign = 1
+            if inv.type in ('out_refund','in_refund'):
+                sign = -1
             if self.artmode == 'overview':
                 showf = True
                 if self.hanal_tag_ids:
                     if not self.setinset(self.hanal_tag_ids._ids, inv.analytic_tag_ids._ids):
                         showf = False
                 if showf:
-                    list_data.append(inv.display_name2)
+                    list_data = list()
+                    list_titles = list()
+                    list_align = list()
+                    if inv.display_name2:
+                        list_data.append(inv.display_name2)
+                    else:
+                        list_data.append("BORRADOR")
                     list_titles.append(_("Invoice Nr"))
+                    list_align.append('center')
 
                     list_data.append(datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime("%d-%m-%Y"))
                     list_titles.append(_("Invoice Date"))
+                    list_align.append('center')
 
                     list_data.append(inv.partner_id.name[:30])
                     list_titles.append(_("Customer"))
+                    list_align.append('center')
 
-                    if inv.type == 'out_invoice':
+                    if inv.type in ('out_invoice', 'in_invoice'):
                         list_data.append(_("FC"))
                         list_titles.append(_("Invoice Type"))
-                        sign = 1
-                    if inv.type == 'out_refund':
+                        list_align.append('center')
+                    if inv.type in ('out_refund', 'in_refund'):
                         list_data.append("NC")
                         list_titles.append(_("Invoice Type"))
-                        sign = -1
+                        list_align.append('center')
 
                     list_data.append(inv.amount_untaxed*sign)
                     list_titles.append(_("Untaxed Amount"))
+                    list_align.append('right')
 
                     if self.show_inv_taxes:
                         list_data.append(inv.amount_tax*sign)
                         list_titles.append(_("Taxes"))
+                        list_align.append('right')
 
-                    list_data.append(inv.amount_total)
+                    list_data.append(inv.amount_total*sign)
                     list_titles.append(_("Total Amount (incl Tax)"))
+                    list_align.append('right')
 
                     if self.show_exch_rates:
                         list_data.append(inv.currency_rate)
                         list_titles.append(_("Exchange Rate"))
+                        list_align.append('center')
 
                     list_data.append(inv.currency_id.name)
                     list_titles.append(_("Currency"))
+                    list_align.append('center')
+
+                    if self.show_comp_currency:
+                        list_data.append(inv.amount_total * inv.currency_rate * sign)
+                        list_titles.append(_("Total In Company Currency"))
+                        list_align.append('right')
+                        tot_cur += inv.amount_total * inv.currency_rate * sign
 
                     key = '{:>010s}:{:>010s}'.format(str(index), '0')
                     print_data.update({key: list_data})
@@ -198,6 +228,15 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
                         else:
                             footer_comp_cur[inv.company_id.currency_id.name] += (inv.amount_total*inv.currency_rate*sign)
 
+                    if not inv.currency_id.name in curtotals.keys():
+                        curtotals.update({inv.currency_id.name: inv.amount_total*sign})
+                    else:
+                        curtotals[inv.currency_id.name] += inv.amount_total*sign
+
+                    if not _("Invoice Qty") in inv_qty.keys():
+                        inv_qty.update({_("Invoice Qty"): 1})
+                    else:
+                        inv_qty[_("Invoice Qty")] += 1
 
             if self.artmode == 'detailed':
                 for indexl, line in enumerate(inv.invoice_line_ids):
@@ -205,7 +244,17 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
                     if self.ranal_tag_ids:
                         if not self.setinset(self.ranal_tag_ids._ids, line.analytic_tag_ids._ids):
                             showf = False
+                    if self.anal_account_id:
+                        if self.anal_account_id.id != line.account_analytic_id.id:
+                            showf = False
                     if showf:
+                        if oldindex != index:
+                            oldindex = index
+                            if not _("Invoice Qty") in inv_qty.keys():
+                                inv_qty.update({_("Invoice Qty"): 1})
+                            else:
+                                inv_qty[_("Invoice Qty")] += 1
+
                         list_data = list()
                         list_titles = list()
                         val = 0.0
@@ -216,74 +265,96 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
                             vals = inv._prepare_tax_line_vals(line, tax)
                             val += vals['amount']
 
-                        list_data.append(inv.display_name2)
+                        if inv.display_name2:
+                            list_data.append(inv.display_name2)
+                        else:
+                            list_data.append("BORRADOR")
                         list_titles.append(_("Invoice Nr"))
+                        list_align.append('center')
 
                         list_data.append(datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime("%d-%m-%Y"))
                         list_titles.append(_("Invoice Date"))
+                        list_align.append('center')
 
                         list_data.append(inv.partner_id.name[:30])
                         list_titles.append(_("Customer"))
+                        list_align.append('center')
 
-                        if inv.type == 'out_invoice':
+                        if inv.type in ('out_invoice', 'in_invoice'):
                             list_data.append(_("FC"))
                             list_titles.append(_("Invoice Type"))
-                            sign = 1
-                        if inv.type == 'out_refund':
+                            list_align.append('center')
+                        if inv.type in ('out_refund', 'in_refund'):
                             list_data.append("NC")
                             list_titles.append(_("Invoice Type"))
-                            sign = -1
+                            list_align.append('center')
 
                         list_data.append(line.product_id.name)
                         list_titles.append(_("Product"))
+                        list_align.append('center')
 
                         list_data.append(line.quantity)
                         list_titles.append(_("Qty"))
+                        list_align.append('right')
 
                         list_data.append(price_unit*sign)
                         list_titles.append(_("Unit Price"))
+                        list_align.append('right')
 
                         list_data.append(line.price_subtotal*sign)
                         list_titles.append(_("Untaxed Amount"))
+                        list_align.append('right')
 
-                        list_data.append(val*sign)
-                        list_titles.append(_("Taxes"))
+                        if self.show_inv_taxes:
+                            list_data.append(val*sign)
+                            list_titles.append(_("Taxes"))
+                            list_align.append('right')
 
                         list_data.append(line.price_subtotal*sign + val*sign)
                         list_titles.append(_("Total Amount (incl Tax)"))
+                        list_align.append('right')
 
                         if self.show_exch_rates:
                             list_data.append(inv.currency_rate)
                             list_titles.append(_("Exchange Rate"))
+                            list_align.append('right')
 
                         list_data.append(inv.currency_id.name)
                         list_titles.append(_("Currency"))
+                        list_align.append('center')
 
-                        list_data.append((line.price_subtotal+val)*inv.currency_rate*sign)
-                        list_titles.append(_("Total In Company Currency"))
+                        if self.show_comp_currency:
+                            list_data.append((line.price_subtotal+val)*inv.currency_rate*sign)
+                            list_titles.append(_("Total In Company Currency"))
+                            list_align.append('right')
 
                         key = '{:>010s}:{:>010s}'.format(str(index), str(indexl))
                         print_data.update({key: list_data})
 
-            if not inv.currency_id.name in curtotals.keys():
-                curtotals.update({inv.currency_id.name: inv.amount_total*sign})
-            else:
-                curtotals[inv.currency_id.name] += inv.amount_total*sign
-
-            inv_qty.update({_("Invoice Qty"):len(invoices)})
+                        if not inv.currency_id.name in curtotals.keys():
+                            curtotals.update({inv.currency_id.name: line.price_subtotal*sign})
+                        else:
+                            curtotals[inv.currency_id.name] += line.price_subtotal*sign
+                if self.show_comp_currency:
+                    tot_cur += inv.amount_total * inv.currency_rate * sign
 
         if len(print_data) > 5000 and self.print_by in ['html','pdf']:
             raise UserError(_("report has more than 5000 lines, please use Excel instead"))
 
+        print print_data
+        #print list_titles
         if self.print_by in ['html','pdf']:
             datas = {
                 'print_data': print_data,
                 'inv_qty': inv_qty,
                 'footer_cur': footer_cur,
-                'footer_comp_cur':footer_comp_cur,
-                'curtotals':curtotals,
-                'list_titles':list_titles,
+                'footer_comp_cur': footer_comp_cur,
+                'curtotals': curtotals,
+                'list_titles': list_titles,
                 'filters2': filters,
+                'list_align': list_align,
+                'type': self.type,
+                'tot_cur': tot_cur,
             }
 
             if self.print_by == 'pdf':
@@ -305,14 +376,20 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
             for title in list_titles:
                 worksheet.write(line, row, title)
                 row += 1
-            for data in print_data:
+            for data in sorted(print_data.iterkeys()):
                 row = 0
+                print data
                 line += 1
                 for index, pos in enumerate(list_titles):
                     worksheet.write(line, row, print_data[data][index])
                     row += 1
+            if tot_cur > 0:
+                line += 1
+                row -= 1
+                worksheet.write(line, row, tot_cur)
+
             row = 0
-            line += 1
+            line += 3
             worksheet.write(line, row, "Totales por Moneda")
             for cur in curtotals:
                 line += 1
@@ -354,6 +431,9 @@ class ReportCustomerInvoiceJournalPdf(models.Model):
             'curtotals': data['curtotals'],
             'list_titles': data['list_titles'],
             'filters2': data['filters2'],
+            'list_align': data['list_align'],
+            'type': data['type'],
+            'tot_cur': data['tot_cur'],
         }
         return self.env['report'].render('partners_invoices_journals.qweb_customer_invoice_journal', docargs)
 

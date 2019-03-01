@@ -2,7 +2,7 @@
 {
     "name": "Partners Invoices Journals",
     'category': 'Localization/Argentina',
-    'version': '10.0.1.1.3',
+    'version': '10.0.1.1.10',
     'author': 'Moogah',
     'website': 'www.moogah.com',
     'summary': 'Partners Invoices Journals',

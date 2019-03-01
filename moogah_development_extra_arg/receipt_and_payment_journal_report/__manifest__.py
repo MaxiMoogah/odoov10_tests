@@ -2,7 +2,7 @@
 
 {
     'name': 'Receipt and Payment Journal Report',
-    'version': '10.0.1.2',
+    'version': '10.0.1.3',
     'category': 'Accounting',
     'summary': '',
     'description': """

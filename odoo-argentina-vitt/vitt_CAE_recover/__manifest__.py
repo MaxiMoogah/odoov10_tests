@@ -8,7 +8,7 @@
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0',
+    'version': '10.0.1.0.2',
     'depends': [
         'account',
         'l10n_ar_afipws_fe',

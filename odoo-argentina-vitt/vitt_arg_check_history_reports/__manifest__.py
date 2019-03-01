@@ -6,12 +6,12 @@
 #
 ##############################################################################
 {
-    'name': 'VITT ARG History Checks Reports',
+    'name': 'History Checks Reports',
     'description': 'Adds History Checks Reports for previous states',
     'summary': '',
     'author': "Moogah",
     'website': "http://www.Moogah.com",
-    'version': '10.0.1.0.1',
+    'version': '10.0.1.0.3',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',

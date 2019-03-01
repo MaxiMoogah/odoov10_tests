@@ -733,6 +733,9 @@ class AccountCheck(models.Model):
                 product = self.env['product.product'].search([('tc_state','=','tc_canceled')],limit=1)
             account2 = product.property_account_income_id.id
         else:
+            if operation == 'reclaimed' and last_operation == 'debited':
+                last_operation = 'rejected'
+
             if last_operation in ['rejected']:
                 product = self.env['product.product'].search([('oc_state','=','oc_rejected')],limit=1)
             if last_operation in ['returned','reclaimed']:

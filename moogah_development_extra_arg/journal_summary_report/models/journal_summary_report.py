@@ -340,11 +340,11 @@ class JournalSummaryReport(models.AbstractModel):
 
         for summary in summary_section_filter:
             if summary['type'] == 'customer_invoices':
-                ref = _('Sales / ')+ month_list[summary['month']-1][1]
+                ref = _('Sales / ') + month_list[summary['month']-1][1]
             elif summary['type'] == 'vendor_invoices':
-                ref = _('Purchases / ')+ month_list[summary['month']-1][1]
+                ref = _('Purchases / ') + month_list[summary['month']-1][1]
             elif summary['type'] == 'supplier_payments':
-                ref = _('Payments / ')+ month_list[summary['month']-1][1]
+                ref = _('Payments / ') + month_list[summary['month']-1][1]
             else:
                 ref = _('Receipts / ') + month_list[summary['month']-1][1]
             if type == 'html':
@@ -565,7 +565,7 @@ class JournalSummaryContextReport(models.TransientModel):
             'mode': 'print',
             'base_url': base_url,
             'company': self.env.user.company_id,
-            'date_from': datetime.strptime(wizard.start_date, "%Y-%m-%d").strftime("%d-%m/-%Y"),
+            'date_from': datetime.strptime(wizard.start_date, "%Y-%m-%d").strftime("%d-%m-%Y"),
             'date_to': datetime.strptime(wizard.end_date, "%Y-%m-%d").strftime("%d-%m-%Y"),
         }
 
@@ -586,7 +586,6 @@ class JournalSummaryContextReport(models.TransientModel):
 
         #OJG hardcoded
         pf_id = self.env['report.paperformat'].search([('name','=','Journal Summary')])
-
         return self.env['report']._run_wkhtmltopdf([header], [''], [(0, body)], landscape, pf_id, spec_paperformat_args={'data-report-margin-top': 10, 'data-report-header-spacing': 10})
 
     def get_full_date_names(self, dt_to, dt_from=None):

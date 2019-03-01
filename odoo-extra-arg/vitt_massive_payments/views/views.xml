@@ -88,7 +88,9 @@
                               type="object" class="oe_highlight"/>
                       <button name="validate_paym" states="confirmed" string="Validate"
                               type="object" class="oe_highlight"/>
-                  </header>
+                      <button name="draft_paym" states="cancel" string="To Draft"
+                              type="object" class="oe_highlight"/>
+                 </header>
                   <sheet>
                       <h1>
                           <label string="Number" />

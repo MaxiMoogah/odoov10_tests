@@ -54,7 +54,8 @@ class AccountInvoice(models.Model):
         readonly=True,
         oldname='afip_cae',
         size=24,
-        states={'draft': [('readonly', False)]},
+        states={'draft': [('readonly', False)],},
+        index=True,
     )
     afip_auth_code_due = fields.Date(
         copy=False,
@@ -572,6 +573,7 @@ print "Observaciones:", wscdc.Obs
                             u_mtx, cod_mtx, codigo, ds, qty, umed,
                             precio, bonif, iva_id, imp_iva, importe + imp_iva)
                     elif afip_ws == 'wsfex':
+                        bonif = qty * precio - importe
                         ws.AgregarItem(
                             codigo, ds, qty, umed, precio, importe,
                             bonif)
@@ -588,13 +590,21 @@ print "Observaciones:", wscdc.Obs
                     vto = ws.Vencimiento
                 elif afip_ws == 'wsfex':
                     ws.Authorize(inv.id)
+                    #print ws.XmlRequest
+                    #print ws.XmlResponse
                     vto = ws.FchVencCAE
             except SoapFault as fault:
+                #print ws.XmlRequest
+                #print ws.XmlResponse
                 msg = 'Falla SOAP %s: %s' % (
                     fault.faultcode, fault.faultstring)
             except Exception, e:
+                #print ws.XmlRequest
+                #print ws.XmlResponse
                 msg = e
             except Exception:
+                #print ws.XmlRequest
+                #print ws.XmlResponse
                 if ws.Excepcion:
                     # get the exception already parsed by the helper
                     msg = ws.Excepcion

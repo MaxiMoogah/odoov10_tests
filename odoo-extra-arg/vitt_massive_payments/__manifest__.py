@@ -8,7 +8,7 @@
     'author': "Moogah",
     'website': "http://www.moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.7',
+    'version': '10.0.1.0.10',
     'depends': ['account'],
     'data': [
         'data/sequence.xml',
