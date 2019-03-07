@@ -10,8 +10,8 @@
                 <group>
                     <field name="date_from"/>
                     <field name="date_to"/>
-                    <field name="partner_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'customer'')]}"/>
-                    <field name="partner2_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'supplier)]}"/>
+                    <field name="partner_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'customer')]}"/>
+                    <field name="partner2_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'supplier')]}"/>
                     <field name="wh_tax_code" widget="many2many_tags"/>
                     <field name="journal_id" widget="many2many_tags"/>
                     <field name="company_id"/>
