@@ -8,7 +8,7 @@
     'license': 'AGPL-3',
     'summary': """App de actualizacion para cod. AFIP en Provincias""",
     'description': """
-        App que actualiza el campo para el codigo AFIP en las provincias de Argentina.
+        App que actualiza el campo para el codigo AFIP en las provincias de Argentina, solo ese campo.
         """,
     
     'depends': ['base'],
