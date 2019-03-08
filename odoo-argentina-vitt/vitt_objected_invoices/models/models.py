@@ -13,40 +13,39 @@ class AccountInvoice(models.Model):
         if self.obj_bool:
             self.obj_value = self.amount_total
 
+    def validated_inv(self, wizard):
+        res = super(AccountInvoice, self).validated_inv(wizard)
+        if res:
+            if wizard.objected and self.obj_bool:
+                return False
 
 class AccountPaymentGroup(models.Model):
     _inherit = 'account.payment.group'
 
     objected_invoices_ids = fields.One2many('account.invoice.objected','apg_id',ondelete='cascade')
 
-    @api.onchange('partner_id', 'partner_type', 'company_id')
-    def _refresh_payments_and_move_lines(self):
-        super(AccountPaymentGroup, self)._refresh_payments_and_move_lines()
-#    @api.onchange('partner_id')
-#    def _objected_onchange(self):
-        #self.invalidate_cache(['objected_invoices_ids'])
+    @api.onchange('partner_id')
+    def _objected_onchange(self):
+        #self.invalidate_cache()
         #if self.objected_invoices_ids:
         #    self.objected_invoices_ids = (5, False, False)
-        if self.partner_id:
-            invs = self.env['account.invoice'].search([('partner_id','=',self.partner_id.id),('obj_bool','=',True)])
+        invs = self.env['account.invoice'].search([('partner_id','=',self.partner_id.id),('obj_bool','=',True)])
 
-            self.objected_invoices_ids = False
-            lines = []
-            for inv in invs:
-                lines.append( (0, 0, {'inv_id': inv.id,
-                                                      'objected_amount': inv.obj_value,
-                                                      'residual_amount': inv.residual,
-                                                      'amount_currency': inv.amount_total,
-                                                      'residual_amount_currency': inv.residual,
-                                                      'currency_id': inv.currency_id.id,
-                                                      'date': inv.date,
-                                                      'duedate': inv.date_due,
-                                                      'invoice_number': inv.display_name2,
-                                                      'partner_id': inv.partner_id.id,
-                                                      'total_amount': inv.amount_total}))
-            print lines
-            self.objected_invoices_ids = lines
-
+        self.objected_invoices_ids = False
+        lines = list()
+        for inv in invs:
+            lines.append((0, False,  {'inv_id': inv.id,
+                                                  'objected_amount': inv.obj_value,
+                                                  'residual_amount': inv.residual,
+                                                  'amount_currency': inv.amount_total,
+                                                  'residual_amount_currency': inv.residual,
+                                                  'currency_id': inv.currency_id.id,
+                                                  'date': inv.date,
+                                                  'duedate': inv.date_due,
+                                                  'invoice_number': inv.display_name2,
+                                                  'partner_id': inv.partner_id.id,
+                                                  'total_amount': inv.amount_total}))
+        self.objected_invoices_ids = lines
 
 
 class AccountInvoiceObjected(models.Model):
@@ -64,3 +63,54 @@ class AccountInvoiceObjected(models.Model):
     partner_id = fields.Many2one('res.partner',string="partner",translate=True)
     currency_id = fields.Many2one('res.currency')
     apg_id = fields.Many2one('account.payment.group')
+
+
+class ReportSlLedger(models.TransientModel):
+    _inherit = 'report.sl.ledger'
+
+    objected = fields.Boolean(string="Excluir Facturas Cuestionadas")
+    extendedf = fields.Boolean()
+
+    def get_filter(self):
+        dic = super(ReportPlLedger, self).get_filter()
+        if self.objected:
+            dic.update({'objected':True})
+        return dic
+
+    @api.model
+    def default_get(self, fields):
+        values = super(ReportSlLedger, self).default_get(fields)
+        flag = False
+        conf = self.env['ir.config_parameter']
+        if conf.get_param('check.add_obj_inv') == 'True':
+            flag = True
+        values['extendedf'] = flag
+        return values
+
+    def get_xls_domain(self,wizard):
+        domain = super(ReportSlLedger, self).get_xls_domain()
+        if self.objected:
+            domain.append(('obj_bool', '!=', False))
+        return domain
+
+class ReportPlLedger(models.TransientModel):
+    _inherit = 'report.pl.ledger'
+
+    objected = fields.Boolean(string="Excluir Facturas Cuestionadas")
+    extendedf = fields.Boolean()
+
+    def get_filter(self):
+        dic = super(ReportPlLedger, self).get_filter()
+        if self.objected:
+            dic.update({'objected':True})
+        return dic
+
+    @api.model
+    def default_get(self, fields):
+        values = super(ReportPlLedger, self).default_get(fields)
+        flag = False
+        conf = self.env['ir.config_parameter']
+        if conf.get_param('check.add_obj_inv') == 'True':
+            flag = True
+        values['extendedf'] = flag
+        return values

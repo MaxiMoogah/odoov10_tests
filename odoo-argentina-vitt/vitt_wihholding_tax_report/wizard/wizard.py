@@ -39,29 +39,29 @@ class AccountPaymentWhwizard(models.TransientModel):
 
     def doit(self):
         filters = list()
-        domain = [('payment_date', '>=', self.date_from), ('payment_date', '<=', self.date_to), ('state', 'in', ['posted','sent'])]
+        domain = [('payment_date', '>=', self.date_from), ('payment_date', '<=', self.date_to), ('state', 'in', ['posted'])]
         if self.type == 'customer':
-            domain.append(('outbound', '=', True))
+            domain.append(('payment_type', '!=', 'inbound'))
         if self.type == 'supplier':
-            domain.append(('inbound', '=', True))
+            domain.append(('payment_type', '=', 'outbound'))
         filters.append(_('dates: ') + str(self.date_from) + " " + str(self.date_to))
         if self.partner_id and self.type == "supplier":
             domain.append(('partner_id', 'in', self.partner_id._ids))
-            filters.append(_('Suppliers: ') + map(lambda x: x.name, self.partner_id))
+            filters.append(_('Suppliers: ') + str(map(lambda x: x.name, self.partner_id)))
         if self.partner2_id and self.type == "customer":
             domain.append(('partner_id', 'in', self.partner2_id._ids))
-            filters.append(_('Customers: ') + map(lambda x: x.name, self.partner2_id))
+            filters.append(_('Customers: ') + str(map(lambda x: x.name, self.partner2_id)))
         if self.company_id:
             domain.append(('company_id', '=', self.company_id.id))
             filters.append(_('Company: ') + self.company_id.name)
         if self.wh_tax_code:
             domain.append(('tax_withholding_id', 'in', self.wh_tax_code._ids))
-            filters.append(_('Withholding Tax: ') + map(lambda x: x.name, self.wh_tax_code))
+            filters.append(_('Withholding Tax: ') + str(map(lambda x: x.name, self.wh_tax_code)))
         else:
             domain.append(('tax_withholding_id', '!=', False))
         if self.journal_id:
             domain.append(('journal_id', '=', self.journal_id._ids))
-            filters.append(_('Journal: ') + map(lambda x: x.name, self.journal_id))
+            filters.append(_('Journal: ') + str(map(lambda x: x.name, self.journal_id)))
 
         lines = OrderedDict()
         print_data = dict()
@@ -79,6 +79,7 @@ class AccountPaymentWhwizard(models.TransientModel):
             list_align.append('center')
 
         payments = self.env['account.payment'].search(domain)
+        print domain
         if payments:
             types = dict(payments[0].tax_withholding_id.tax_group_id._fields['tax']._description_selection(self.env))
             index = 0

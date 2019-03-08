@@ -6,10 +6,11 @@
     'author': "Moogah",
     'website': "http://www.moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.5',
+    'version': '10.0.1.0.6',
     'depends': [
-        'vitt_report_settings',
+        'vitt_nl_setting',
         'account_payment_group',
+        'vitt_sales_purch_ledger',
     ],
     'data': [
         'views/views.xml',

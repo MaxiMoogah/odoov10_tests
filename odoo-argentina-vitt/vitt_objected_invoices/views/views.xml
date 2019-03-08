@@ -63,5 +63,28 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="ledger_sl_report_form2">
+        <field name="name">ledger.sl.report.form2</field>
+        <field name="model">report.sl.ledger</field>
+        <field name="inherit_id" ref="vitt_sales_purch_ledger.ledger_sl_report_form"/>
+        <field name="arch" type="xml">
+            <field name="team_id" position="after">
+                <field name="objected" attrs="{'invisible':[('extendedf', '=', False)]}"/>
+                <field name="extendedf" invisible="1"/>
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="ledger_pl_report_form2">
+        <field name="name">ledger.pl.report.form2</field>
+        <field name="model">report.pl.ledger</field>
+        <field name="inherit_id" ref="vitt_sales_purch_ledger.ledger_pl_report_form"/>
+        <field name="arch" type="xml">
+            <field name="date" position="after">
+                <field name="objected" attrs="{'invisible':[('extendedf', '=', False)]}"/>
+                <field name="extendedf" invisible="1"/>
+            </field>
+        </field>
+    </record>
 
 </odoo>
