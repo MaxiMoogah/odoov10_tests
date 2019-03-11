@@ -1,6 +1,6 @@
 {
     'name': 'wihholding tax report',
-    'description': 'wihholding tax report',
+    'description': 'wihholding tax report for Supplier Payments and Customers Receipts',
     'summary': 'wihholding tax report',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
