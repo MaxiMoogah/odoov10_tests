@@ -35,8 +35,11 @@
                                 <!--span t-esc="qty"/-->
                                 <t t-foreach="qty" t-as="index">
                                     <t t-if="list_align[index]=='center'">
-                                        <td style="text-align:center;">
+                                        <td t-if="data[1][index+1]!=''" style="text-align:center;">
                                             <span t-esc="data[1][index]"/>
+                                        </td>
+                                        <td t-if="data[1][index+1]==''" style="text-align:center;">
+                                            <b><span t-esc="data[1][index]"/></b>
                                         </td>
                                     </t>
                                     <t t-if="list_align[index]=='right'">
@@ -46,8 +49,11 @@
                                     </t>
                                 </t>
                             </tr>
+                            <tr><td><br/><br/><br/><br/><br/></td></tr>
                             <tr>
-                                <td></td>
+                                <td>
+                                    <b>Impuesto de Retencion</b>
+                                </td>
                             </tr>
                             <t t-set="tot" t-value="0.0"/>
                             <tr t-foreach="tot_wh" t-as="data">
@@ -57,6 +63,11 @@
                                 <td style="text-align:right;">
                                     <span t-esc="'%.2f' % tot_wh[data]"/>
                                     <t t-set="tot" t-value="tot+tot_wh[data]"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <b>Totales</b>
                                 </td>
                             </tr>
                             <tr>

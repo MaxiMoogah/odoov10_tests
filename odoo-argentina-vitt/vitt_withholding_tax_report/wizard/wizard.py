@@ -41,7 +41,7 @@ class AccountPaymentWhwizard(models.TransientModel):
         filters = list()
         domain = [('payment_date', '>=', self.date_from), ('payment_date', '<=', self.date_to), ('state', 'in', ['posted'])]
         if self.type == 'customer':
-            domain.append(('payment_type', '!=', 'inbound'))
+            domain.append(('payment_type', '=', 'inbound'))
         if self.type == 'supplier':
             domain.append(('payment_type', '=', 'outbound'))
         filters.append(_('dates: ') + str(self.date_from) + " " + str(self.date_to))
@@ -74,7 +74,7 @@ class AccountPaymentWhwizard(models.TransientModel):
                 _('Withholding Certificate No'), _('Withholding Tax'), _('Withholdable Amount'), _('Withholding Rate'),
                 _('Withholding Value'),_('MB1 Amount')]
         list_align = ['center', 'center', 'center', 'center', 'center', 'center', 'right', 'right', 'right', 'right']
-        if self.print_by == 'excel':
+        if self.print_by == 'excel' and self.include_link:
             list_titles.append(_('Payment No. Link'))
             list_align.append('center')
 
@@ -85,7 +85,7 @@ class AccountPaymentWhwizard(models.TransientModel):
             index = 0
             for pay in payments:
                 if self.wh_group_by:
-                    if not pay.tax_withholding_id.name in whcodes.keys():
+                    if not types[pay.tax_withholding_id.tax_group_id.tax] in whcodes.values():
                         whcodes.update({pay.tax_withholding_id.name: types[pay.tax_withholding_id.tax_group_id.tax]})
 
                 if not pay.partner_id.main_id_number in lines.keys():
@@ -94,12 +94,14 @@ class AccountPaymentWhwizard(models.TransientModel):
                             pay.payment_group_id.display_name, pay.vendorbill.display_name2, pay.withholding_number,
                             pay.tax_withholding_id.name, pay.withholding_base_amount, pay.wh_perc, pay.amount,
                             pay.amount*pay.manual_currency_rate]})
-                    if self.print_by == 'excel':
-                        menu = self.env['ir.model.data'].get_object_reference('vitt_payments_odoo_std',
-                                                                              'action_account_payments')
+                    if self.print_by == 'excel' and self.include_link:
+                        if self.type == 'customer':
+                            menu = self.env['ir.model.data'].get_object_reference('account_payment_group','action_account_payments_group')
+                        else:
+                            menu = self.env['ir.model.data'].get_object_reference('account_payment_group','action_account_payments_group_payable')
                         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url') + "/web?#id=" + str(
-                            pay.id) + \
-                                   "&view_type=form&model=account.payment&action=" + str(menu[1])
+                            pay.payment_group_id.id) + \
+                                   "&view_type=form&model=account.payment.group&action=" + str(menu[1])
                         base_url = base_url.replace("https://", "http://")
                         lines[key].append(base_url)
                     index += 1
@@ -143,9 +145,9 @@ class AccountPaymentWhwizard(models.TransientModel):
                 'tot_wh': tot_wh,
             }
             if self.print_by == 'pdf':
-                return self.env['report'].with_context(landscape=True).get_action(self,'vitt_wihholding_tax_report.repoort_pdf',data=datas)
+                return self.env['report'].with_context(landscape=True).get_action(self,'vitt_withholding_tax_report.repoort_pdf',data=datas)
             if self.print_by == 'html':
-                return self.env['report'].with_context(landscape=True).get_action(self,'vitt_wihholding_tax_report.repoort_html',data=datas)
+                return self.env['report'].with_context(landscape=True).get_action(self,'vitt_withholding_tax_report.repoort_html',data=datas)
 
         if self.print_by == 'excel':
             print_data = lines
@@ -201,11 +203,11 @@ class AccountPaymentWhwizard(models.TransientModel):
 
 
 class ReportCustomerInvoiceJournalPdf(models.Model):
-    _name = 'report.vitt_wihholding_tax_report.repoort_pdf'
+    _name = 'report.vitt_withholding_tax_report.repoort_pdf'
 
     def render_html(self,docids, data=None):
         report_obj = self.env['report']
-        report = report_obj._get_report_from_name('vitt_wihholding_tax_report.repoort_pdf')
+        report = report_obj._get_report_from_name('vitt_withholding_tax_report.repoort_pdf')
 
         #print sorted(data['print_data'].items(), key=lambda x: x[0])
         docargs = {
@@ -219,9 +221,9 @@ class ReportCustomerInvoiceJournalPdf(models.Model):
             'whcodes': data['whcodes'],
             'tot_wh': data['tot_wh'],
         }
-        return self.env['report'].render('vitt_wihholding_tax_report.qweb_customer_invoice_journal', docargs)
+        return self.env['report'].render('vitt_withholding_tax_report.qweb_customer_invoice_journal', docargs)
 
 class ReportCustomerInvoiceJournalHtml(models.Model):
-    _inherit = 'report.vitt_wihholding_tax_report.repoort_pdf'
-    _name = 'report.vitt_wihholding_tax_report.repoort_html'
+    _inherit = 'report.vitt_withholding_tax_report.repoort_pdf'
+    _name = 'report.vitt_withholding_tax_report.repoort_html'
 

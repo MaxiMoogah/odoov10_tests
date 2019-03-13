@@ -6,7 +6,7 @@
     'author': "Moogah",
     'website': "http://www.moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.6',
+    'version': '10.0.1.0.8',
     'depends': [
         'vitt_nl_setting',
         'account_payment_group',

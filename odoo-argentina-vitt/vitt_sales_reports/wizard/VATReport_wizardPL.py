@@ -290,6 +290,13 @@ class sales_reports(models.TransientModel):
         tmp = 0.0
         for o in invoices:
             if o.journal_id.use_documents and o.validated_inv(self):
+                if o.document_number:
+                    if len(o.document_number) == 13:
+                        nr_ = "0" + str(o.document_number)
+                    else:
+                        nr_ = str(o.document_number)
+                else:
+                    nr_ = ""
                 subindex = 0
                 if self.det_level == 'detailed':
                     worksheet.write(index, subindex, o.date_invoice)
@@ -302,10 +309,7 @@ class sales_reports(models.TransientModel):
                     worksheet.write(index, subindex, str(let))  # letra
                     subindex += 1
 
-                    if o.document_number:
-                        worksheet.write(index, subindex, o.document_number)  # nro comprob
-                    else:
-                        worksheet.write(index, subindex, "")
+                    worksheet.write(index, subindex, nr_)  # nro comprob
                     subindex += 1
 
                     worksheet.write(index, subindex,  str(o.partner_id.afip_responsability_type_id.report_code_name))
@@ -445,10 +449,7 @@ class sales_reports(models.TransientModel):
                     worksheet.write(index, subindex, str(let))  # letra
                     subindex += 1
 
-                    if o.document_number:
-                        worksheet.write(index, subindex, o.document_number)  # nro comprob
-                    else:
-                        worksheet.write(index, subindex, "")
+                    worksheet.write(index, subindex, nr_)  # nro comprob
                     subindex += 1
 
                     tot = 0.0

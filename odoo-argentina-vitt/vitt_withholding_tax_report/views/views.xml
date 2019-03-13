@@ -54,13 +54,13 @@
     />
     <menuitem name="Withholding Tax Report - Payments"
         id="menu_wh_tax_report"
-        parent="vitt_wihholding_tax_report.menu_tax_reports"
+        parent="vitt_withholding_tax_report.menu_tax_reports"
         action="action_wh_tax_report"
         sequence="6"
     />
     <menuitem name="Withholding Tax Report - Receipts"
         id="menu_per_tax_report"
-        parent="vitt_wihholding_tax_report.menu_tax_reports"
+        parent="vitt_withholding_tax_report.menu_tax_reports"
         action="action_per_tax_report"
         sequence="6"
     />
@@ -90,9 +90,9 @@
         model="account.payment"
         string="Tax Report"
         report_type="qweb-html"
-        name="vitt_wihholding_tax_report.repoort_html"
-        file="vitt_wihholding_tax_report.repoort_html"
-        paperformat="vitt_wihholding_tax_report.tax_reports"
+        name="vitt_withholding_tax_report.repoort_html"
+        file="vitt_withholding_tax_report.repoort_html"
+        paperformat="vitt_withholding_tax_report.tax_reports"
         menu="False"/>
     <report
         id="menu_per_temp_pdf"
@@ -101,7 +101,7 @@
         report_type="qweb-pdf"
         name="partners_invoices_journals.repoort_pdf"
         file="partners_invoices_journals.repoort_pdf"
-        paperformat="vitt_wihholding_tax_report.tax_reports"
+        paperformat="vitt_withholding_tax_report.tax_reports"
         menu="False"/>
 
 
@@ -111,18 +111,18 @@
         model="account.payment"
         string="Tax Report"
         report_type="qweb-html"
-        name="vitt_wihholding_tax_report.repoort_html"
-        file="vitt_wihholding_tax_report.repoort_html"
-        paperformat="vitt_wihholding_tax_report.tax_reports"
+        name="vitt_withholding_tax_report.repoort_html"
+        file="vitt_withholding_tax_report.repoort_html"
+        paperformat="vitt_withholding_tax_report.tax_reports"
         menu="False"/>
     <report
         id="menu_wh_temp_pdf"
         model="account.payment"
         string="Tax Report"
         report_type="qweb-pdf"
-        name="vitt_wihholding_tax_report.repoort_pdf"
-        file="vitt_wihholding_tax_report.repoort_pdf"
-        paperformat="vitt_wihholding_tax_report.tax_reports"
+        name="vitt_withholding_tax_report.repoort_pdf"
+        file="vitt_withholding_tax_report.repoort_pdf"
+        paperformat="vitt_withholding_tax_report.tax_reports"
         menu="False"/>
 
 </odoo>

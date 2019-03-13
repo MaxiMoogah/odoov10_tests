@@ -36,9 +36,9 @@ class AccountPaymentGroup(models.Model):
         for inv in invs:
             lines.append((0, False,  {'inv_id': inv.id,
                                                   'objected_amount': inv.obj_value,
-                                                  'residual_amount': inv.residual,
+                                                  'residual_amount': inv.residual-inv.obj_value,
                                                   'amount_currency': inv.amount_total,
-                                                  'residual_amount_currency': inv.residual,
+                                                  'residual_amount_currency': inv.residual-inv.obj_value,
                                                   'currency_id': inv.currency_id.id,
                                                   'date': inv.date,
                                                   'duedate': inv.date_due,

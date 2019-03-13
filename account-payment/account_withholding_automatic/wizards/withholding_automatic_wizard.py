@@ -29,7 +29,8 @@ class account_withholding_automatic_wizard(models.TransientModel):
     fix_amount  = fields.Float('Fix Amount')
     action_type = fields.Char('Action type passed on the context', required=True)
 
-    document_ids = fields.Many2many('account.journal.document.type','ab2_rel','a2_id','b2_id',string='Tipo Documento')
+    document_ids = fields.Many2many('account.journal.document.type','ab2_rel','a2_id','b2_id',
+        string='Tipo Documento',domain="[('sequence_id', '=', False)]")
 
 
     def build_domain_fr_wizard(self):
