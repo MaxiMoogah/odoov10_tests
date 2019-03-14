@@ -81,15 +81,16 @@ class AccountPaymentWhwizard(models.TransientModel):
         payments = self.env['account.payment'].search(domain)
         print domain
         if payments:
-            types = dict(payments[0].tax_withholding_id.tax_group_id._fields['tax']._description_selection(self.env))
+            #types = dict(payments[0].tax_withholding_id.tax_group_id._fields['name']._description_selection(self.env))
             index = 0
             for pay in payments:
-                if self.wh_group_by:
-                    if not types[pay.tax_withholding_id.tax_group_id.tax] in whcodes.values():
-                        whcodes.update({pay.tax_withholding_id.name: types[pay.tax_withholding_id.tax_group_id.tax]})
+                if True:
+                #if self.wh_group_by:
+                    if not pay.tax_withholding_id.name in whcodes.keys():
+                        whcodes.update({pay.tax_withholding_id.name: 0})
 
                 if not pay.partner_id.main_id_number in lines.keys():
-                    key = str(index)
+                    key = '{:>010s}'.format(str(index))
                     lines.update({key: [pay.partner_id.main_id_number, pay.partner_id.name,
                             pay.payment_group_id.display_name, pay.vendorbill.display_name2, pay.withholding_number,
                             pay.tax_withholding_id.name, pay.withholding_base_amount, pay.wh_perc, pay.amount,
@@ -118,14 +119,16 @@ class AccountPaymentWhwizard(models.TransientModel):
                     testf = False
                     for line in lines:
                         if code == lines[line][5]:
+                            key = '{:>010s}'.format(str(subindex))
                             if not testf:
                                 if self.print_by != 'excel':
-                                    grouped.update({subindex:[whcodes[code],"","","","","",0,0,0,0]})
+                                    grouped.update({key:[lines[line][5],"","","","","",0,0,0,0]})
                                 else:
-                                    grouped.update({subindex: [whcodes[code], "", "", "", "", "", 0, 0, 0, 0, ""]})
+                                    grouped.update({key: [lines[line][5], "", "", "", "", "", 0, 0, 0, 0, ""]})
                                 testf = True
                                 subindex += 1
-                            grouped.update({subindex:lines[line]})
+                            key = '{:>010s}'.format(str(subindex))
+                            grouped.update({key:lines[line]})
                             subindex += 1
                 #print grouped
                 lines = grouped
@@ -169,12 +172,19 @@ class AccountPaymentWhwizard(models.TransientModel):
                 line += 1
                 for index, pos in enumerate(list_titles):
                     if index+1 != len(list_titles):
-                        worksheet.write(line, row, print_data[data][index])
+                        if list_align[index] == 'center':
+                            worksheet.write(line, row, print_data[data][index])
+                        else:
+                            numberf = float(int(print_data[data][index]*100))/100
+                            if numberf > 0:
+                                worksheet.write(line, row, numberf)
                     else:
-                        worksheet.write(line, row, xlwt.Formula('HYPERLINK("%s";"%s")' % (print_data[data][index], 'HTTP-LINK')))
+                        if print_data[data][index]:
+                            worksheet.write(line, row, xlwt.Formula('HYPERLINK("%s";"%s")' % (print_data[data][index], 'HTTP-LINK')))
                     row += 1
 
-            if self.wh_group_by:
+            if True:
+            #if self.wh_group_by:
                 row = 0
                 line += 3
                 worksheet.write(line, row, "Totales Agrupados")
@@ -183,7 +193,8 @@ class AccountPaymentWhwizard(models.TransientModel):
                     row = 0
                     worksheet.write(line, row, cur)
                     row += 1
-                    worksheet.write(line, row, tot_wh[cur])
+                    number = float(int(tot_wh[cur]*100))/100
+                    worksheet.write(line, row, number)
 
 
             fp = StringIO()
