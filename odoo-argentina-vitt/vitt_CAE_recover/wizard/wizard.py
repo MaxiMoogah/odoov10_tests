@@ -13,9 +13,9 @@ _logger = logging.getLogger(__name__)
 class AccountInvoiceCAERecover(models.TransientModel):
     _name = 'account.invoice.caerecover'
 
-    number = fields.Char(string="Number", translate=True, size=64)
+    number = fields.Char(string="Number (EJ: 0021-00010695)", translate=True, size=64)
     doctype_id = fields.Many2one('account.journal.document.type', string="Document Type", translate=True, required=True)
-    journal_id = fields.Many2one('account.journal', string="Journal", required=True)
+    journal_id = fields.Many2one('account.journal', string="Journal", required=True, domain="[('type', '=', 'sale'),('point_of_sale_type', '=', 'electronic')]")
 
     def confirm(self):
         active_ids = self._context.get('active_ids', [])
