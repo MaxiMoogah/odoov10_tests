@@ -47,20 +47,15 @@
         <field name="context">{'default_type': 'customer'}</field>
     </record>
 
-    <menuitem name="Tax Reports"
-        id="menu_tax_reports"
-        parent="vitt_sales_reports.menu_finance_vatreports"
-        sequence="7"
-    />
     <menuitem name="Withholding Tax Report - Payments"
         id="menu_wh_tax_report"
-        parent="vitt_withholding_tax_report.menu_tax_reports"
+        parent="vitt_sales_reports.menu_tax_reports"
         action="action_wh_tax_report"
         sequence="6"
     />
     <menuitem name="Withholding Tax Report - Receipts"
         id="menu_per_tax_report"
-        parent="vitt_withholding_tax_report.menu_tax_reports"
+        parent="vitt_sales_reports.menu_tax_reports"
         action="action_per_tax_report"
         sequence="6"
     />

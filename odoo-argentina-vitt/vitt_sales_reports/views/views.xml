@@ -356,6 +356,16 @@
             <field name="target">new</field>
         </record>
 
+        <menuitem name="TAX Exports"
+            id="menu_tax_exports"
+            parent="vitt_sales_reports.menu_finance_vatreports"
+            sequence="7"
+        />
+        <menuitem name="Tax Reports"
+            id="menu_tax_reports"
+            parent="vitt_sales_reports.menu_finance_vatreports"
+            sequence="7"
+        />
         <!-- QWeb Reports -->
         <menuitem name="Reportes ARG"
             id="menu_finance_vatreports"
@@ -365,49 +375,49 @@
 
         <menuitem name="SICORE - Compras"
             id="sicore_Compras"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
             action="Sicore_Report_action"
             sequence="7"
         />
 
         <menuitem name="Libro IVA Ventas"
             id="VAT_Reports_SL"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_reports"
             action="VAT_SL_Report_action"
             sequence="7"
         />
 
         <menuitem name="Exportaciones CITI"
             id="CITI_Reports_SL"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
             action="CITI_SL_Report_action"
             sequence="8"
         />
 
         <menuitem name="SIRE - Form 2004"
             id="SIRE_form_2004"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
             action="SIRE_Report_action"
             sequence="9"
         />
 
         <menuitem name="SIFERE Percepciones - Proveedores"
             id="SIFERE_PL"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
             action="SIFERE_Report_action"
             sequence="11"
         />
 
         <menuitem name="SIFERE Percepciones - Retenciones en Recibos"
             id="SIFERE_SL"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
             action="SIFERE_Report_action_vtas"
             sequence="12"
         />
 
         <menuitem name="Libro IVA Compras"
             id="VAT_Reports_PL"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_reports"
             action="VAT_PL_Report_action"
             sequence="10"
         />
@@ -489,7 +499,7 @@
             action="act_arciba_report"
             id="menu_action_arciba_report"
             sequence="12"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
         />
 
         <record id="arciba_customs_report_wizard" model="ir.ui.view">
@@ -525,7 +535,7 @@
             action="act_arciba_customs_report"
             id="menu_action_arciba_customs_report"
             sequence="12"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
         />
 
 
@@ -569,7 +579,7 @@
             action="act_arba_perc_report"
             id="menu_action_arba_perc_report"
             sequence="12"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
         />
 
         <record id="act_arba_wh_report" model="ir.actions.act_window">
@@ -586,7 +596,7 @@
             action="act_arba_wh_report"
             id="menu_action_arba_wh_report"
             sequence="12"
-            parent="menu_finance_vatreports"
+            parent="menu_tax_exports"
         />
 
 
