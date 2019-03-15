@@ -107,12 +107,19 @@ class AccountPaymentWhwizard(models.TransientModel):
 
                 if not pay.partner_id.main_id_number in lines.keys():
                     key = '{:>010s}'.format(str(index))
-                    lines.update({key: [pay.partner_id.main_id_number, pay.partner_id.name,
+                    if self.type == 'supplier':
+                        lines.update({key: [pay.partner_id.main_id_number, pay.partner_id.name,
                             pay.payment_group_id.display_name, pay.vendorbill.display_name2, pay.withholding_number,
+                            pay.tax_withholding_id.name, pay.withholding_base_amount, pay.wh_perc, pay.amount,
+                            pay.amount*pay.manual_currency_rate]})
+                    if self.type == 'customer':
+                        lines.update({key: [pay.partner_id.main_id_number, pay.partner_id.name,
+                            pay.payment_group_id.display_name, pay.customerbill.display_name2, pay.withholding_number,
                             pay.tax_withholding_id.name, pay.withholding_base_amount, pay.wh_perc, pay.amount,
                             pay.amount*pay.manual_currency_rate]})
                     if self.print_by == 'excel':
                         lines[key].append(pay.payment_date)
+
                     if self.print_by == 'excel' and self.include_link:
                         if self.type == 'customer':
                             menu = self.env['ir.model.data'].get_object_reference('account_payment_group','action_account_payments_group')
