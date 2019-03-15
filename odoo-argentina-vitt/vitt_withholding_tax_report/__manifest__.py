@@ -1,10 +1,10 @@
 {
-    'name': 'withholding tax report',
-    'description': 'withholding tax report',
+    'name': 'Withholding Tax Teport',
+    'description': 'Informe de Retenciones en Pagos y Recibos para Argentina utilizando pagos en Grupos',
     'summary': 'withholding tax report',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
-    'version': '10.0.1.0.6',
+    'version': '10.0.1.0.7',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',

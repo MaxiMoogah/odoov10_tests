@@ -44,7 +44,8 @@ class AccountPaymentWhwizard(models.TransientModel):
             domain.append(('payment_type', '=', 'inbound'))
         if self.type == 'supplier':
             domain.append(('payment_type', '=', 'outbound'))
-        filters.append(_('dates: ') + str(self.date_from) + " " + str(self.date_to))
+        filters.append(_('dates: ') + str(datetime.strptime(self.date_from, "%Y-%m-%d").strftime("%d-%m-%Y")) + " " +
+                       str(datetime.strptime(self.date_to, "%Y-%m-%d").strftime("%d-%m-%Y")))
         if self.partner_id and self.type == "supplier":
             domain.append(('partner_id', 'in', self.partner_id._ids))
             filters.append(_('Suppliers: ') + str(map(lambda x: x.name, self.partner_id)))
@@ -118,12 +119,12 @@ class AccountPaymentWhwizard(models.TransientModel):
                             pay.tax_withholding_id.name, pay.withholding_base_amount, pay.wh_perc, pay.amount,
                             pay.amount*pay.manual_currency_rate]})
                     if self.print_by == 'excel':
-                        lines[key].append(pay.payment_date)
+                        lines[key].append(datetime.strptime(pay.payment_date, "%Y-%m-%d").strftime("%d-%m-%Y"))
 
                     if self.print_by == 'excel' and self.include_link:
                         if self.type == 'customer':
                             menu = self.env['ir.model.data'].get_object_reference('account_payment_group','action_account_payments_group')
-                        else:
+                        if self.type == 'supplier':
                             menu = self.env['ir.model.data'].get_object_reference('account_payment_group','action_account_payments_group_payable')
                         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url') + "/web?#id=" + str(
                             pay.payment_group_id.id) + \
