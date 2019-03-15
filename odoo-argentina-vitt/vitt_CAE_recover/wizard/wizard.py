@@ -7,6 +7,7 @@
 from odoo import models, api, fields, _
 from odoo.exceptions import UserError
 import logging
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -15,12 +16,9 @@ class AccountInvoiceCAERecover(models.TransientModel):
 
     number = fields.Char(string="Number (EJ: 0021-00010695)", translate=True, size=64)
     doctype_id = fields.Many2one('account.journal.document.type', string="Document Type", translate=True, required=True)
-    journal_id = fields.Many2one('account.journal', string="Journal", required=True, domain="[('type', '=', 'sale'),('point_of_sale_type', '=', 'electronic')]")
+    journal_id = fields.Many2one('account.journal', string="Journal", required=True)
 
     def confirm(self):
-        active_ids = self._context.get('active_ids', [])
-        invoices = self.env['account.invoice'].browse(active_ids)
-
         ws = self.doctype_id.get_pyafipws_consult_invoice2(self.number)
         if 'factura' not in ws.keys():
             raise UserError(_('No existen datos de esa factura en la Afip'))
@@ -32,10 +30,12 @@ class AccountInvoiceCAERecover(models.TransientModel):
         if inv:
             raise UserError(_('you have an invoice with this CAE: %s') % (inv.display_name2))
 
+        active_ids = self._context.get('active_ids', [])
+        invoices = self.env['account.invoice'].browse(active_ids)
         foundf = False
         for inv in invoices:
-            if inv.type == 'sale' and inv.state == 'draft' and \
-                    self.doctype_id == inv.journal_document_type_id and self.journal_id == inv.journal_id:
+            if inv.type in ['out_invoice','out_refund'] and inv.state == 'draft' and \
+                    self.doctype_id.id == inv.journal_document_type_id.id and self.journal_id.id == inv.journal_id.id:
 
                 date = inv.date_invoice
                 if date.replace("-", "") == ws['FechaCbte'] and \
@@ -44,7 +44,7 @@ class AccountInvoiceCAERecover(models.TransientModel):
                         int(ws['factura']['tipo_cbte']) == int(inv.journal_document_type_id.document_type_id.code) and \
                         ws['factura']['moneda_id'] == inv.currency_id.afip_code:
 
-                    date2 = datetime.datetime.strptime(ws['factura']['fch_venc_cae'], '%Y%m%d').date()
+                    date2 = datetime.strptime(ws['factura']['fch_venc_cae'], '%Y%m%d').date()
                     afip_auth_code = ws['factura']['cae']
                     afip_result = ws['factura']['resultado']
                     afip_xml_request = ws['XmlRequest']

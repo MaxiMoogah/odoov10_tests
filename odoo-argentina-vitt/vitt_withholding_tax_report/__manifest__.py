@@ -4,7 +4,7 @@
     'summary': 'withholding tax report',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
-    'version': '10.0.1.0.5',
+    'version': '10.0.1.0.6',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',

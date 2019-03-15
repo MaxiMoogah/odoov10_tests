@@ -70,15 +70,31 @@ class AccountPaymentWhwizard(models.TransientModel):
         list_align = list()
         tot_wh = dict()
 
-        list_titles = [_('Supplier Id No'), _('Supplier Name'), _('Payment No'), _('Supplier Invoice No'),
-                _('Withholding Certificate No'), _('Withholding Tax'), _('Withholdable Amount'), _('Withholding Rate'),
-                _('Withholding Value'),_('MB1 Amount')]
-        list_align = ['center', 'center', 'center', 'center', 'center', 'center', 'right', 'right', 'right', 'right']
-        if self.print_by == 'excel' and self.include_link:
-            list_titles.append(_('Payment No. Link'))
-            list_align.append('center')
+        if self.type == 'supplier':
+            list_titles = [_('Supplier Id No'), _('Supplier Name'), _('Payment No'), _('Supplier Invoice No'),
+                    _('Withholding Certificate No'), _('Withholding Tax'), _('Withholdable Amount'), _('Withholding Rate'),
+                    _('Withholding Value'),_('MB1 Amount')]
+            list_align = ['center', 'center', 'center', 'center', 'center', 'center', 'right', 'right', 'right', 'right']
+            if self.print_by == 'excel':
+                list_titles.append(_('Payment Date'))
+                list_align.append('center')
+            if self.print_by == 'excel' and self.include_link:
+                list_titles.append(_('Payment No. Link'))
+                list_align.append('link')
+        if self.type == 'customer':
+            list_titles = [_('Customer Id No'), _('Customer Name'), _('Receipt No'), _('Customer Invoice No'),
+                    _('Withholding Certificate No'), _('Withholding Tax'), _('Withholdable Amount'), _('Withholding Rate'),
+                    _('Withholding Value'),_('MB1 Amount')]
+            list_align = ['center', 'center', 'center', 'center', 'center', 'center', 'right', 'right', 'right', 'right']
+            if self.print_by == 'excel':
+                list_titles.append(_('Receipt Date'))
+                list_align.append('center')
+            if self.print_by == 'excel' and self.include_link:
+                list_titles.append(_('Receipt No. Link'))
+                list_align.append('link')
 
-        payments = self.env['account.payment'].search(domain)
+
+        payments = self.env['account.payment'].search(domain,order="payment_date")
         print domain
         if payments:
             #types = dict(payments[0].tax_withholding_id.tax_group_id._fields['name']._description_selection(self.env))
@@ -95,6 +111,8 @@ class AccountPaymentWhwizard(models.TransientModel):
                             pay.payment_group_id.display_name, pay.vendorbill.display_name2, pay.withholding_number,
                             pay.tax_withholding_id.name, pay.withholding_base_amount, pay.wh_perc, pay.amount,
                             pay.amount*pay.manual_currency_rate]})
+                    if self.print_by == 'excel':
+                        lines[key].append(pay.payment_date)
                     if self.print_by == 'excel' and self.include_link:
                         if self.type == 'customer':
                             menu = self.env['ir.model.data'].get_object_reference('account_payment_group','action_account_payments_group')
@@ -124,7 +142,7 @@ class AccountPaymentWhwizard(models.TransientModel):
                                 if self.print_by != 'excel':
                                     grouped.update({key:[lines[line][5],"","","","","",0,0,0,0]})
                                 else:
-                                    grouped.update({key: [lines[line][5], "", "", "", "", "", 0, 0, 0, 0, ""]})
+                                    grouped.update({key: [lines[line][5], "", "", "", "", "", 0, 0, 0, 0, "", ""]})
                                 testf = True
                                 subindex += 1
                             key = '{:>010s}'.format(str(subindex))
@@ -171,7 +189,7 @@ class AccountPaymentWhwizard(models.TransientModel):
                 row = 0
                 line += 1
                 for index, pos in enumerate(list_titles):
-                    if index+1 != len(list_titles):
+                    if list_align[index] != 'link':
                         if list_align[index] == 'center':
                             worksheet.write(line, row, print_data[data][index])
                         else:
@@ -187,7 +205,7 @@ class AccountPaymentWhwizard(models.TransientModel):
             #if self.wh_group_by:
                 row = 0
                 line += 3
-                worksheet.write(line, row, "Totales Agrupados")
+                worksheet.write(line, row, _("Totales Agrupados"))
                 for cur in tot_wh:
                     line += 1
                     row = 0
