@@ -1,6 +1,6 @@
 {
-    'name': 'vitt_view_product_fix',
-    'description': 'vitt_view_product_fix',
+    'name': 'VITT - Corrección vista de productos',
+    'description': 'Corrección vista de productos según si es para ventas o compras, en Ordenes y Facturas',
     'summary': 'vitt_view_product_fix',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',

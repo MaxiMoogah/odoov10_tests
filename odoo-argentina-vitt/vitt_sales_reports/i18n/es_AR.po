@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-07 19:38+0000\n"
-"PO-Revision-Date: 2018-09-07 16:43-0300\n"
+"POT-Creation-Date: 2019-03-15 16:59+0000\n"
+"PO-Revision-Date: 2019-03-15 14:03-0300\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"Language: es_AR\n"
-"X-Generator: Poedit 2.0.8\n"
+"Language: es\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #. module: vitt_sales_reports
 #: model:ir.ui.menu,name:vitt_sales_reports.menu_action_arba_perc_report
@@ -39,7 +39,7 @@ msgid "ARCIBA - Withholdings/Perceptions"
 msgstr "ARCIBA - Retenciones/Percepciones"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/models/account_payment.py:24
+#: code:addons/vitt_sales_reports/models/account_payment.py:27
 #, python-format
 msgid "Already Exist an Invoice with the same number, not allowed"
 msgstr "Una Factura ya existe con este número, no está permitido registros con el mismo Nro. Oficial"
@@ -76,17 +76,17 @@ msgid "Baja"
 msgstr "Baja"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:471
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:459
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:555
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:525
 #, python-format
 msgid "Base"
 msgstr "N.G."
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:177
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:204
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:165
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:192
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:244
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:271
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:226
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:253
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -94,8 +94,8 @@ msgid "CUIT/CUIL"
 msgstr "CUIT/CUIL"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:157
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:145
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:217
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:198
 #, python-format
 msgid "CUIT: "
 msgstr "CUIT: "
@@ -110,7 +110,7 @@ msgstr "CUIT: "
 #: model:ir.ui.view,arch_db:vitt_sales_reports.sicore_report_form
 #: model:ir.ui.view,arch_db:vitt_sales_reports.sl_vat_report_form
 msgid "Cancel"
-msgstr "Revertir"
+msgstr "Cancelar"
 
 #. module: vitt_sales_reports
 #: model:ir.actions.act_window,help:vitt_sales_reports.sicore_codes_action
@@ -213,6 +213,7 @@ msgstr "Provincia"
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_create_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard_create_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_create_uid
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_create_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes_create_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat_create_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl_create_uid
@@ -235,6 +236,7 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_create_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard_create_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_create_date
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_create_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes_create_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat_create_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl_create_date
@@ -250,18 +252,12 @@ msgstr "Creado por"
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvat_create_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvatpl_create_date
 msgid "Created on"
-msgstr "Creado en"
+msgstr "Creado el"
 
 #. module: vitt_sales_reports
-#: model:ir.actions.act_window,name:vitt_sales_reports.action_invoice_refund_in_tree_nc
 #: model:ir.ui.menu,name:vitt_sales_reports.nc_menu_pl_ledger
 #: model:ir.ui.menu,name:vitt_sales_reports.nc_menu_sl_ledger
 msgid "Credit Notes"
-msgstr "Notas de Crédito"
-
-#. module: vitt_sales_reports
-#: model:ir.actions.act_window,name:vitt_sales_reports.action_invoice_refund_out_tree_nc
-msgid "CreditNotes"
 msgstr "Notas de Crédito"
 
 #. module: vitt_sales_reports
@@ -319,27 +315,27 @@ msgstr ""
 "Atentamente,"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:67
+#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:76
 #, python-format
 msgid "Debe Completar al menos 1 campo, jurisdiccion o impuesto"
 msgstr "Debe Completar al menos un campo, Jurisdicción o Impuesto"
 
 #. module: vitt_sales_reports
 #: code:addons/vitt_sales_reports/wizard/ARBAReport_wizard.py:114
-#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:247
+#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:259
 #, python-format
 msgid "Debe Completar al menos un codigo de Percepcion"
 msgstr "Debe Completar al menos un Código de Percepción"
 
 #. module: vitt_sales_reports
 #: code:addons/vitt_sales_reports/wizard/ARBAReport_wizard.py:64
-#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:249
+#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:261
 #, python-format
 msgid "Debe Completar al menos un codigo de Retencion"
 msgstr "Debe Completar al menos un Código de Retención"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:65
+#: code:addons/vitt_sales_reports/wizard/ArcibaReport_wizard.py:74
 #, python-format
 msgid "Debe Completar solo 1 campo, jurisdiccion o impuesto"
 msgstr "Debe Completar solo 1 campo, Jurisdicción o Impuesto"
@@ -356,7 +352,7 @@ msgid "Detallado"
 msgstr "Detallado"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/models/account_payment.py:108
+#: code:addons/vitt_sales_reports/models/account_payment.py:111
 #, python-format
 msgid "Diferencias en valores contabilizados. La(s) Cta.(s) %s distinto en la(s) NC(s) que el registrado en la Factura de Proveedor. Por favor, revise los valores ingresados"
 msgstr "Diferencias en valores contabilizados. La(s) Cta.(s) %s distinto en la(s) NC(s) que el registrado en la Factura de Proveedor. Por favor, revise los valores ingresados"
@@ -366,6 +362,7 @@ msgstr "Diferencias en valores contabilizados. La(s) Cta.(s) %s distinto en la(s
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_display_name
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard_display_name
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_display_name
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_display_name
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes_display_name
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat_display_name
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl_display_name
@@ -381,7 +378,7 @@ msgstr "Diferencias en valores contabilizados. La(s) Cta.(s) %s distinto en la(s
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvat_display_name
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvatpl_display_name
 msgid "Display Name"
-msgstr "Mostrar Nombre"
+msgstr "Nombre a mostrar"
 
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_excel_file_p_alic
@@ -400,8 +397,13 @@ msgid "Download TXT"
 msgstr "Descargar TXT"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:155
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:143
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_excel_file
+msgid "Download report Excel"
+msgstr "Download report Excel"
+
+#. module: vitt_sales_reports
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:215
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:196
 #, python-format
 msgid "Empresa: "
 msgstr "Empresa: "
@@ -423,6 +425,11 @@ msgid "Esta opcion aplica un control que verifica que los valores de las Cuentas
 msgstr "Esta opcion aplica un control que verifica que los valores de las Cuentas Contables en Notas de Credito vinculadas a Facturas de Proveedor no sean superiores a las registradas en estas facturas"
 
 #. module: vitt_sales_reports
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_file_name
+msgid "Excel File"
+msgstr "Excel File"
+
+#. module: vitt_sales_reports
 #: model:ir.ui.view,arch_db:vitt_sales_reports.view_excel_citi_extended
 #: model:ir.ui.view,arch_db:vitt_sales_reports.view_excel_form_extended
 #: model:ir.ui.view,arch_db:vitt_sales_reports.view_sire_form_extended
@@ -430,8 +437,8 @@ msgid "Excel Report file"
 msgstr "Archivo Informe en Excel"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:186
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:174
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:253
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:235
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -522,10 +529,10 @@ msgid "Factura no esta en el recibo: "
 msgstr "Factura no esta en el recibo: "
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:167
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:200
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:155
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:188
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:234
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:267
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:216
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:249
 #, python-format
 msgid "Fecha"
 msgstr "Fecha"
@@ -541,6 +548,7 @@ msgstr "Imp.Int"
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_id
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard_id
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_id
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_id
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes_id
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat_id
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl_id
@@ -559,8 +567,8 @@ msgid "ID"
 msgstr "ID"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:220
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:208
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:287
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:269
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -574,10 +582,10 @@ msgid "Impuestos ARCIBA Ventas"
 msgstr "Impuestos ARCIBA Ventas"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:192
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:224
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:180
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:212
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:259
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:291
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:241
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:273
 #, python-format
 msgid "Impuestos Internos"
 msgstr "Impuestos Internos"
@@ -595,7 +603,7 @@ msgstr "Incluir Recibos a Clientes"
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_account_tax_vatreport_included
 msgid "Incluir en Libros Iva"
-msgstr "Incluir en Libros Iva"
+msgstr "Incluir en Libros IVA"
 
 #. module: vitt_sales_reports
 #: model:ir.model,name:vitt_sales_reports.model_account_invoice
@@ -605,7 +613,18 @@ msgstr "Factura"
 #. module: vitt_sales_reports
 #: model:ir.model,name:vitt_sales_reports.model_account_invoice_line
 msgid "Invoice Line"
-msgstr "Línea de Factura"
+msgstr "Linea de Factura"
+
+#. module: vitt_sales_reports
+#: model:ir.model,name:vitt_sales_reports.model_account_invoice_refund
+msgid "Invoice Refund"
+msgstr "Nota de Crédito"
+
+#. module: vitt_sales_reports
+#: model:ir.actions.act_window,name:vitt_sales_reports.action_invoice_refund_in_tree_nc
+#: model:ir.actions.act_window,name:vitt_sales_reports.action_invoice_refund_out_tree_nc
+msgid "Invoices"
+msgstr "Facturas"
 
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvat_journal_ids
@@ -614,13 +633,13 @@ msgid "Journal"
 msgstr "Diario"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/models/account_payment.py:36
+#: code:addons/vitt_sales_reports/models/account_payment.py:39
 #, python-format
 msgid "La NC no puede registrar Impuestos de Percepción en un mes distinto al de la factura de Origen. Por favor, borre el impuesto de percepción para recalcular los valores."
 msgstr "La NC no puede registrar Impuestos de Percepción en un mes distinto al de la factura de Origen. Por favor, borre el impuesto de percepción para re-calcular los valores."
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/models/account_payment.py:67
+#: code:addons/vitt_sales_reports/models/account_payment.py:70
 #, python-format
 msgid "La factura NC tiene una cuenta que no esta presente en la factura original"
 msgstr "La factura NC tiene una cuenta que no esta presente en la factura original"
@@ -630,6 +649,7 @@ msgstr "La factura NC tiene una cuenta que no esta presente en la factura origin
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard___last_update
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard___last_update
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended___last_update
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended___last_update
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes___last_update
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat___last_update
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl___last_update
@@ -645,13 +665,14 @@ msgstr "La factura NC tiene una cuenta que no esta presente en la factura origin
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvat___last_update
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvatpl___last_update
 msgid "Last Modified on"
-msgstr "Ult. Modificación en"
+msgstr "Última modificación en"
 
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arba_report_wizard_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_write_uid
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl_write_uid
@@ -667,13 +688,14 @@ msgstr "Ult. Modificación en"
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvat_write_uid
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvatpl_write_uid
 msgid "Last Updated by"
-msgstr "Ult. Modificación por"
+msgstr "Última actualización por"
 
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arba_report_wizard_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba_report_wizard_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_citi_extended_write_date
+#: model:ir.model.fields,field_description:vitt_sales_reports.field_excel_extended_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_jurisdiction_codes_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvat_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_report_vitt_sales_reports_reportvatpl_write_date
@@ -689,10 +711,10 @@ msgstr "Ult. Modificación por"
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvat_write_date
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_vitt_sales_reports_reportvatpl_write_date
 msgid "Last Updated on"
-msgstr "Ult. Actualización en"
+msgstr "Última actualización el"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:171
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:238
 #, python-format
 msgid "Letra"
 msgstr "Letra"
@@ -727,10 +749,10 @@ msgid "N.G."
 msgstr "N.G."
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:181
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:216
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:169
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:204
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:248
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:283
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:230
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:265
 #, python-format
 msgid "Neto Gravado"
 msgstr "Neto Gravado"
@@ -747,10 +769,10 @@ msgid "No Calcular Percepciones en NC Parciales y en Meses distintos"
 msgstr "No Calcular Percepciones en NC Parciales y en Meses distintos"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:194
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:218
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:182
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:206
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:261
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:285
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:243
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:267
 #, python-format
 msgid "No Gravado"
 msgstr "No Gravado"
@@ -761,10 +783,10 @@ msgid "No Permitir validacion de Notas de Credito si ya existen Pagos asociados"
 msgstr "No Permitir la validación de Notas de Crédito si ya existen Pagos asociados"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:179
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:202
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:167
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:190
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:246
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:269
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:228
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:251
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -772,13 +794,13 @@ msgid "Nombre"
 msgstr "Nombre"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:142
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:195
 #, python-format
 msgid "Nombre del Informe: Libro IVA Compras"
 msgstr "Nombre del Informe: Libro IVA Compras"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:154
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:214
 #, python-format
 msgid "Nombre del Informe: Libro IVA Ventas"
 msgstr "Nombre del Informe: Libro IVA Ventas"
@@ -801,10 +823,10 @@ msgid "Nota de Credito de Proveedor"
 msgstr "Nota de Crédito Proveedor"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:173
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:212
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:161
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:200
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:240
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:279
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:222
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:261
 #, python-format
 msgid "Nro. Comp"
 msgstr "Nro. Comp"
@@ -854,22 +876,22 @@ msgid "Percep"
 msgstr "Percep"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:190
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:178
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:257
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:239
 #, python-format
 msgid "Percepcion IIBB"
 msgstr "Percepcion IIBB"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:188
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:176
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:255
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:237
 #, python-format
 msgid "Percepcion IVA"
 msgstr "Percepcion IVA"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:222
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:210
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:289
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:271
 #, python-format
 msgid "Percepciones"
 msgstr "Percepciones"
@@ -885,11 +907,17 @@ msgid "Perceptions"
 msgstr "Percepciones"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:158
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:146
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:218
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:199
 #, python-format
 msgid "Periodo "
 msgstr "Periodo "
+
+#. module: vitt_sales_reports
+#: code:addons/vitt_sales_reports/models/account_payment.py:16
+#, python-format
+msgid "Please, Complete Partner fields main id number, category and responsability type first"
+msgstr "Por favor, antes complete los campos en la empresa de Nro.Id. Tributario, Categoría y Tipo de Responsabilidad"
 
 #. module: vitt_sales_reports
 #: model:ir.ui.view,arch_db:vitt_sales_reports.pl_vat_report_form
@@ -973,10 +1001,10 @@ msgid "Reportes SIRE"
 msgstr "Exportación - SIRE"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:175
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:206
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:163
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:194
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:242
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:273
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:224
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:255
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -1063,9 +1091,9 @@ msgid "Sales"
 msgstr "Ventas"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:210
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:159
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:198
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:277
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:220
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:259
 #, python-format
 msgid "Serie"
 msgstr "Serie"
@@ -1079,6 +1107,11 @@ msgstr "Exportación - SICORE Compras"
 #: selection:sicore.norm.codes,tax_scope:0
 msgid "Supplier Payment"
 msgstr "Pago a Proveedor"
+
+#. module: vitt_sales_reports
+#: model:ir.ui.menu,name:vitt_sales_reports.menu_tax_exports
+msgid "TAX Exports"
+msgstr "Exportaciones Impositivas"
 
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_sicore_extended_file_name
@@ -1098,9 +1131,14 @@ msgid "Tax"
 msgstr "Impuesto"
 
 #. module: vitt_sales_reports
+#: model:ir.ui.menu,name:vitt_sales_reports.menu_tax_reports
+msgid "Tax Reports"
+msgstr "Informes Impositivos"
+
+#. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_sicore_norm_codes_tax_scope
 msgid "Tax Scope"
-msgstr "Ambito del impuesto"
+msgstr "Ámbito del impuesto"
 
 #. module: vitt_sales_reports
 #: model:ir.model.fields,field_description:vitt_sales_reports.field_arciba2_report_wizard_tax_ids
@@ -1108,10 +1146,10 @@ msgid "Taxes"
 msgstr "Impuestos"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:169
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:208
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:157
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:196
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:236
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:275
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:218
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:257
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -1124,10 +1162,10 @@ msgid "Tipo de Operacion"
 msgstr "Tipo de Operación"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:197
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:214
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:185
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:202
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:264
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:281
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:246
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:263
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvat
 #: model:ir.ui.view,arch_db:vitt_sales_reports.reportvatpl
 #, python-format
@@ -1135,17 +1173,15 @@ msgid "Total"
 msgstr "Total"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:447
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:475
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:435
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:463
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:522
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:492
 #, python-format
 msgid "Totales"
 msgstr "Totales"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:468
-#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:456
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizard.py:544
+#: code:addons/vitt_sales_reports/wizard/VATReport_wizardPL.py:514
 #, python-format
 msgid "Totales Agrupados"
 msgstr "Totales Agrupados"
@@ -1156,7 +1192,7 @@ msgid "Type"
 msgstr "Tipo"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/models/account_payment.py:40
+#: code:addons/vitt_sales_reports/models/account_payment.py:43
 #, python-format
 msgid "Una NC parcial no puede registrar Impuestos de Percepción. Por favor, borre el impuesto de percepción para recalcular los valores"
 msgstr "Una NC parcial no puede registrar Impuestos de Percepción. Por favor, borre el impuesto de percepción para re-calcular los valores"
@@ -1219,25 +1255,25 @@ msgid "jurisdiction.codes"
 msgstr "jurisdiction.codes"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/CITIReport_wizard.py:716
+#: code:addons/vitt_sales_reports/wizard/CITIReport_wizard.py:717
 #, python-format
 msgid "la factura debe tener al menos un impuesto por linea"
 msgstr "la factura debe tener al menos un Código de Impuesto por linea"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/CITIReport_wizard.py:652
+#: code:addons/vitt_sales_reports/wizard/CITIReport_wizard.py:653
 #, python-format
 msgid "la factura debe tener fecha de vencimiento"
 msgstr "la factura debe tener ingresada una Fecha de Vencimiento"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/wizard/CITIReport_wizard.py:661
+#: code:addons/vitt_sales_reports/wizard/CITIReport_wizard.py:662
 #, python-format
 msgid "la factura debe tener termino de pago"
 msgstr "la factura debe tener ingresado un Término de Pago"
 
 #. module: vitt_sales_reports
-#: code:addons/vitt_sales_reports/models/account_payment.py:87
+#: code:addons/vitt_sales_reports/models/account_payment.py:90
 #, python-format
 msgid "la factura no debe tener ningun pago asociado"
 msgstr "la factura no debe tener ningun pago asociado"
