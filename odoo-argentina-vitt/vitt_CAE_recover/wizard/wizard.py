@@ -16,7 +16,7 @@ class AccountInvoiceCAERecover(models.TransientModel):
 
     number = fields.Char(string="Number (EJ: 0021-00010695)", translate=True, size=64)
     doctype_id = fields.Many2one('account.journal.document.type', string="Document Type", translate=True, required=True)
-    journal_id = fields.Many2one('account.journal', string="Journal", required=True)
+    journal_id = fields.Many2one('account.journal', string="Journal", required=True,domain="[('type', '=', 'sale'),('point_of_sale_type', '=', 'electronic')]")
 
     def confirm(self):
         ws = self.doctype_id.get_pyafipws_consult_invoice2(self.number)
