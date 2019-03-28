@@ -276,7 +276,7 @@ class AccountInvoice(models.Model):
             _logger.info(
                 'Setting document data on account.invoice and account.move')
             journal_document_type = invoice.journal_document_type_id
-            inv_vals = self.get_localization_invoice_vals()
+            inv_vals = invoice.get_localization_invoice_vals()
             if invoice.use_documents:
                 if not invoice.document_number:
                     if not invoice.journal_document_type_id.sequence_id:

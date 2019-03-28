@@ -43,6 +43,45 @@ class sire_report(models.TransientModel):
         invoiceModel = self.env['account.invoice']
         invoices = invoiceModel.search(domain,order="date_invoice")
 
+        sdata = list()
+        for inv in invoices:
+            if inv.journal_id.use_documents:
+                for tax in inv.tax_line_ids:
+                    if not tax.tax_id.jurisdiction_code:
+                        sdata.append("falta codigo de jurisdiccion en " + tax.tax_id.name.encode('ASCII', 'ignore'))
+                    if not inv.partner_id.main_id_number:
+                        sdata.append("falta Nro CUIT en contacto " + inv.partner_id.name.encode('ASCII', 'ignore'))
+                    if not inv.date_invoice:
+                        sdata.append("falta fecha factura en factura " + inv.display_name)
+                    if not inv.document_number:
+                        sdata.append("falta nro de documento en factura " + inv.display_name)
+                    if not inv.journal_document_type_id.document_type_id.internal_type:
+                        sdata.append("falta tipo de factura en journal doc type " + inv.journal_document_type_id.document_type_id.name.name)
+                    if not inv.journal_document_type_id.document_type_id.document_letter_id.name:
+                        sdata.append("falta letra de factura en journal doc type " + inv.journal_document_type_id.document_type_id.name.name)
+
+        if len(sdata)>0:
+            perr = StringIO()
+            std_err = ""
+            for i,data in enumerate(sdata):
+                std_err += sdata[i] + '\r\n'
+            perr.write(std_err)
+            export_id = self.env['excel.citi.extended'].create(
+                {'errors': base64.encodestring(perr.getvalue())
+                    , 'file_errors': 'errores.txt'}).id
+            perr.close()
+            return {
+                'view_mode': 'form',
+                'res_id': export_id,
+                'res_model': 'excel.citi.extended',
+                'view_type': 'form',
+                'type': 'ir.actions.act_window',
+                'context': context,
+                'target': 'new',
+            }
+
+
+
         tstr2 = tstr = ''
         for inv in invoices:
             if inv.journal_id.use_documents:

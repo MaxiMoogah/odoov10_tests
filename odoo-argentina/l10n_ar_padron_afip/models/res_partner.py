@@ -114,6 +114,12 @@ class ResPartner(models.Model):
         except:
             raise UserError(_("CUIT NOT FOUND"))
 
+        if padron.errores:
+            raise UserError(padron.errores[0].values())
+        if padron.Errores:
+            raise UserError(padron.Errores[0].values())
+
+        #print padron.__dict__
         # porque imp_iva activo puede ser S o AC
         imp_iva = padron.imp_iva
         if imp_iva == 'S':
@@ -157,20 +163,26 @@ class ResPartner(models.Model):
                 "We couldn't get impuesto a las ganancias from padron, you"
                 "must set it manually")
 
-        if padron.provincia:
-            # if not localidad then it should be CABA.
-            if not padron.localidad:
-                state = self.env['res.country.state'].search([
-                    ('code', '=', 'ABA'),
-                    ('country_id.code', '=', 'AR')], limit=1)
-            # If localidad cant be caba
-            else:
-                state = self.env['res.country.state'].search([
-                    ('name', 'ilike', padron.provincia),
-                    ('code', '!=', 'ABA'),
-                    ('country_id.code', '=', 'AR')], limit=1)
-            if state:
-                vals['state_id'] = state.id
+        state = self.env['res.country.state'].search([('afip_code', '=', str(padron.data['domicilioFiscal']['idProvincia']))], limit=1)
+        if state:
+            vals['state_id'] = state.id
+        else:
+            raise UserError(_("Por Favor ingrese codigo afip en la provincia %s") % (padron.provincia))
+
+        #if padron.provincia:
+            # # if not localidad then it should be CABA.
+            # if not padron.localidad:
+            #     state = self.env['res.country.state'].search([
+            #         ('code', '=', 'ABA'),
+            #         ('country_id.code', '=', 'AR')], limit=1)
+            # # If localidad cant be caba
+            # else:
+            #     state = self.env['res.country.state'].search([
+            #         ('name', 'ilike', padron.provincia),
+            #         ('code', '!=', 'ABA'),
+            #         ('country_id.code', '=', 'AR')], limit=1)
+            # if state:
+            #    vals['state_id'] = state.id
 
         if imp_iva == 'NI' and padron.monotributo == 'S':
             vals['afip_responsability_type_id'] = self.env.ref(
