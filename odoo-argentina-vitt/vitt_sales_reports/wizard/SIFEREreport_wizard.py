@@ -47,18 +47,32 @@ class sire_report(models.TransientModel):
         for inv in invoices:
             if inv.journal_id.use_documents:
                 for tax in inv.tax_line_ids:
-                    if not tax.tax_id.jurisdiction_code:
-                        sdata.append("falta codigo de jurisdiccion en " + tax.tax_id.name.encode('ASCII', 'ignore'))
-                    if not inv.partner_id.main_id_number:
-                        sdata.append("falta Nro CUIT en contacto " + inv.partner_id.name.encode('ASCII', 'ignore'))
-                    if not inv.date_invoice:
-                        sdata.append("falta fecha factura en factura " + inv.display_name)
-                    if not inv.document_number:
-                        sdata.append("falta nro de documento en factura " + inv.display_name)
-                    if not inv.journal_document_type_id.document_type_id.internal_type:
-                        sdata.append("falta tipo de factura en journal doc type " + inv.journal_document_type_id.document_type_id.name.name)
-                    if not inv.journal_document_type_id.document_type_id.document_letter_id.name:
-                        sdata.append("falta letra de factura en journal doc type " + inv.journal_document_type_id.document_type_id.name.name)
+                    if 'gross_income' == tax.tax_id.tax_group_id.tax and \
+                            'perception' == tax.tax_id.tax_group_id.type:
+                        found = False
+                        if 'gross_income' == tax.tax_id.tax_group_id.tax and \
+                                'perception' == tax.tax_id.tax_group_id.type:
+
+                            if not self.wh_id and not self.jurisd_id:
+                                found = True
+                            else:
+                                if self.wh_id and tax.tax_id.id in list(self.wh_id._ids):
+                                    found = True
+                                if self.jurisd_id and self.jurisd_id.id == tax.tax_id.jurisdiction_code.id:
+                                    found = True
+                        if found:
+                            if not tax.tax_id.jurisdiction_code:
+                                sdata.append("falta codigo de jurisdiccion en " + tax.tax_id.name.encode('ASCII', 'ignore'))
+                            if not inv.partner_id.main_id_number:
+                                sdata.append("falta Nro CUIT en contacto " + inv.partner_id.name.encode('ASCII', 'ignore'))
+                            if not inv.date_invoice:
+                                sdata.append("falta fecha factura en factura " + inv.display_name)
+                            if not inv.document_number:
+                                sdata.append("falta nro de documento en factura " + inv.display_name)
+                            if not inv.journal_document_type_id.document_type_id.internal_type:
+                                sdata.append("falta tipo de factura en journal doc type " + inv.journal_document_type_id.document_type_id.name.name)
+                            if not inv.journal_document_type_id.document_type_id.document_letter_id.name:
+                                sdata.append("falta letra de factura en journal doc type " + inv.journal_document_type_id.document_type_id.name.name)
 
         if len(sdata)>0:
             perr = StringIO()

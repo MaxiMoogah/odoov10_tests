@@ -39,9 +39,18 @@ class sire_report(models.TransientModel):
 
         sdata = list()
         for pay in payments:
+            found = False
             if 'gross_income' == pay.tax_withholding_id.tax_group_id.tax and \
                 'withholding' == pay.tax_withholding_id.tax_group_id.type:
 
+                if not self.wh_id and not self.jurisd_id:
+                    found = True
+                else:
+                    if self.wh_id and self.wh_id.id == pay.tax_withholding_id.id:
+                        found = True
+                    if self.jurisd_id and self.jurisd_id.id == pay.tax_withholding_id.jurisdiction_code.id:
+                        found = True
+            if found:
                 if not pay.tax_withholding_id.jurisdiction_code:
                     sdata.append("falta codigo de jurisdiccion en " + pay.tax_withholding_id.name.encode('ASCII', 'ignore'))
                 if not pay.customerbill:

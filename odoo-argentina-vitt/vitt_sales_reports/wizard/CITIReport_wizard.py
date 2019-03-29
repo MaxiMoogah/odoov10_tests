@@ -364,7 +364,7 @@ class citi_reports(models.TransientModel):
 
                 for code in vatcodes:
                     tstr_alic += "{:0>3}".format(inv.document_type_id.code)
-                    tstr_alic += "{:0>5}".format(inv.document_number[0]) + "{:0>20}".format(inv.document_number[1])
+                    tstr_alic += "{:0>5}".format(inv.document_number[0:5]) + "{:0>20}".format(inv.document_number[6:])
                     tstr_alic += "{:0>2}".format(inv.partner_id.main_id_category_id.afip_code)
                     tstr_alic += "{:0>20}".format(inv.partner_id.main_id_number)
                     if inv.fiscal_position_id.afip_code == False:
