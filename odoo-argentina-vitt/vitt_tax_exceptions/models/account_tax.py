@@ -366,7 +366,7 @@ class AccountTax(models.Model):
                     return result
                 raise ValidationError(_('el impuesto %s no tiene ningun webservice seleccionado' % self.name))
             else:
-                return result = 0.0
+                return 0.0
 
         if self.amount_type in ['percent','division']:
             if self.jurisdiction_code and self.tax_control == 'control':
