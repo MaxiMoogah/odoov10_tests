@@ -357,13 +357,16 @@ class AccountTax(models.Model):
 
         date_invoice = self._context.get('date_invoice')
         if self.amount_type == 'code2':
-            if self.service_id == 'arba_ws':
-                result = price_unit * quantity * partner.with_context(date_invoice=date_invoice).get_arba_alicuota_percepcion(self,jur)
-                return result
-            if self.service_id == 'agip_ws':
-                result = price_unit * quantity * partner.with_context(date_invoice=date_invoice).get_agip_alicuota_percepcion(self,jur)
-                return result
-            raise ValidationError(_('el impuesto %s no tiene ningun webservice seleccionado' % self.name))
+            if partner.company_type != 'person':
+                if self.service_id == 'arba_ws':
+                    result = price_unit * quantity * partner.with_context(date_invoice=date_invoice).get_arba_alicuota_percepcion(self,jur)
+                    return result
+                if self.service_id == 'agip_ws':
+                    result = price_unit * quantity * partner.with_context(date_invoice=date_invoice).get_agip_alicuota_percepcion(self,jur)
+                    return result
+                raise ValidationError(_('el impuesto %s no tiene ningun webservice seleccionado' % self.name))
+            else:
+                return result = 0.0
 
         if self.amount_type in ['percent','division']:
             if self.jurisdiction_code and self.tax_control == 'control':
