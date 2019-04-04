@@ -298,7 +298,7 @@
                         </div>
                     </div>
        
-                    <div class="col-xs-12" style="line-height:20px;margin-top:20px;font-size:11px;">
+                    <div name="payment" class="col-xs-12" style="line-height:20px;margin-top:20px;font-size:11px;">
                         <strong>Información de Pago:</strong>
                     </div>
                     <div class="col-xs-12" style="line-height:20px;font-size:11px;">

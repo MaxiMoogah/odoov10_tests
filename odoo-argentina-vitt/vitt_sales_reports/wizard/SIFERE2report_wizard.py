@@ -108,7 +108,7 @@ class sire_report(models.TransientModel):
 
                 tstr += pay.payment_date[8:10] + '/' + pay.payment_date[5:7] + '/' + pay.payment_date[0:4]
                 tstr += "{:0>4}".format(pay.withholding_number[0:4])
-                tstr += "{:0>16}".format(pay.withholding_number[5:13])
+                tstr += "{:0>16}".format(pay.withholding_number[5:14])
                 tstr2 = pay.customerbill.journal_document_type_id.document_type_id.internal_type
                 if tstr2 == 'invoice':
                     tstr2 = 'F'

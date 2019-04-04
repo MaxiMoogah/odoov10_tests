@@ -35,8 +35,9 @@
     <field name="inherit_id" ref="account.invoice_form"/>
     <field name="arch" type="xml">
         <button name="%(account.action_account_invoice_payment)d" position="attributes">
-            <attribute name="name">action_account_invoice_payment_group</attribute>
-            <attribute name="type">object</attribute>
+            <!--attribute name="name">action_account_invoice_payment_group</attribute>
+            <attribute name="type">object</attribute-->
+            <attribute name="invisible">True</attribute>
         </button>
     </field>
 </record>
@@ -47,8 +48,9 @@
     <field name="inherit_id" ref="account.invoice_supplier_form"/>
     <field name="arch" type="xml">
         <button name="%(account.action_account_invoice_payment)d" position="attributes">
-            <attribute name="name">action_account_invoice_payment_group</attribute>
-            <attribute name="type">object</attribute>
+            <!--attribute name="name">action_account_invoice_payment_group</attribute>
+            <attribute name="type">object</attribute-->
+            <attribute name="invisible">True</attribute>
         </button>
         <xpath expr="//sheet/group/group/field[@name='date_due']" position="after">
             <field name="date" domain="[('state', '=', 'draft'), ('company_id', '=', company_id)]" groups="account.group_account_user"/>
