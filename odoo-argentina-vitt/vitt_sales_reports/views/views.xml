@@ -356,6 +356,12 @@
             <field name="target">new</field>
         </record>
 
+        <!-- QWeb Reports -->
+        <menuitem name="Reportes ARG"
+            id="menu_finance_vatreports"
+            parent="account.menu_finance"
+            sequence="6"
+        />
         <menuitem name="TAX Exports"
             id="menu_tax_exports"
             parent="vitt_sales_reports.menu_finance_vatreports"
@@ -366,13 +372,6 @@
             parent="vitt_sales_reports.menu_finance_vatreports"
             sequence="7"
         />
-        <!-- QWeb Reports -->
-        <menuitem name="Reportes ARG"
-            id="menu_finance_vatreports"
-            parent="account.menu_finance"
-            sequence="6"
-        />
-
         <menuitem name="SICORE - Compras"
             id="sicore_Compras"
             parent="menu_tax_exports"

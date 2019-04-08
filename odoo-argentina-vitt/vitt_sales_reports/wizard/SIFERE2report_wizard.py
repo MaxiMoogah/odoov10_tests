@@ -107,8 +107,9 @@ class sire_report(models.TransientModel):
                 tstr += '-' + "{:<1}".format(pay.customerbill.partner_id.main_id_number[10:11])
 
                 tstr += pay.payment_date[8:10] + '/' + pay.payment_date[5:7] + '/' + pay.payment_date[0:4]
-                tstr += "{:0>4}".format(pay.withholding_number[0:4])
-                tstr += "{:0>16}".format(pay.withholding_number[5:14])
+                #tstr += "{:0>4}".format(pay.withholding_number[0:4])
+                #tstr += "{:0>16}".format(pay.withholding_number[5:14])
+                tstr += "{:0>20}".format(pay.withholding_number)
                 tstr2 = pay.customerbill.journal_document_type_id.document_type_id.internal_type
                 if tstr2 == 'invoice':
                     tstr2 = 'F'
@@ -118,8 +119,9 @@ class sire_report(models.TransientModel):
                     tstr2 = 'D'
                 tstr += "{:<1}".format(tstr2)
                 tstr += "{:<1}".format(pay.customerbill.journal_document_type_id.document_type_id.document_letter_id.name)
-                tstr += "{:0>4}".format(pay.customerbill.display_name[-13:-9])
-                tstr += "{:0>16}".format(pay.customerbill.display_name[-8:])
+                nr = pay.customerbill.display_name.split('-')
+                tstr += "{:0>4}".format(nr[0][-4:])
+                tstr += "{:0>16}".format(nr[1])
                 tstr2 = "{:0>11.2f}".format(pay.amount)
                 for l in tstr2:
                     if l == '.':

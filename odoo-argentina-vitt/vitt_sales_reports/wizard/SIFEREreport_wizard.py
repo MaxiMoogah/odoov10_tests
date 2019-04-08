@@ -119,8 +119,9 @@ class sire_report(models.TransientModel):
                         tstr += '-' + "{:<1}".format(inv.partner_id.main_id_number[10:11])
 
                         tstr += inv.date_invoice[8:10] + '/' + inv.date_invoice[5:7] + '/' + inv.date_invoice[0:4]
-                        tstr += "{:0>4}".format(inv.document_number[0:4])
-                        tstr += "{:0>8}".format(inv.document_number[5:14])
+                        nr = inv.document_number.split('-')
+                        tstr += "{:0>4}".format(nr[0][-4:])
+                        tstr += "{:0>8}".format(nr[1])
                         tstr2 = inv.journal_document_type_id.document_type_id.internal_type
                         if tstr2 == 'invoice':
                             tstr2 = 'F'
