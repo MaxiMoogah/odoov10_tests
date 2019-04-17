@@ -341,7 +341,7 @@ class WizardCustomerInvoiceJournal(models.TransientModel):
         if len(print_data) > 5000 and self.print_by in ['html','pdf']:
             raise UserError(_("report has more than 5000 lines, please use Excel instead"))
 
-        #print print_data
+        print print_data
         #print list_titles
         if self.print_by in ['html','pdf']:
             datas = {
