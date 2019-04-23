@@ -3,7 +3,7 @@
 
 {
     "name": "Inverse Exchange Rate",
-    "version": "10.0.1.0.15",
+    "version": "10.0.1.0.16",
     "depends": ['base', 'account', 'account_accountant'],
     "author": "BrowseInfo, Moogah",
     "description": """
