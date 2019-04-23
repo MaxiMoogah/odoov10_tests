@@ -19,11 +19,22 @@ class AccountPaymentWhwizard(models.TransientModel):
         string="Withholding Tax Code",
         translate=True,
     )
+    wh_tax_code2 = fields.Many2many(
+        'account.tax',
+        domain="[('type_tax_use','=','customer'),('active','=',True),('withholding_type','in',['tabla_ganancias','arba_ws','based_on_rule'])]",
+        string="Withholding Tax Code",
+        translate=True,
+    )
     journal_id = fields.Many2many('account.journal',
         string="Withholding Tax Journal",
         domain="[('type', 'in', ['bank', 'cash']), "
                "('outbound_payment_method_ids.code', 'in', ['withholding']),"
                "('outbound_payment_method_ids.payment_type', '=', 'outbound')]",
+        translate=True,
+    )
+    journal2_id = fields.Many2many('account.journal',
+        string="Withholding Tax Journal",
+        domain="[('type', 'in', ['bank', 'cash']),('inbound_payment_method_ids.code', 'in', ['withholding']),('inbound_payment_method_ids.payment_type', '=', 'inbound')]",
         translate=True,
     )
     company_id = fields.Many2one('res.company', string="Company", translate=True, default=lambda self: self.env.user.company_id)
@@ -55,14 +66,27 @@ class AccountPaymentWhwizard(models.TransientModel):
         if self.company_id:
             domain.append(('company_id', '=', self.company_id.id))
             filters.append(_('Company: ') + self.company_id.name)
-        if self.wh_tax_code:
-            domain.append(('tax_withholding_id', 'in', self.wh_tax_code._ids))
-            filters.append(_('Withholding Tax: ') + str(map(lambda x: x.name, self.wh_tax_code)))
-        else:
-            domain.append(('tax_withholding_id', '!=', False))
-        if self.journal_id:
+
+        if self.type == 'customer':
+            if self.wh_tax_code2:
+                domain.append(('tax_withholding_id', 'in', self.wh_tax_code2._ids))
+                filters.append(_('Withholding Tax: ') + str(map(lambda x: x.name, self.wh_tax_code2)))
+            else:
+                domain.append(('tax_withholding_id', '!=', False))
+
+        if self.type == 'supplier':
+            if self.wh_tax_code:
+                domain.append(('tax_withholding_id', 'in', self.wh_tax_code._ids))
+                filters.append(_('Withholding Tax: ') + str(map(lambda x: x.name, self.wh_tax_code)))
+            else:
+                domain.append(('tax_withholding_id', '!=', False))
+
+        if self.journal_id and self.type == 'supplier':
             domain.append(('journal_id', '=', self.journal_id._ids))
             filters.append(_('Journal: ') + str(map(lambda x: x.name, self.journal_id)))
+        if self.journal2_id and self.type == 'customer':
+            domain.append(('journal_id', '=', self.journal2_id._ids))
+            filters.append(_('Journal: ') + str(map(lambda x: x.name, self.journal2_id)))
 
         lines = OrderedDict()
         print_data = dict()

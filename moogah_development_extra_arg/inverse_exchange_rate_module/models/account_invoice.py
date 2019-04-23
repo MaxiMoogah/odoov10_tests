@@ -16,6 +16,7 @@ class account_invoice_line(models.Model):
         if self.product_id:
             if not self.invoice_id:
                 return
+            res = super(account_invoice_line, self)._onchange_product_id()
             if self.invoice_id.manual_currency_rate_active and self.invoice_id.currency_id != self.invoice_id.company_id.currency_id:
                 if self.invoice_id.manual_currency_rate <= 0.00:
                     raise Warning(_('Please enter currency rate grater than 0 or positive number'))
@@ -25,6 +26,7 @@ class account_invoice_line(models.Model):
                     taxes = self.product_id.supplier_taxes_id or self.account_id.tax_ids
                 company_id = self.company_id or self.env.user.company_id
                 taxes = taxes.filtered(lambda r: r.company_id == company_id)
+                self.invoice_line_tax_ids = False
                 self.invoice_line_tax_ids = self.invoice_id.fiscal_position_id.map_tax(taxes, self.product_id,
                                                                                        self.invoice_id.partner_id)
                 if self.invoice_id.type == 'out_invoice':
@@ -33,10 +35,7 @@ class account_invoice_line(models.Model):
                     manual_currency_rate = self.product_id.standard_price / self.invoice_id.manual_currency_rate
                 self.price_unit = manual_currency_rate
                 self.name = self.product_id.name
-            else:
-                res = super(account_invoice_line, self)._onchange_product_id()
-                print "=============res", res
-                return res
+            return res
 
 
 # WATCH OUT, it is overriding the std function

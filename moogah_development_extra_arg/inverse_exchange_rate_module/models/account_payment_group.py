@@ -160,13 +160,15 @@ class AccountPaymentGroup(models.Model):
         for rec in self:
             rec.paid_company_currency = sum(rec.matched_move_line_ids.mapped(
                 lambda m: m.with_context(payment_group_id=rec.id).payment_group_matched_amount))
-            rec.paid_payment_currency = rec.paid_company_currency / rec.manual_currency_rate
+            if rec.manual_currency_rate > 0:
+                rec.paid_payment_currency = rec.paid_company_currency / rec.manual_currency_rate
 
     @api.multi
     @api.depends('state', 'matched_move_line_ids.payment_group_matched_amount', 'payments_amount', 'unmatched_amount')
     def _compute_matched_amounts2(self):
         for rec in self:
-            rec.unmatched_amount_payment_currency2 = rec.unmatched_amount / rec.manual_currency_rate
+            if rec.manual_currency_rate > 0:
+                rec.unmatched_amount_payment_currency2 = rec.unmatched_amount / rec.manual_currency_rate
 
     @api.multi
     @api.depends('unmatched_amount')

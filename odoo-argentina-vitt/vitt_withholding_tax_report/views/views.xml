@@ -12,8 +12,10 @@
                     <field name="date_to"/>
                     <field name="partner_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'customer')]}"/>
                     <field name="partner2_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'supplier')]}"/>
-                    <field name="wh_tax_code" widget="many2many_tags"/>
-                    <field name="journal_id" widget="many2many_tags"/>
+                    <field name="wh_tax_code" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'customer')]}"/>
+                    <field name="wh_tax_code2" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'supplier')]}"/>
+                    <field name="journal_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'customer')]}"/>
+                    <field name="journal2_id" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'supplier')]}"/>
                     <field name="company_id"/>
                     <field name="wh_group_by"/>
                     <field name="include_link"/>
