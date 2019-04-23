@@ -21,7 +21,7 @@ class AccountPaymentWhwizard(models.TransientModel):
     )
     wh_tax_code2 = fields.Many2many(
         'account.tax',
-        domain="[('type_tax_use','=','customer'),('active','=',True),('withholding_type','in',['tabla_ganancias','arba_ws','based_on_rule'])]",
+        domain="[('type_tax_use','=','customer'),('active','=',True)]",
         string="Withholding Tax Code",
         translate=True,
     )
