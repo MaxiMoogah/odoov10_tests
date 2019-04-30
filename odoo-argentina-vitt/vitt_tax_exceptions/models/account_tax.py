@@ -66,7 +66,7 @@ class AI(models.Model):
         tax_grouped = {}
         for line in self.invoice_line_ids:
             price_unit = line.price_unit * (1 - (line.discount or 0.0) / 100.0)
-            taxes = line.invoice_line_tax_ids.compute_all(price_unit, self.currency_id, line.quantity, line.product_id, self.partner_id,
+            taxes = line.invoice_line_tax_ids.with_context(date_invoice=self.date_invoice).compute_all(price_unit, self.currency_id, line.quantity, line.product_id, self.partner_id,
                                                           self.partner_shipping_id.state_id or self.partner_id.state_id)['taxes']
             for tax in taxes:
                 val = self._prepare_tax_line_vals(line, tax)
@@ -78,6 +78,11 @@ class AI(models.Model):
                     tax_grouped[key]['amount'] += val['amount']
                     tax_grouped[key]['base'] += val['base']
         return tax_grouped
+
+    @api.onchange('date_invoice')
+    def onchange_date_invoice(self):
+        self._onchange_invoice_line_ids()
+        return super(AI, self).onchange_date_invoice()
 
 
 class AIL(models.Model):
@@ -153,7 +158,7 @@ class ResPartner(models.Model):
                 if not arba.numero_comprobante:
                     return 0
                 else:
-                    _logger.info('Alicuota arba Recibida para calculo percepcion: %s' % arba.alicuota_percepcion)
+                    _logger.info('1 - Alicuota arba Recibida para calculo percepcion: %s' % arba.alicuota_percepcion)
                     return arba.alicuota_percepcion / 100.0
         return 0
 
@@ -204,7 +209,7 @@ class ResPartner(models.Model):
                 if not arba.numero_comprobante:
                     return 0
                 else:
-                    _logger.info('Alicuota arba Recibida para calculo percepcion: %s' % arba.alicuota_percepcion)
+                    _logger.info('2 - Alicuota arba Recibida para calculo percepcion: %s' % arba.alicuota_percepcion)
                     return arba.alicuota_percepcion / 100.0
         return 0
 
@@ -218,7 +223,7 @@ class ResPartner(models.Model):
         arba = self.get_arba_data(company, date)
         if not arba.numero_comprobante:
             return -1 #IF NOT IN PADRON RETURN THIS INSTEAD OF ZERO
-        _logger.info('Alicuota arba Recibida para calculo retencion: %s' % arba.alicuota_retencion)
+        _logger.info('3 - Alicuota arba Recibida para calculo retencion: %s' % arba.alicuota_retencion)
         return arba.alicuota_retencion / 100.0
 
 
@@ -274,7 +279,6 @@ class AccountTax(models.Model):
     #overwritten
     @api.multi
     def compute_all(self, price_unit, currency=None, quantity=1.0, product=None, partner=None, jur=None):
-
         # NEW
         date_invoice = self._context.get('date_invoice')
 
@@ -352,7 +356,6 @@ class AccountTax(models.Model):
 
     def _compute_amount(self, base_amount, price_unit, quantity=1.0, product=None, partner=None, jur=None):
         self.ensure_one()
-
         res = super(AccountTax, self)._compute_amount(base_amount, price_unit, quantity, product, partner)
 
         date_invoice = self._context.get('date_invoice')

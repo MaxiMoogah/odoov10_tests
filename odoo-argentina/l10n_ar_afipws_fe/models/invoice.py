@@ -110,6 +110,15 @@ class AccountInvoice(models.Model):
     afip_error_log = fields.Text(string="Errores AFIP")
 
 
+    @api.multi
+    def action_invoice_cancel(self):
+        for inv in self:
+            if inv.journal_id.point_of_sale_type == 'electronic':
+                raise UserError(_('Solo para facturas NO electronicas'))
+
+        return super(AcountInvoice, self).action_invoice_cancel()
+
+
     @api.one
     def get_validation_type(self):
         # for compatibility with account_invoice_operation, if module installed
