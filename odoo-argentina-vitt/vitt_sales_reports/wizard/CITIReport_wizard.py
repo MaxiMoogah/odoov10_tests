@@ -331,10 +331,10 @@ class citi_reports(models.TransientModel):
                 else:
                     tstr = tstr + str(vatcodesqty)
 
-                if inv.fiscal_position_id.afip_code == None:
+                if inv.fiscal_position_id.afip_code_purch == None:
                     tstr = tstr + '0'
                 else:
-                    tstr = tstr + "{:>1}".format(inv.fiscal_position_id.afip_code)
+                    tstr = tstr + "{:>1}".format(inv.fiscal_position_id.afip_code_purch)
 
                 if inv.journal_document_type_id.document_type_id.document_letter_id.name != 'B' and \
                                 inv.journal_document_type_id.document_type_id.document_letter_id.name != 'C':

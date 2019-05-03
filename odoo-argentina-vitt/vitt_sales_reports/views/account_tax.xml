@@ -13,5 +13,16 @@
             </field>
         </record>
 
+        <record id="view_account_position_form2" model="ir.ui.view">
+            <field name="name">view.account.position.form2</field>
+            <field name="model">account.fiscal.position</field>
+            <field name="inherit_id" ref="l10n_ar_account.view_account_position_form"/>
+            <field name="arch" type="xml">
+                <field name="afip_code" position="after">
+                    <field name="afip_code_purch"/>
+                </field>
+            </field>
+        </record>
+
   </data>
 </odoo>

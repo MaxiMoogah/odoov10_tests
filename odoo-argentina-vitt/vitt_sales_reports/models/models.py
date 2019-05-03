@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 from odoo import http, models, fields, api, _
 from odoo.exceptions import ValidationError
+
+class AccountFiscalPosition(models.Model):
+    _inherit = "account.fiscal.position"
+
+    afip_code_purch = fields.Char('AFIP Code Purchase',help='For eg. This code will be used on Purcahse citi reports')
+
 class jurisdiction_codes(models.Model):
     _name = 'jurisdiction.codes'
 
@@ -14,6 +20,7 @@ class sicore_codes(models.Model):
 
     name = fields.Char('Codigo SIFERE', size=3)
     comment = fields.Char('texto', size=60)
+
 
 class sicore_codes(models.Model):
     _name = 'sicore.norm.codes'
@@ -31,6 +38,7 @@ class sicore_codes(models.Model):
     @api.multi
     def name_get(self):
         return [(code.id, "%s / %s " % (code.id, code.comment)) for code in self]
+
 
 class account_tax_sicore(models.Model):
     _inherit = 'account.tax'
