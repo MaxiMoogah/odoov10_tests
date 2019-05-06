@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 {
     'name': 'Show Full Reconcile',
     'description': 'Show Full Reconcile',
