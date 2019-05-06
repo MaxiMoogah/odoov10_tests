@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "hide pyament button invoice",
-    'summary': """hide pyament button invoice""",
-    'description': """hide pyament button invoice""",
+    'name': "Hide Payment Button Invoice",
+    'summary': """Este add-on esconde el botón 'Registrar Pago' en las facturas de Clientes y Proveedores""",
+    'description': """Este add-on esconde el botón 'Registrar Pago' en las facturas de Clientes y Proveedores""",
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
