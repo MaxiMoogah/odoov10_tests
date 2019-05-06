@@ -13,11 +13,12 @@
                     <field name="journal_ids" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'purchase')]}"/>
                     <field name="tax_percep_ids" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'purchase')]}"/>
                     <field name="p_journal_ids" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'sale')]}"/>
-                    <field name="p_tax_percep_ids" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'ssale')]}"/>
+                    <field name="p_tax_percep_ids" widget="many2many_tags" attrs="{'invisible': [('type', '=', 'sale')]}"/>
                     <field name="company_id"/>
                     <field name="group_by_tax"/>
                     <field name="show_comp_cur"/>
                     <field name="show_link"/>
+                    <field name="tax_no_zero"/>
                     <field name="print_by"/>
                     <field name="type" invisible="1"/>
                 </group>

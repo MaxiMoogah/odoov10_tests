@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Perception Tax Report - Customer Invoices',
-    'version': '10.0.1.0.1',
+    'version': '10.0.1.0.2',
     'summary': 'Perception Tax Report - Customer Invoices',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
