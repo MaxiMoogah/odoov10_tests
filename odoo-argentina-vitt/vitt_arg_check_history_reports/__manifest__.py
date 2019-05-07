@@ -11,7 +11,7 @@
     'summary': 'Este app instala el reporte de Historia de Cheques Propios y de 3ros',
     'author': "Moogah",
     'website': "http://www.Moogah.com",
-    'version': '10.0.1.0.5',
+    'version': '10.0.1.0.4',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',
