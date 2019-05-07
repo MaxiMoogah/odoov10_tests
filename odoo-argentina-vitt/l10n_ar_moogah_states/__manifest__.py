@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Provincias Argentinas con Cod. AFIP",
-    'version': '10.0.1.2',
+    'version': '10.0.1.1',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'Moogah',
