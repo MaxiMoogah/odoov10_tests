@@ -8,10 +8,10 @@
 {
     'name': 'History Checks Reports',
     'description': 'Adds History Checks Reports for previous states',
-    'summary': '',
+    'summary': 'Este app instala el reporte de Historia de Cheques Propios y de 3ros',
     'author': "Moogah",
     'website': "http://www.Moogah.com",
-    'version': '10.0.1.0.4',
+    'version': '10.0.1.0.5',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',
