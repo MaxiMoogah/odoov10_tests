@@ -5,7 +5,7 @@
 
 {
     'name': 'Argentina - Chart of Accounts Template',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'description': """
 Argentinian chart of accounts and tax codes, template.
 ==================================================
@@ -24,3 +24,4 @@ Plan contable argentino e impuestos de acuerdo a disposiciones vigentes
         'data/check_accounts_data.xml'
     ],
 }
+#<div>Icons made by <a href="https://www.flaticon.com/authors/twitter" title="Twitter">Twitter</a> from <a href="https://www.flaticon.com/" 		    title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" 		    title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
