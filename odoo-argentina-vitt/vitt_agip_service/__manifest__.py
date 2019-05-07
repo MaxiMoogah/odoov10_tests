@@ -6,12 +6,12 @@
 #
 ##############################################################################
 {
-    'name': 'VITT AGIP Web Service',
-    'description': 'VITT AGIP Web Service',
-    'summary': 'VITT AGIP Web Service',
+    'name': 'VITT AGIP Web Service for Server',
+    'description': 'VITT AGIP Web Service for Server',
+    'summary': 'VITT AGIP Web Service. Este app solo debe ser instalado en el servidor donde se importarán los archivos del padrón AGIP.',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'license': 'Other proprietary',
     'maintainer':'Osvaldo Gentile',
     'contributors':'',
