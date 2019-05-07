@@ -57,7 +57,7 @@
                                 </td>
                                 <t t-if="mode=='detailed'">
                                     <td class="text-right">
-                                        <span t-field="o.date"/>
+                                        <span t-field="o.transdate_move_id"/>
                                     </td>
                                 </t>
                                 <t t-if="total==0">
