@@ -2,15 +2,15 @@
 {
     'name': "Formato de Impresion para Pagos y Recibos",
 
-    'summary': """Localizacion impresion de pagos y recibos""",
+    'summary': """Localizacion Argentina, impresion de Pagos a Proveedores y Recibos de Clientes""",
 
     'description': """
-        impresion de pagos y recibos ARG
+        Este app instala el formato de impresión para los registros de pagos en grupo para Pagos a Proveedores y Recibos de Clientes
     """,
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'depends': [
         'account_payment_group',
         'account_check',
