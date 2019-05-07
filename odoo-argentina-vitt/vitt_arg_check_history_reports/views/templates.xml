@@ -17,7 +17,7 @@
                                 <th class="text-right">Banco</th>
                                 <th class="text-right">Empresa</th>
                                 <t t-if="mode=='overview'">
-                                	<th class="text-right">Fecha Estado</th>
+                                	<th class="text-right">Notas</th>
                                 </t>
                                 <t t-if="mode=='detailed'">
                                     <th class="text-right">Notas</th>
