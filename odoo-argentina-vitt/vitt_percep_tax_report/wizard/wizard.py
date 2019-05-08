@@ -58,8 +58,7 @@ class PercepTaxReportWizard(models.TransientModel):
         filters = list()
         domain = [('date_invoice', '>=', self.date_from),
                   ('date_invoice', '<=', self.date_to),
-                  ('state', 'in', ['open','paid']),
-                  ('type', 'in', ('out_invoice', 'out_refund'))]
+                  ('state', 'in', ['open','paid'])]
         filters.append(_('dates: ') + str(datetime.strptime(self.date_from, "%Y-%m-%d").strftime("%d-%m-%Y")) + " " +
                        str(datetime.strptime(self.date_to, "%Y-%m-%d").strftime("%d-%m-%Y")))
         if self.company_id:
@@ -67,14 +66,16 @@ class PercepTaxReportWizard(models.TransientModel):
             filters.append(_('Company: ') + self.company_id.name)
 
         if self.type == 'sale':
+            domain.append(('type', 'in', ('out_invoice', 'out_refund')))
             if self.journal_ids:
-                domain.append(('journal_ids', '=', self.journal_ids._ids))
+                domain.append(('journal_id', 'in', self.journal_ids._ids))
                 filters.append(_('Journal: ') + str(map(lambda x: x.name, self.journal_ids)))
             if self.tax_percep_ids:
                 filters.append(_('Perceptions: ') + str(map(lambda x: x.name, self.tax_percep_ids)))
         if self.type == 'purchase':
+            domain.append(('type', 'in', ('in_invoice', 'in_refund')))
             if self.p_journal_ids:
-                domain.append(('journal_ids', '=', self.p_journal_ids._ids))
+                domain.append(('journal_id', 'in', self.p_journal_ids._ids))
                 filters.append(_('Journal: ') + str(map(lambda x: x.name, self.p_journal_ids)))
             if self.p_tax_percep_ids:
                 filters.append(_('Perceptions: ') + str(map(lambda x: x.name, self.p_tax_percep_ids)))
@@ -140,9 +141,13 @@ class PercepTaxReportWizard(models.TransientModel):
                             whcodes.update({tax.tax_id.name: 0})
 
                         key = '{:>010s}'.format(str(index))
+                        if tax.base > 0:
+                            base = tax.amount*100/tax.base*sign
+                        else:
+                            base = 0.0
                         lines.update({key: [str(datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime("%d-%m-%Y")),
                             inv.display_name2, inv.partner_id.name, inv.partner_id.main_id_number, tax.base*sign,
-                            tax.amount*100/tax.base*sign, tax.tax_id.jurisdiction_code.name, tax.amount*sign,tax.tax_id.name]})
+                            base, tax.tax_id.jurisdiction_code.name, tax.amount*sign,tax.tax_id.name]})
                         if self.show_comp_cur:
                             lines[key].append(tax.amount*currate*sign)
                         if self.print_by == 'xls' and self.show_link:
@@ -200,7 +205,7 @@ class PercepTaxReportWizard(models.TransientModel):
                 return self.env['report'].with_context(landscape=True).get_action(self,'vitt_percep_tax_report.repoort_html',data=datas)
 
         if self.print_by == 'xls':
-            #print_data = lines
+            print_data = lines
             context = self._context
             filename = _('Perception_Tax_Report.xls')
             workbook = xlwt.Workbook(encoding="UTF-8")
@@ -225,7 +230,7 @@ class PercepTaxReportWizard(models.TransientModel):
                                 worksheet.write(line, row, print_data[data][index])
                             else:
                                 numberf = float(int(print_data[data][index]*100))/100
-                                if numberf > 0:
+                                if numberf != 0:
                                     worksheet.write(line, row, numberf)
                         else:
                             if print_data[data][index]:
