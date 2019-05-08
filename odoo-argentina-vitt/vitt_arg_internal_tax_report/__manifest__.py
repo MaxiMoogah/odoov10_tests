@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name': 'Argentinean Internal Tax Report',
-    'version': '10.0.1.0',
+    'name': 'Reporte de Impuestos Internos Compras y Ventas',
+    'version': '10.0.1.1',
     'category': 'Hidden/Dependency',
     'depends': ['purchase', 'sale_stock', 'l10n_ar_account', 'report_xls'],
     'description': """
-Module for defining argentinian reports.
+Este app instala el informe que muestra los valores de Impuestos Internos por producto en Facturas de Ventas y Compras, y la diferencia del cálculo al comparar ambos.
 ===============================================
     """,
     'data': [
