@@ -3,12 +3,12 @@
     'name': "Recuperacion de Cod. CAE desde Factura",
     'summary': """Recuperar CAE desde la factura y/o lista de facturas""",
     'description': """
-        Recuperar CAE desde la factura
+        Este app incluye la funcionalidad para Recuperar el CAE desde el registro de factura o desde la lista de facturas.
     """,
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.6',
+    'version': '10.0.1.0.7',
     'depends': [
         'account',
         'l10n_ar_afipws_fe',

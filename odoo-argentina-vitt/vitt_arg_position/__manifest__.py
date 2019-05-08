@@ -5,11 +5,9 @@
 
 {
     'name': 'Argentina - Posiciones Fiscales',
-    'version': '10.0.1.3',
+    'version': '10.0.1.4',
     'description': """
 Template de Posiciones Fiscales con reemplazo de cod. IVA e identificación por tipo de responsabilidad.
-==================================================
-
 Considera Operaciones Exentas, No Gravadas y reemplazo de impuestos para Monotributistas y Consumidor Final
 
     """,
@@ -19,6 +17,5 @@ Considera Operaciones Exentas, No Gravadas y reemplazo de impuestos para Monotri
     'depends': ['account'],
     'data':[
         'data/f_position_arg_data.xml',
-      #  'data/sicore_norm_code.xml' /removed for now, it causes errors in odoo.sh
     ],
 }
