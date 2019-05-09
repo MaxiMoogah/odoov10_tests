@@ -116,7 +116,7 @@ class AccountInvoice(models.Model):
             if inv.journal_id.point_of_sale_type == 'electronic':
                 raise UserError(_('Solo para facturas NO electronicas'))
 
-        return super(AcountInvoice, self).action_invoice_cancel()
+        return super(AccountInvoice, self).action_invoice_cancel()
 
 
     @api.one
@@ -583,6 +583,8 @@ print "Observaciones:", wscdc.Obs
                             precio, bonif, iva_id, imp_iva, importe + imp_iva)
                     elif afip_ws == 'wsfex':
                         bonif = qty * precio - importe
+                        if bonif < 0:
+                            bonif = 0
                         ws.AgregarItem(
                             codigo, ds, qty, umed, precio, importe,
                             bonif)

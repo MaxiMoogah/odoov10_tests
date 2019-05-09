@@ -5,9 +5,10 @@
 
 {
     'name': 'Argentina - Financial Reports',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'description': """
-Financial reports with ARG Chart of Accounts using Account Tags instead of account type.
+Definición de Reportes Financieros en base al Plan de Cuentas ARG de Moogah. Se utilizan "Etiquetas de Cuentas" en lugar de Tipos de Cuentas para estos informes.
+Los informes se muestran disponibles desde el nuevo sub-menú: Informes Legales Argentina, desde Contabilidad > Informes
 
     """,
     'author': ['Moogah'],
