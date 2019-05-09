@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "VITT App - Setting for Cash Invoice",
-    'summary': """This app includes an account for the Payment Term to book the invoice to a Cash/Bank account instead of a Debtors one""",
+    'name': "Términos de Pago - Pagos Contado",
+    'summary': """Este app vincula una cuenta contable al Término de Pago, lo que permite que la factura al momento de validarse quede completamente pagada.""",
     'description': """
-        The app adds a new field to specify an account (type Bank or Cash) in order to book the invoice straight to this account instead of using the Debtors account. 
-        The invoice will be marked as paid with no open value.
+        El app agrega un nuevo campo para especificar una cuenta (de tipo Banco o Caja) para que la factura sea registrada contra este cuenta en lugar de usar la Cuenta de Deudores.
+        Al validarse, la factura quedará marcada como totalmente pagada.
     """,
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.1',
+    'version': '10.0.1.0.2',
     'depends': [
         'account',
      ],
