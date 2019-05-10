@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Nueva sequencia para remitos oficiales",
-    'summary': """Nueva sequencia para remitos oficiales""",
-    'description': """Nueva sequencia para remitos oficiales""",
+    'name': "Secuencia para Remito Pre-impresos ARG",
+    'summary': """Permite definir un campo de Nro. Oficial en Reg. de Stock""",
+    'description': """ """,
 
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
 
     'depends': ['stock',],
     'data': [
