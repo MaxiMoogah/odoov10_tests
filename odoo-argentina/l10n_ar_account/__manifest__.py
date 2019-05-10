@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Módulo base de Contabilidad Argentina",
-    'version': '10.0.1.0.10',
+    "name": "Base para Contabilidad Argentina",
+    'version': '10.0.1.0.11',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'Moogah,ADHOC SA,Moldeo Interactive',
     'license': 'AGPL-3',
-    'summary': '',
+    'summary': 'Configuración básica para localización de Argentina',
     'depends': [
         'account_document',
         'l10n_ar_partner',

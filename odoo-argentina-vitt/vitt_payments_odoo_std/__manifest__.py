@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Standard Odoo Payments & Receipts",
-    'summary': """Standard registers for Payments, purchase and sales transactions, using Odoo standard payments instead of Payment Groups""",
-    'description': """Standard registers for Payments, purchase and sales transactions, using Odoo standard payments instead of Payment Groups""",
+    'name': "Pagos & Recibos Standard Odoo",
+    'summary': """Permite acceder al menú para ver los Pagos de Odoo cuando se tiene instalado el app de Pagos en Grupo""",
+    'description': """ """,
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.3',
+    'version': '10.0.1.0.4',
     'depends': [
         'account_accountant',
         'account_payment_group_document',

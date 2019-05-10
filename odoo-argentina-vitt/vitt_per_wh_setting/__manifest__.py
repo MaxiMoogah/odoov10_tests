@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Configuracion en Provincias para Percepciones y Retenciones',
-    'summary': 'Configuracion en Provincias para Percepciones y Retenciones',
+    'name': 'Campos Impositivos en Provincias',
+    'summary': 'Campos para impuestos de Percepción y Retención en Provincias',
     'description': """Configuracion en Provincias para Percepciones y Retenciones""",
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
     'depends': [

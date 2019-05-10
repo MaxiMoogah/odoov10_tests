@@ -6,7 +6,7 @@
     'sequence': 14,
     'author': 'Moogah',
     'license': 'AGPL-3',
-    'summary': '',
+    'summary': 'WS Bonos Fiscales Electronicos AFIP',
     'depends': [
         'l10n_ar_afipws',
         'l10n_ar_account',

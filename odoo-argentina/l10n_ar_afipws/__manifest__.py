@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Modulo Base para los Web Services de AFIP',
-    'version': '10.0.1.0.6',
+    'name': 'Base para Web Services de AFIP',
+    'version': '10.0.1.0.7',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'Moogah,ADHOC SA, Moldeo Interactive',
     'license': 'AGPL-3',
-    'summary': '',
+    'summary': 'Este app instala las funcionalidades para el uso de WS de AFIP',
     'depends': [
         # this dependency is becaouse of CUIT request and some config menus
         'l10n_ar_partner',
