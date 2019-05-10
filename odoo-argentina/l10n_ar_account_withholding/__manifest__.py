@@ -43,14 +43,14 @@
         'account_withholding_automatic',
         # 'l10n_ar_invoice',
         # para ganancias
-        #'report_aeroo',
         'l10n_ar_padron_afip',
     ],
     'external_dependencies': {
 #        'python': ['pyafipws'],
     },
     'installable': True,
-    'name': 'Argentinian Withholding Management',
+    'name': 'Retenciones Impositivas Argentina',
+    'summary': 'Funcionalidades básicas para el cálculo de Percepciones y Retenciones Impositivas Argentina',
     'test': [],
-    'version': '10.0.1.0.4',
+    'version': '10.0.1.0.5',
 }
