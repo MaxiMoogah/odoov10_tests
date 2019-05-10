@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Facturación Electrónica Argentina",
-    'version': '10.0.1.0.19',
+    "name": "Factura Electrónica Argentina",
+    'version': '10.0.1.0.18',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'Moogah,ADHOC SA, Moldeo Interactive',
     'license': 'AGPL-3',
-    'summary': 'Este app instala todas las funcionaldiades para facturación electrónica',
+    'summary': '',
     'depends': [
         'l10n_ar_afipws',
         'l10n_ar_account',

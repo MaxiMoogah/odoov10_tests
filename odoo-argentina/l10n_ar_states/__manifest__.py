@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
-    "name": "Lista de provincias Argentinas",
-    'version': '10.0.1.0.1',
+    "name": "Listado de provincias Argentinas",
+    'version': '10.0.1.0.0',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'Moogah,ADHOC SA',

@@ -42,7 +42,7 @@
         #'python': ['pyafipws'],
     },
     'installable': True,
-    'name': 'Constancia Padron AFIP',
+    'name': 'Padron AFIP Argentino',
     'test': [],
     'version': '10.0.1.0.8',
 }
