@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Seteo para control de partner con mismo cuit duplicados',
-    'summary': 'Seteo para control de partner con mismo cuit duplicados',
-    'description': """Seteo para control de partner con mismo cuit duplicados""",
-    'version': '10.0.1.0.4',
+    'name': 'Control CUIT Duplicados',
+    'summary': 'Control para evitar la duplicación de CUIT/CUIL',
+    'description': """Este app incluye un campo adicional en la Configuración del módulo de Contabilidad que permite especificar el Tipo de Documento sobre el que se realizará el control.
+    """,
+    'version': '10.0.1.0.5',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
     'depends': [
