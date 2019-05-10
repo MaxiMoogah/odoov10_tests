@@ -27,8 +27,8 @@
     <menuitem
         id="menu_nl_setting"
         name="NL Settings"
-        sequence="6"
-        parent="account.menu_finance_configuration"
+        sequence="80"
+        parent="account.account_account_menu"
         action="action_nl_setting"
     />
 

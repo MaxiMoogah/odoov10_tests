@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Términos de Pago - Pagos Contado",
-    'summary': """Este app vincula una cuenta contable al Término de Pago, lo que permite que la factura al momento de validarse quede completamente pagada.""",
+    'summary': """Este app vincula una cuenta contable al Término de Pago.""",
     'description': """
         El app agrega un nuevo campo para especificar una cuenta (de tipo Banco o Caja) para que la factura sea registrada contra este cuenta en lugar de usar la Cuenta de Deudores.
         Al validarse, la factura quedará marcada como totalmente pagada.

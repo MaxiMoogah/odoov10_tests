@@ -5,13 +5,9 @@
 
 {
     'name': 'Formato Separador Decimales es_AR',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
     'description': """
-Este app actualiza el formato de separador de decimales para el idioma es_AR, sin separador de miles.
-==================================================
-
-Solo separador de decimales
-
+		Este app actualiza el formato de separador de decimales para el idioma es_AR, sin separador de miles
     """,
     'author': ['Moogah'],
     'website': 'http://www.moogah.com',
