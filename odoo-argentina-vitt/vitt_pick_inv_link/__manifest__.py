@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Stock Picking Links with Invoices',
-    'version': '10.0.1.0',
-    'summary': 'Adds link between pickings and invoices',
+    'name': 'Nros. Remito en Facturas de Venta',
+    'version': '10.0.1.1',
+    'summary': 'El app agrega el vínculo entre Facturas de Ventas y Remitos',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
     'depends': [
