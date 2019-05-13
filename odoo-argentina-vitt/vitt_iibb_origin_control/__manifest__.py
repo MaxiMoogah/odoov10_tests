@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Control Provincia IIBB",
-    'summary': """Este app sirve para registrar la Provincia en el momento en que se validó la factura""",
+    'summary': """Este app agrega un campo de Provincia adicional a la factura""",
     'description': """IIBB tax origin control""",
     'author': "Moogah",
     'website': "http://www.Moogah.com",

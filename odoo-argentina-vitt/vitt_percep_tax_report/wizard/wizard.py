@@ -88,9 +88,14 @@ class PercepTaxReportWizard(models.TransientModel):
         list_align = list()
         tot_wh = dict()
 
-        list_titles = [_('Invoice Date'), _('Invoice Nr'), _('Customer Name'), _('Customer ID Nr'),_('Net Amount'),
+        if self.type != 'purchase':
+            list_titles = [_('Invoice Date'), _('Invoice Nr'), _('Customer Name'), _('Customer ID Nr'),_('Net Amount'),
                        _('Perception Rate %'), _('Jurisdiction'), _('Perception Amount'),_('Tax Name')]
-        list_align = ['center', 'center', 'center', 'center', 'right', 'right', 'center', 'right','none']
+            list_align = ['center', 'center', 'center', 'center', 'right', 'right', 'center', 'right', 'none']
+        else:
+            list_titles = [_('Invoice Date'), _('Invoice Nr'), _('Customer Name'), _('Customer ID Nr'),
+                           _('Jurisdiction'), _('Perception Amount'),_('Tax Name')]
+            list_align = ['center', 'center', 'center', 'center', 'center', 'right', 'none']
         if self.show_comp_cur:
             list_titles.append(_('Amount in Company Currency'))
             list_align.append('right')
@@ -142,16 +147,26 @@ class PercepTaxReportWizard(models.TransientModel):
 
                         key = '{:>010s}'.format(str(index))
                         if tax.base > 0:
-                            base = tax.amount*100/tax.base*sign
+                            base = tax.amount*100/tax.base
                         else:
                             base = 0.0
-                        lines.update({key: [str(datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime("%d-%m-%Y")),
-                            inv.display_name2, inv.partner_id.name, inv.partner_id.main_id_number, tax.base*sign,
-                            base, tax.tax_id.jurisdiction_code.name, tax.amount*sign,tax.tax_id.name]})
+
+                        if self.type != 'purchase':
+                            lines.update({key: [str(datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime("%d-%m-%Y")),
+                                inv.display_name2, inv.partner_id.name, inv.partner_id.main_id_number, tax.base*sign,
+                                base, tax.tax_id.jurisdiction_code.name, tax.amount*sign,tax.tax_id.name]})
+                        else:
+                            lines.update({key: [str(datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime("%d-%m-%Y")),
+                                inv.display_name2, inv.partner_id.name, inv.partner_id.main_id_number,
+                                tax.tax_id.jurisdiction_code.name, tax.amount*sign,tax.tax_id.name]})
+
                         if self.show_comp_cur:
                             lines[key].append(tax.amount*currate*sign)
                         if self.print_by == 'xls' and self.show_link:
-                            menu = self.env['ir.model.data'].get_object_reference('account','action_invoice_tree1')
+                            if self.type != 'purchase':
+                                menu = self.env['ir.model.data'].get_object_reference('account','action_invoice_tree1')
+                            else:
+                                menu = self.env['ir.model.data'].get_object_reference('account', 'action_invoice_tree2')
                             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url') + "/web?#id=" + str(inv.id) + \
                                    "&view_type=form&model=account.invoice&action=" + str(menu[1])
                             base_url = base_url.replace("https://", "http://")
@@ -170,13 +185,23 @@ class PercepTaxReportWizard(models.TransientModel):
                 for code in whcodes:
                     testf = False
                     for line in lines:
-                        if code == lines[line][8]:
+                        if self.type == 'purchase':
+                            tt = lines[line][6]
+                        else:
+                            tt = lines[line][8]
+                        if code == tt:
                             key = '{:>010s}'.format(str(subindex))
                             if not testf:
-                                if self.print_by != 'excel':
-                                    grouped.update({key:[lines[line][8],"","","",0,0,"",0,"",0]})
+                                if self.type != 'purchase':
+                                    if self.print_by != 'excel':
+                                        grouped.update({key:[tt,"","","",0,0,"",0,"",0,""]})
+                                    else:
+                                        grouped.update({key: [tt,"","","",0,0,"",0,"","",0,""]})
                                 else:
-                                    grouped.update({key: [lines[line][8],"","","",0,0,"",0,"","",0]})
+                                    if self.print_by != 'excel':
+                                        grouped.update({key:[tt,"","","",0,0,"",0,""]})
+                                    else:
+                                        grouped.update({key: [tt,"","","",0,0,"","",0,""]})
                                 testf = True
                                 subindex += 1
                             key = '{:>010s}'.format(str(subindex))
@@ -217,9 +242,10 @@ class PercepTaxReportWizard(models.TransientModel):
             #print print_data
             line = 3
             row = 0
-            for title in list_titles:
-                worksheet.write(line, row, title)
-                row += 1
+            for pos, title in enumerate(list_titles):
+                if list_align[pos] != 'none':
+                    worksheet.write(line, row, title)
+                    row += 1
             for data in sorted(print_data.iterkeys()):
                 row = 0
                 line += 1

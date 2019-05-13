@@ -37,7 +37,9 @@ class sire_report(models.TransientModel):
         #data
         whcode = self.wh_id
         domain = [
-            ('date', '>=', self.date_from), ('date', '<=', self.date_to), ('state', 'not in', ['draft','cancel'])
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
+            ('state', 'not in', ['draft','cancel']),
         ]
 
         invoiceModel = self.env['account.invoice']
@@ -48,10 +50,14 @@ class sire_report(models.TransientModel):
             if inv.journal_id.use_documents:
                 for tax in inv.tax_line_ids:
                     if 'gross_income' == tax.tax_id.tax_group_id.tax and \
-                            'perception' == tax.tax_id.tax_group_id.type:
+                            'perception' == tax.tax_id.tax_group_id.type and \
+                            'purchase' == tax.tax_id.type_tax_use:
+
                         found = False
                         if 'gross_income' == tax.tax_id.tax_group_id.tax and \
-                                'perception' == tax.tax_id.tax_group_id.type:
+                                'perception' == tax.tax_id.tax_group_id.type and \
+                                'purchase' == tax.tax_id.type_tax_use:
+
 
                             if not self.wh_id and not self.jurisd_id:
                                 found = True
@@ -102,7 +108,8 @@ class sire_report(models.TransientModel):
                 for tax in inv.tax_line_ids:
                     found = False
                     if 'gross_income' == tax.tax_id.tax_group_id.tax and \
-                        'perception' == tax.tax_id.tax_group_id.type:
+                        'perception' == tax.tax_id.tax_group_id.type and \
+                        'purchase' == tax.tax_id.type_tax_use:
 
                         if not self.wh_id and not self.jurisd_id:
                             found = True

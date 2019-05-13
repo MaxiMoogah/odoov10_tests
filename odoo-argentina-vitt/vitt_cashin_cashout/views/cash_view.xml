@@ -20,7 +20,7 @@
                     </header>
                     <sheet>
                         <h1>
-                            <label string="Cash Out" />
+                            <!--label string="Cash Out" /-->
                             <field name="name" class="oe_inline" />
                         </h1>
                         <group name="main">

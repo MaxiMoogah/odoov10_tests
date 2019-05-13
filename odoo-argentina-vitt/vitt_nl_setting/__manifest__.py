@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Controles adicional para Contabilidad ARG",
-    'summary': """El app habilita una opcion de configuracion con controles adicionales para exportaciones impositivas""",
-    'description': """ """,
+    'summary': """Controles adicional para Contabilidad ARG""",
+    'description': """El app habilita una opcion de configuracion con controles adicionales para exportaciones impositivas""",
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
