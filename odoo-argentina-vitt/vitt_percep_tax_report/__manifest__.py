@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Perception Tax Report - Customer Invoices',
-    'version': '10.0.1.0.6',
-    'summary': 'Perception Tax Report - Customer Invoices',
+    'name': 'Informe Imp. Percepciones - Facturas',
+    'version': '10.0.1.0.7',
+    'summary': 'Informes de Impuestos de Percepción en Facturas (Ventas y Compras)',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
     'depends': [
