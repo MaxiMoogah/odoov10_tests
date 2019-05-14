@@ -5,14 +5,14 @@
     'summary': """Nueva impresion de cotizaciones ARG""",
 
     'description': """
-        Nueva impresion de cotizaciones ARG
+        El app habilita una nueva impresion para Cotizaciones y Ordenes de Venta según requerimientos de ARG. Es decir, discriminación del IVA para clientes de tipo Responsable Inscripto.
     """,
 
     'author': "Moogah",
     'website': "http://www.Moogah.com",
 
     'category': 'Uncategorized',
-    'version': '10.0.1.0',
+    'version': '10.0.1.1',
 
     # any module necessary for this one to work correctly
     'depends': [

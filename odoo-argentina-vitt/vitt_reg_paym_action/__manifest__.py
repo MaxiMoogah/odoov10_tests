@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "Hide register Payment for invoices",
-    'summary': """Hide register Payment for invoices""",
-    'description': """Hide register Payment for invoices""",
+    'name': "Deshabilitar registrar Pagos desde Facturas",
+    'summary': """Deshabilitar registrar Pagos desde Facturas""",
+    'description': """Este app deshabilita la opción que permite realizar Pagos desde los registros de Facturas de Clientes y Proveedores.
+    Al instalarlo, el botón Registrar Pago ya no es visible para el usuario.""",
     'author': "Moogah",
     'website': "http://www.Moogah.com",
     'category': 'Uncategorized',
-    'version': '10.0.1.0.0',
+    'version': '10.0.1.0.1',
     'depends': ['sale','purchase'],
     'data': [
         'views/views.xml',
