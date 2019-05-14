@@ -13,8 +13,8 @@
                         Outstanding Statement
                     </h4>
                     <p>
-                        Date: <span t-esc="Date[o.id]" /><br/><!--Today-->
-                        <t t-if="o.ref">Partner ref: <span t-field="o.ref"/></t>
+                        <b>Date: <span t-esc="Date[o.id]" /><br/><!--Today-->
+                        <t t-if="o.ref">Partner ref: <span t-field="o.ref"/></t> </b>
                     </p>
 
                     <t t-if="Lines[o.id]">
@@ -22,9 +22,9 @@
                         <t t-foreach="Lines[o.id]" t-as="currency">
                             <br t-if="not currency_first" />
                             <p>
-                                Outstanding Statement at <span t-esc="Date_end[o.id]" /> in <span t-esc="Currencies[o.id][currency].name"/>:
+                                <b> Outstanding Statement at <span t-esc="Date_end[o.id]" /> in <span t-esc="Currencies[o.id][currency].name"/>: </b>
                             </p>
-                            <table class="table table-condensed" style="border: 1px solid black; border-collapse: collapse;">
+                            <table class="table table-striped" style="border: 1px solid black; border-collapse: collapse; background-color: #cce7f2;">
                                 <thead>
                                     <tr>
                                         <th style="border-right: 1px solid black;">Reference number</th>
@@ -105,7 +105,7 @@
                                     </td>
                                     <td style="border-right: 1px solid black;"></td>
                                     <td style="border-right: 1px solid black;">
-                                        Ending Balance
+                                        <b>Ending Balance </b>
                                     </td>
                                     <td style="border-right: 1px solid black;"></td>
                                     <td style="border-right: 1px solid black;"></td>
@@ -115,9 +115,9 @@
                                 </tr>
                             </table>
                             <p>
-                                Aging Report at  <span t-esc="Date_end[o.id]" /> in <span t-esc="Currencies[o.id][currency].name"/>:
+                                <b>Aging Report at  <span t-esc="Date_end[o.id]" /> in <span t-esc="Currencies[o.id][currency].name"/>: </b>
                             </p>
-                            <table class="table table-condensed" t-if="Show_Buckets" style="border: 1px solid black; border-collapse: collapse;">
+                            <table class="table table-condensed" t-if="Show_Buckets" style="border: 1px solid black; border-collapse: collapse; background-color: #ede4f0;">
                                 <thead>
                                     <tr>
                                         <th class="text-center" style="border-right: 1px solid black;">Current Due</th>
