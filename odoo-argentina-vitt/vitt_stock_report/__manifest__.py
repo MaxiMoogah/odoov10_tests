@@ -6,12 +6,12 @@
 #
 ##############################################################################
 {
-    'name': 'Nuevo Remito de Entrega',
-    'description': 'Nuevo Remito de Entrega',
-    'summary': 'El app habilita un nuevo formato de Remito de Entrega desde el menú de Impresión. Incluye la columna de Cantidad Ordenada y la firma.',
+    'name': 'New delivery slip report',
+    'description': 'New delivery slip report',
+    'summary': '',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
-    'version': '10.0.1.1',
+    'version': '10.0.1.0',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',
