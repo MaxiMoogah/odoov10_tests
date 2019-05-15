@@ -3,8 +3,8 @@
         <t t-call="report.html_container">
             <t t-call="report.external_layout">
                 <div class="page" style="font-size:9px;" >
-                    <h2 t-if="type=='customer'">Informe Imp. Retenciones - Recibos</h2>
-                    <h2 t-if="type=='supplier'">Informe Imp. Retenciones - Pagos</h2>
+                    <h2 t-if="type=='customer'">Withholding Tax Report - Receipts</h2>
+                    <h2 t-if="type=='supplier'">Withholding Tax Report - Payments</h2>
                     <div class="row">
                         <div class="col-xs-6" >
                             <t t-foreach="filters2" t-as="filters">
@@ -52,7 +52,7 @@
                             <tr><td><br/><br/><br/><br/><br/></td></tr>
                             <tr>
                                 <td>
-                                    <b>Impuestos de Retenciones</b>
+                                    <b>Impuesto de Retencion</b>
                                 </td>
                             </tr>
                             <t t-set="tot" t-value="0.0"/>

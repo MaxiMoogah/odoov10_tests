@@ -1,10 +1,10 @@
 {
-    'name': 'Informe Imp. Retenciones Aplicadas',
+    'name': 'Withholding Tax Report',
     'description': 'Informe de Retenciones en Pagos y Recibos para Argentina utilizando pagos en Grupos',
-    'summary': 'Informe Imp. Retenciones aplicadas',
+    'summary': 'withholding tax report',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
-    'version': '10.0.1.0.11',
+    'version': '10.0.1.0.10',
     'license': 'Other proprietary',
     'maintainer': 'Osvaldo Jorge Gentile',
     'contributors': '',
