@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 10.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-08 19:59+0000\n"
-"PO-Revision-Date: 2018-03-08 17:01-0300\n"
+"POT-Creation-Date: 2019-05-15 14:06+0000\n"
+"PO-Revision-Date: 2019-05-15 11:12-0300\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: \n"
-"Language: es_AR\n"
-"X-Generator: Poedit 2.0.6\n"
+"Language: es\n"
+"X-Generator: Poedit 2.2.1\n"
 
 #. module: vitt_stock_report
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document2
@@ -50,7 +50,7 @@ msgstr "<strong>Fecha</strong>"
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document2
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document3
 msgid "<strong>Delivered Quantity</strong>"
-msgstr "<strong>Cantidad Entregada</strong>"
+msgstr "<strong>Cantidad entregada</strong>"
 
 #. module: vitt_stock_report
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document2
@@ -62,7 +62,7 @@ msgstr "<strong>Orden (Origen)</strong>"
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document2
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document3
 msgid "<strong>Ordered Quantity</strong>"
-msgstr "<strong>Cantidad Ordenada</strong>"
+msgstr "<strong>Cantidad pedida</strong>"
 
 #. module: vitt_stock_report
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document2
@@ -78,17 +78,17 @@ msgstr "Todos los artículos no pudieron ser enviados, los restantes serán envi
 #. module: vitt_stock_report
 #: model:ir.actions.report.xml,name:vitt_stock_report.action_report_delivery2
 msgid "Delivery Slip 2"
-msgstr "Entrega/Merc. Rec. Nro Serie"
+msgstr "Remito de Entrega 2"
 
 #. module: vitt_stock_report
 #: model:ir.actions.report.xml,name:vitt_stock_report.action_report_delivery3
 msgid "Delivery Slip overview"
-msgstr "Entrega/Merc. Recibida"
+msgstr "Remito de Entrega Resumido"
 
 #. module: vitt_stock_report
 #: model:ir.ui.view,arch_db:vitt_stock_report.report_delivery_document2
 msgid "This shipment is a backorder of"
-msgstr "Este envío es una Entrega Parcial de"
+msgstr "Este envío es un pedido parcial de"
 
 #. module: vitt_stock_report
 #: model:ir.model,name:vitt_stock_report.model_stock_picking

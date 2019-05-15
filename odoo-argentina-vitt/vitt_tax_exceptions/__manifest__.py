@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Tax Withholding Exceptions',
-    'description': 'Tax Withholding Exceptions',
+    'name': 'Retenciones y Percepciones v2',
+    'description': 'Nuevo código para Retenciones y Percepciones',
     'summary': 'WARNING, replacing whole WHolding calculations',
     'author': 'Moogah',
     'website': 'www.moogah.com',
@@ -15,7 +15,6 @@
         'l10n_ar_account_withholding',
     ],
     'installable': True,
-    'name': 'Taxes Exceptions',
     'test': [],
-    'version': '10.0.1.0.3',
+    'version': '10.0.1.0.4',
 }

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "Configuracion, Informes y Exportaciones Impositivas para ARG",
-    'summary': """Configuracion, Informes y Exportaciones Impositivas para ARG""",
+    'summary': """Informes y Exportaciones Impositivas para ARG""",
     'description': """
         Configuración y campos adicionales para el manejo de impuestos de ARG, Exportaciones e Informes.
     """,
@@ -11,7 +11,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '10.0.1.1.6',
+    'version': '10.0.1.1.7',
     # any module necessary for this one to work correctly
     'depends': [
         'sale',
