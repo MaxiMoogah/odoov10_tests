@@ -1,1 +1,1 @@
-import odoo_mercadopago
+from . import models
