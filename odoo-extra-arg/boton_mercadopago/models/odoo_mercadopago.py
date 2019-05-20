@@ -111,16 +111,15 @@ class SaleOrder(models.Model):
 				'unit_price': self.amount_total
 				}]}
 			computed_url = None
-			mercadopago_client_obj = self.env['ir.config_parameter'].search([('key','=','mercadopago_client')])
-			if mercadopago_client_obj:
-				mercadopago_key_obj = self.env['ir.config_parameter'].search([('key','=','mercadopago_key')])
-				if mercadopago_key_obj:
-					mercadopago_client = mercadopago_client_obj.value
-					mercadopago_key = mercadopago_key_obj.value
-					mp = mercadopago.MP(mercadopago_client,mercadopago_key)
-					preferenceResult = mp.create_preference(preference)
+			acquirer_id = self.env['payment.acquirer'].sudo().search([('provider', '=', 'mercadopago')], limit=1)
+			if acquirer_id.mercadopago_client_id and acquirer_id.mercadopago_client_secret:
+				mp = mercadopago.MP(acquirer_id.mercadopago_client_id, acquirer_id.mercadopago_client_secret)
+				preferenceResult = mp.create_preference(preference)
+				if acquirer_id.environment == 'prod':
 					url = preferenceResult['response']['init_point']
-					computed_url = url
+				else:
+					url = preferenceResult['response']['sandbox_init_point']
+				computed_url = url
 			if not computed_url:
 				self.mercadopago_url = 'N/A'
 			else:
