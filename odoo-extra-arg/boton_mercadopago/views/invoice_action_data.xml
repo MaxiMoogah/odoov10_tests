@@ -39,7 +39,7 @@
     <br/>
     <p>It is also possible to directly pay with MercadoPago:</p>
         <a style="margin-left: 120px;" href="${object.mercadopago_url}">
-            <img class="oe_edi_paypal_button" src="/boton_mercadopago-master/static/src/img/boton_mercado_pago"/>
+            <img class="oe_edi_paypal_button" src="/boton_mercadopago/static/src/img/boton_mercado_pago.png"/>
         </a>
     % endif
     
