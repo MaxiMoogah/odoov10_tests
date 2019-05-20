@@ -1,7 +1,7 @@
 {
     'name': 'Button for MercadoPago',
     'category': 'Account',
-    'version': '10.0.1.0.3',
+    'version': '10.0.1.0.4',
     'depends': [
         'account',
         'sale',
