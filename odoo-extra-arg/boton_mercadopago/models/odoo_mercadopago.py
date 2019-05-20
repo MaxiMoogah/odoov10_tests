@@ -54,7 +54,7 @@ class account_invoice(models.Model):
 					mercadopago_client = mercadopago_client_obj.value
 					mercadopago_key = mercadopago_key_obj.value
 					mp = mercadopago.MP(mercadopago_client,mercadopago_key)
-					mp.sandbox_mode(enable=True)
+					mp.sandbox_mode()
 					preferenceResult = mp.create_preference(preference)
 					url = preferenceResult['response']['init_point']
 					computed_url = url		
