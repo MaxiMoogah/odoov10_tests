@@ -38,11 +38,17 @@
     % if object.mercadopago_url:
     <br/>
     <p>It is also possible to directly pay with MercadoPago:</p>
+
+    <center>
+        <a href="${object.mercadopago_url}" style="background-color: #44ee8d; padding: 20px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 16px;" class="o_default_snippet_text">${access_name}</a>
+        <br/><br/>
+    </center>
+        
         <a style="margin-left: 120px;" href="${object.mercadopago_url}">
             <img class="oe_edi_paypal_button" src="/boton_mercadopago/static/src/img/boton_mercado_pago.png"/>
         </a>
     % endif
-    
+
     <br/>
     <p>If you have any question, do not hesitate to contact us.</p>
     <p>Thank you for choosing ${object.company_id.name or 'us'}!</p>
