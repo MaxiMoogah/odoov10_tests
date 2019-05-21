@@ -3,10 +3,10 @@
 # For copyright and license notices, see __openerp__.py file in module root
 # directory
 ##############################################################################
-from openerp import fields, models, api, _
+from odoo import fields, models, api, _
 import logging
-from openerp.exceptions import UserError
-import openerp.tools as tools
+from odoo.exceptions import UserError
+import odoo.tools as tools
 import os
 import hashlib
 import time
@@ -234,3 +234,36 @@ class ResCompany(models.Model):
             'token': token,
             'sign': sign,
         }
+
+class AccountDocumentType(models.Model):
+    _inherit = 'account.document.type'
+
+    mipymesf = fields.Boolean(string="MiPymes")
+
+class ResPartnerBank(models.Model):
+    _inherit = 'res.partner.bank'
+
+    cbu_alias = fields.Char(string="CBU Alias",size=25)
+    use_mipymesf = fields.Boolean(string="Use MiPymes")
+
+class AccountInvoice(models.Model):
+    _inherit = "account.invoice"
+
+    mipymesf = fields.Boolean(string="MiPymes",readonly=True)
+    bank_account_id = fields.Many2one('res.partner.bank',string="Bank Account",translate=True)
+    cbu = fields.Char(string="Issuer CBU",translate=True)
+    cbu_alias = fields.Char(string="Alias CBU")
+    revocation_code = fields.Char(string="Revocation Code",translate=True)
+    internal_type = fields.Selection(related="journal_document_type_id.document_type_id.internal_type")
+    comercial_ref = fields.Char(string="Commercial Reference",size=50)
+
+    @api.onchange('journal_document_type_id','journal_id')
+    def _onchange_journal_document_type_id(self):
+        self.mipymesf = self.journal_document_type_id.document_type_id.mipymesf
+
+    @api.onchange('bank_account_id')
+    def _onchange_bank_account_id(self):
+        self.cbu = self.bank_account_id.cbu
+        self.cbu_alias = self.bank_account_id.cbu_alias
+
+

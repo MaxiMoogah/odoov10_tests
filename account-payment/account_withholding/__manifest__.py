@@ -34,7 +34,7 @@
         'account_payment_group',
     ],
     'installable': True,
-    'name': 'Withholdings on Payments',
+    'name': 'Reteciones en Pagos a Proveedores',
     'test': [],
     'version': '10.0.1.0.2',
 }

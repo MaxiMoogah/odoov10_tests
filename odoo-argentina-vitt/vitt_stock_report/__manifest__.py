@@ -7,8 +7,8 @@
 ##############################################################################
 {
     'name': 'Nuevo Remito de Entrega',
-    'description': 'Nuevo Remito de Entrega',
-    'summary': 'El app habilita un nuevo formato de Remito de Entrega desde el menú de Impresión. Incluye la columna de Cantidad Ordenada y la firma.',
+    'description': 'El app habilita un nuevo formato de Remito de Entrega desde el menú de Impresión. Incluye la columna de Cantidad Ordenada y la firma.',
+    'summary': 'Nuevo Remito de Entrega',
     'author': 'Moogah',
     'website': 'http://www.moogah.com',
     'version': '10.0.1.1',

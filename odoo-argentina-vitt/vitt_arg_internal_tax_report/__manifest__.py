@@ -2,7 +2,7 @@
 
 {
     'name': 'Reporte de Impuestos Internos Compras y Ventas',
-    'version': '10.0.1.1',
+    'version': '10.0.1.2',
     'category': 'Hidden/Dependency',
     'depends': ['purchase', 'sale_stock', 'l10n_ar_account', 'report_xls'],
     'description': """

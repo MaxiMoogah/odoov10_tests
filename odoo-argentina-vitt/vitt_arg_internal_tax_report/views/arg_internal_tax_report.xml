@@ -8,8 +8,8 @@
             string="Internal Taxes Report"
             report_type="qweb-pdf"
             paperformat="paperformat_internal_taxes_report"
-            name="arg_internal_tax_report.internal_taxes"
-            file="arg_internal_tax_report.report_internal_taxes"
+            name="vitt_arg_internal_tax_report.internal_taxes"
+            file="vitt_arg_internal_tax_report.report_internal_taxes"
             />
     </data>
     <data>

@@ -47,23 +47,32 @@ class AccountInvoiceRefund(models.TransientModel):
         compute='get_available_journal_document_types',
         string='Available Journal Document Types',
     )
+    type = fields.Selection([('debit','Debit Note'),('credit','Credit Note')],
+                            translate=True,
+                            string="Select Type",
+                            default="credit",
+                            required=True)
 
     @api.multi
-    @api.depends('invoice_id')
+    @api.depends('invoice_id','type')
     def get_available_journal_document_types(self):
         for rec in self:
             invoice = rec.invoice_id
             if not invoice:
                 return True
             invoice_type = TYPE2REFUND[invoice.type]
+            if rec.type == 'debit':
+                invoice_type = TYPE2REFUND[invoice_type]
             res = invoice._get_available_journal_document_types(invoice.journal_id, invoice_type, invoice.partner_id)
             rec.available_journal_document_type_ids = res['available_journal_document_types']
             rec.journal_document_type_id = res['journal_document_type']
 
-    @api.onchange('invoice_id')
+    @api.onchange('invoice_id','type')
     def _onchange_invoice_id_2(self):
         if self.invoice_id.id:
             invoice_type = TYPE2REFUND[self.invoice_id.type]
+            if self.type == 'debit':
+                invoice_type = TYPE2REFUND[invoice_type]
             res = self.invoice_id._get_available_journal_document_types(self.invoice_id.journal_id, invoice_type, self.invoice_id.partner_id)
 
             return {'domain': {'journal_document_type_id': [('id','in',res['available_journal_document_types'].ids)]}}

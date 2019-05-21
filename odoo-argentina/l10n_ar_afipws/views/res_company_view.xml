@@ -16,5 +16,58 @@
             </field>
         </record>
 
+        <record id="view_document_type_form" model="ir.ui.view">
+            <field name="name">account.document.type.form</field>
+            <field name="model">account.document.type</field>
+            <field name="inherit_id" ref="account_document.view_document_type_form"/>
+            <field name="arch" type="xml">
+                <field name='validator_id' position="after">
+                    <field name='mipymesf'/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_bank_form2" model="ir.ui.view">
+          <field name="model">res.partner.bank</field>
+          <field name="name">res.bank.form2</field>
+          <field name="inherit_id" ref="base.view_partner_bank_form" />
+          <field name="arch" type="xml">
+            <field name="acc_number" position="after">
+              <field name='cbu_alias'/>
+            </field>
+            <field name="cbu" position="after">
+              <field name='use_mipymesf'/>
+            </field>
+          </field>
+        </record>
+
+        <record id="invoice_form2" model="ir.ui.view">
+            <field name="name">invoice.form2</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name='date_invoice' position="before">
+                    <field name='mipymesf'/>
+                </field>
+                <page name="other_info" position="after" >
+                    <page name="mipymes" string="MIPymes" attrs="{'invisible': [('mipymesf', '=', False)]}">
+                        <group>
+                            <group>
+                                <field name="bank_account_id"
+                                       domain="[('use_mipymesf', '=', True),('partner_id', '=', partner_id)]"
+                                />
+                                <field name="cbu"/>
+                                <field name="cbu_alias"/>
+                                <field name="internal_type" invisible="1"/>
+                                <field name="revocation_code"
+                                       attrs="{'invisible': [('internal_type', 'not in', ('debit_note','credit_note'))],
+                                               'required' : [('internal_type', 'in', ('debit_note','credit_note'))]}"/>
+                                <field name="comercial_ref"/>
+                            </group>
+                        </group>
+                    </page>
+                </page>
+            </field>
+        </record>
     </data>
 </openerp>

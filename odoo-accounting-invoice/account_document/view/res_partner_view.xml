@@ -15,5 +15,19 @@
             </field>
         </record>
 
+        <record id="view_bank_form2" model="ir.ui.view">
+          <field name="model">res.partner.bank</field>
+          <field name="name">res.bank.form2</field>
+          <field name="inherit_id" ref="base.view_partner_bank_form" />
+          <field name="arch" type="xml">
+            <field name="acc_number" position="after">
+              <field name='cbu_alias'/>
+            </field>
+            <field name="cbu" position="after">
+              <field name='use_mipymesf'/>
+            </field>
+          </field>
+        </record>
+
     </data>
 </odoo>

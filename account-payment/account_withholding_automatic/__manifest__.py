@@ -38,7 +38,7 @@
         'account_withholding',
     ],
     'installable': True,
-    'name': 'Automatic Withholdings on Payments',
+    'name': 'Retenciones Automáticas en Pagos',
     'test': [],
     'version': '10.0.1.0.2',
 }

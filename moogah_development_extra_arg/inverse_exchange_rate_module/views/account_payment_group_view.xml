@@ -74,7 +74,6 @@
             </field>
         </record>
 
-<!--  Removed the options as it's not possible to see the list when there are many transactions
 
         <record id="view_account_payment_group_anticipate_tree" model="ir.ui.view">
             <field name="name">account.payment.group.anticipate.tree</field>
@@ -111,7 +110,7 @@
             </field>
         </record>
 
-        <record id="action_account_payment_group_anticipate_supplier" model="ir.actions.act_window">
+        <!--record id="action_account_payment_group_anticipate_supplier" model="ir.actions.act_window">
             <field name="name">Supplier Anticipate List</field>
             <field name="res_model">account.payment.group</field>
             <field name="view_type">form</field>
@@ -129,7 +128,8 @@
             <field name="domain">[('anticipate', '=', True),('partner_type', '=', 'customer')]</field>
             <field name="search_view_id" ref="view_account_payment_group_anticipate_search"/>
             <field name="view_id" ref="view_account_payment_group_anticipate_tree"/>
-        </record>
+        </record-->
+
 
         <record model="ir.actions.act_window" id="account_payment_group.action_account_payments_group_payable">
             <field name="view_type">form</field>
@@ -143,8 +143,8 @@
             <field name="view_id" ref="account_payment_group.view_account_payment_group_tree"/>
         </record>
 
-        <menuitem action="action_account_payment_group_anticipate" id="menu_action_account_payments_group_anticipate" parent="account.menu_finance_receivables" sequence="30" />
-        <menuitem action="action_account_payment_group_anticipate_supplier" id="menu_action_account_payments_group_anticipate_supplier" parent="account.menu_finance_payables" sequence="30" />
+        <!--menuitem action="action_account_payment_group_anticipate" id="menu_action_account_payments_group_anticipate" parent="account.menu_finance_receivables" sequence="30" />
+        <menuitem action="action_account_payment_group_anticipate_supplier" id="menu_action_account_payments_group_anticipate_supplier" parent="account.menu_finance_payables" sequence="30" /-->
 
 
         <record id="view_account_payment_group_search2" model="ir.ui.view">
@@ -160,7 +160,6 @@
                 </filter>
             </field>
         </record>
--->
 
         <!--record id="view_account_payment_group_tree2" model="ir.ui.view">
             <field name="name">account.payment.group.tree2</field>

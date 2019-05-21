@@ -2,7 +2,7 @@
 {
     'name': 'Retenciones y Percepciones v2',
     'description': 'Nuevo código para Retenciones y Percepciones',
-    'summary': 'WARNING, replacing whole WHolding calculations',
+    'summary': 'OBS este app instala el nuevo código de Retenciones y Percepciones',
     'author': 'Moogah',
     'website': 'www.moogah.com',
     'category': 'Accounting & Finance',

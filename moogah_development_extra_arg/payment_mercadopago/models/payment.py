@@ -197,8 +197,9 @@ class PaymentMercadoPago(models.Model):
 
             temp_mercadopago_tx_values = {'tx_return_url' : mercadopago_pref.get('response').get("back_urls").get('success'),}
             # print "temp_mercadopago_tx_values", temp_mercadopago_tx_values
-        return temp_mercadopago_tx_values
 
+            return temp_mercadopago_tx_values
+        return {'tx_return_url': ''}
 
     @api.model
     def mercadopago_s2s_form_process(self, data):

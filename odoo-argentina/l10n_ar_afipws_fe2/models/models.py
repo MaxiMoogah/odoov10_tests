@@ -4,6 +4,7 @@ from odoo.exceptions import UserError, Warning
 import logging
 import sys
 import traceback
+from datetime import datetime
 _logger = logging.getLogger(__name__)
 
 try:
@@ -98,6 +99,9 @@ class AccountInvoice(models.Model):
                     fecha_serv_hasta = fecha_serv_hasta.replace("-", "")
             else:
                 fecha_venc_pago = fecha_serv_desde = fecha_serv_hasta = None
+
+            if inv.mipymesf and doc_afip_code in ('201','206','211'):
+                fecha_venc_pago = inv.date_due
 
             # # invoice amount totals:
             imp_total = str("%.2f" % abs(inv.amount_total))
@@ -228,6 +232,15 @@ class AccountInvoice(models.Model):
                         0,
                         "%.2f" % abs(tax.amount),
                     )
+                if afip_ws == 'wsfe' and inv.mipymesf:
+                    if doc_afip_code in ('201', '206', '211'):
+                        if inv.cbu:
+                            ws.AgregarOpcional(2101, inv.cbu)
+                        if inv.cbu_alias:
+                            ws.AgregarOpcional(2102, inv.cbu_alias)
+                    if doc_afip_code in ('202', '203', '207','208','212','213'):
+                        ws.AgregarOpcional(22, inv.revocation_code)
+
 
             CbteAsoc = inv.get_related_invoices_data()
             if CbteAsoc:
@@ -359,6 +372,24 @@ class AccountInvoice(models.Model):
                 'afip_xml_response': ws.XmlResponse,
                 'state': 'open',
             })
+
+    @api.multi
+    def write(self, vals):
+        for inv in self:
+            orig_month = datetime.strptime(inv.date_invoice, "%Y-%m-%d").strftime('%m')
+            today_month = datetime.today().strftime('%m')
+            if orig_month != today_month:
+                raise UserError(_('You can send invoices in the same current month only'))
+            if inv.mipymesf:
+                if not inv.date_due:
+                    raise UserError(_('You can send invoices in the same current month only'))
+                if inv.type == 'out_refund':
+                    if not inv.cbu:
+                        raise UserError(_('You should complete Issuer CBU mipymes'))
+                    if not inv.bank_account_id:
+                        raise UserError(_('You should complete Bank Account mipymes'))
+            vals.update({'mipymesf_read_only': inv.mipymesf})
+        return super(AccountInvoice, self).write(vals)
 
 class AfipwsConnection(models.Model):
     _inherit = "afipws.connection"

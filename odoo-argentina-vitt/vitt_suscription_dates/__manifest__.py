@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Fechas Servicios en Facturas de Suscripciones',
-    'description': 'Fechas Servicios en Facturas de Suscripciones',
-    'summary': 'Este app ingresa de forma automática los valores en los campos Fecha Inicio y Fin del Servicio en las facturas generadas desde suscripciones. Las fechas ingresadas corresponderán al período facturado.',
+    'description': 'Este app ingresa de forma automática los valores en los campos Fecha Inicio y Fin del Servicio en las facturas generadas desde suscripciones. Las fechas ingresadas corresponderán al período facturado',
+    'summary': 'Fechas Servicios en Facturas de Suscripciones.',
     'author': 'Moogah',
     'website': 'www.moogah.com',
     'category': 'Accounting & Finance',

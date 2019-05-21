@@ -5,7 +5,7 @@
     'author' : 'Moogah',
     'website' : 'www.techultrasolutions.com',
     'summary': 'Payment Acquirer: MercadoPago Integration for Argentina',
-    'version': '1.4',
+    'version': '10.0.1.4.1',
     'description': """MercadoPago Payment Acquirer""",
     'depends': ['payment', 'website', 'website_sale'],
     'data': [

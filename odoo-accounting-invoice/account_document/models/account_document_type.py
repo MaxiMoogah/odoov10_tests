@@ -84,6 +84,7 @@ class AccountDocmentType(models.Model):
         'base.validator',
         'Validator',
     )
+    mipymesf = fields.Boolean(string="MiPymes")
 
     @api.multi
     def validate_document_number(self, document_number):
