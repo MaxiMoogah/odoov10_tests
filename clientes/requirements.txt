@@ -1,1 +1,2 @@
-PyCups
+libcups2-dev
+pycups
