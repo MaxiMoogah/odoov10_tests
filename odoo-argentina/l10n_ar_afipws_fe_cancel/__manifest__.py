@@ -17,32 +17,33 @@
 #
 ##############################################################################
 {
+    "name": "Integration between electronic invoice and account cancel",
+    'version': '10.0.1.0.0',
+    'category': 'Localization/Argentina',
+    'sequence': 14,
     'author': 'Moogah,ADHOC SA',
     'website': 'www.moogah.com',
     'license': 'AGPL-3',
-    'category': 'Accounting & Finance',
+    'summary': '',
+    'description': """
+Integration between electronic invoice and account cancel
+=========================================================
+""",
+    'depends': [
+        'l10n_ar_afipws_fe',
+        'account_cancel',
+    ],
+    'external_dependencies': {
+    },
     'data': [
-        'wizard/res_partner_update_from_padron_wizard_view.xml',
-        'security/ir.model.access.csv',
-        'views/res_partner_view.xml',
-        'views/afip_activity_view.xml',
-        'views/afip_tax_view.xml',
-        'views/afip_concept_view.xml',
-        'views/res_company_view.xml',
-        'res_config_view.xml',
+        'views/invoice_view.xml',
     ],
     'demo': [
     ],
-    'depends': [
-        # 'base',
-        # 'l10n_ar_base',
-        'l10n_ar_account',
+    'test': [
     ],
-    'external_dependencies': {
-        #'python': ['pyafipws'],
-    },
     'installable': True,
-    'name': 'Constancia Padron AFIP',
-    'test': [],
-    'version': '10.0.1.0.10',
+    'auto_install': False,
+    'application': False,
 }
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

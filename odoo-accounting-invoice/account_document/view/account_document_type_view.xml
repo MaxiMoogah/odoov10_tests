@@ -15,6 +15,7 @@
                         <field name='internal_type'/>
                         <field name='localization'/>
                         <field name='validator_id'/>
+                        <field name='mipymesf'/>
                         <field name='active'/>
                     </group>
                 </form>

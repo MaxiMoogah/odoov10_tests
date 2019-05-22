@@ -17,3 +17,9 @@ class ResPartner(models.Model):
         help='Set here if this partner can issue other documents further '
         'than invoices, credit notes and debit notes'
     )
+
+class ResPartnerBank(models.Model):
+    _inherit = 'res.partner.bank'
+
+    cbu_alias = fields.Char(string="CBU Alias",size=25)
+    use_mipymesf = fields.Boolean(string="Use MiPymes")

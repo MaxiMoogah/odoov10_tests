@@ -87,6 +87,10 @@
                                     'readonly': ['|', ('state', '!=', 'draft'), ('move_name', '!=', False)]}"
                     />
                 </field>
+                <field name='date_invoice' position="before">
+                    <field name='mipymesf' invisible="1"/>
+                    <field name='mipymesf_read_only'/>
+                </field>
 
                 <field name="number" position="attributes">
                     <attribute name="invisible">1</attribute>
@@ -97,7 +101,25 @@
                     <label string="- Next Number: " attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
                     <field name="next_number" attrs="{'invisible': [('next_number', 'in', (0, False))]}" class="oe_inline"/>
                 </field>
-           
+                <page name="other_info" position="after" >
+                    <page name="mipymes" string="MIPymes" attrs="{'invisible': [('mipymesf', '=', False)]}">
+                        <group>
+                            <group>
+                                <field name="bank_account_id"
+                                       domain="[('use_mipymesf', '=', True),('partner_id', '=', partner_id)]"
+                                />
+                                <field name="cbu"/>
+                                <field name="cbu_alias"/>
+                                <field name="internal_type" invisible="1"/>
+                                <field name="revocation_code"
+                                       attrs="{'invisible': [('internal_type', 'not in', ('debit_note','credit_note'))],
+                                               'required' : [('internal_type', 'in', ('debit_note','credit_note'))]}"/>
+                                <field name="comercial_ref"/>
+                            </group>
+                        </group>
+                    </page>
+                </page>
+
             </field>
         </record>
 
@@ -146,6 +168,7 @@
 
             </field>
         </record>
+
 
     </data>
 </odoo>

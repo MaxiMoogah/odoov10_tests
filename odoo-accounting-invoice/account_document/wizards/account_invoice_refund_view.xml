@@ -19,6 +19,9 @@
                     />
                     <field name="document_number" attrs="{'invisible': ['|', ('document_sequence_id', '!=', False), ('use_documents', '=', False)], 'required': [('document_sequence_id', '=', False), ('use_documents', '=', True)]}"/>
                 </field>
+                <field name='filter_refund' position="after">
+                    <field name='type'/>
+                </field>
             </field>
         </record>
 

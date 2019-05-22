@@ -102,9 +102,12 @@ class ResPartner(models.Model):
             attachments=attachments)
 
     @api.multi
-    def get_data_from_padron_afip(self):
+    def get_data_from_padron_afip(self,cuit_=None):
         self.ensure_one()
-        cuit = self.main_id_number
+        if not cuit_:
+            cuit = self.main_id_number
+        else:
+            cuit = cuit_
         #padron = PadronAFIP()
 
         afip_ws = "ws_sr_constancia_inscripcion" #"ws_sr_padron_a4"

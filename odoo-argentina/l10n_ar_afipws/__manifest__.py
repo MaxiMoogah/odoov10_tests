@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Base para Web Services de AFIP',
-    'version': '10.0.1.0.7',
+    'version': '10.0.1.0.8',
     'category': 'Localization/Argentina',
     'sequence': 14,
     'author': 'Moogah,ADHOC SA, Moldeo Interactive',
